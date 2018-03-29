@@ -43,7 +43,7 @@ make_tile:
 		SUB	r0, r0, #1
 		ADD	pxl_x_drawn, pxl_x_drawn, #1
 		CMP	pxl_x_drawn, height
-		BLE	tileLoop
+		BLT	tileLoop
 
 	POP	{r5-r6, pc}
 
@@ -95,7 +95,7 @@ draw_HL:
 		ADD	r0, r0, #1
 		ADD	pxl_x_drawn, pxl_x_drawn, #1
 		CMP	pxl_x_drawn, length
-		BLE	HL_pxl_x_loop
+		BLT	HL_pxl_x_loop
 
 	POP	{r6, lr}
 	MOV	pc, lr
