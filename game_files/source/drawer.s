@@ -1,14 +1,14 @@
 @ Drawer
 
-.text
-.global Init_Frame
-	Init_Frame:
-		PUSH	{lr}
+@.text
+@.global Init_Frame
+@	Init_Frame:
+@		PUSH	{lr}
 
-		LDR	r0, =frameBufferInfo
-		BL	initFbInfo
+@		LDR	r0, =frameBufferInfo
+@		BL	initFbInfo
 
-		POP	{pc}
+@		POP	{pc}
 
 
 @ r0 - x_start
@@ -179,6 +179,7 @@ draw_word:
 	MOV	r6, r1
 	MOV	r7, r2
 	MOV	r4, r3
+
 	draw_word_loop:
 		LDRB	r0, [r5], #1
 		CMP	r0, #0
@@ -199,22 +200,23 @@ draw_black_screen:
 	PUSH {r4, r5, lr}
 	MOV r4, #0
 	MOV r5, #0
-draw_black:
-    MOV r0, r4
-    MOV r1, r5
-    MOV r2, #0
-    bl	draw_pxl
+
+	draw_black:
+		MOV r0, r4
+		MOV r1, r5
+		MOV r2, #0
+    		bl	draw_pxl
     
-    add	r4, r4, #1
-    CMP r4, #720
-    MOVEQ	r4, #0
+    		add	r4, r4, #1
+    		CMP r4, #720
+    		MOVEQ	r4, #0
     
-    ADDEQ r5, r5, #1
+   		ADDEQ r5, r5, #1
     
-    CMP   r5, #960
-    BLT draw_black
+    		CMP   r5, #960
+    		BLT draw_black
     
-    pop {r4,r5, pc}
+    		pop {r4,r5, pc}
 	
 
 

@@ -5,3 +5,10 @@
 
 .global main
 main:
+		ldr	r0, =frameBufferInfo
+		bl	initFbInfo
+
+start_menu:	bl	main_menu
+		cmp	r0, #1
+
+		
