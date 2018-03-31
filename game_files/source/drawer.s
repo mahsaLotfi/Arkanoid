@@ -1,5 +1,15 @@
-@ Drawer
+@ Draws: Screen state, Update screen - Animation + Menu
 
+@ Is used by: 
+
+@ Uses: 
+
+@ Implementation:			Implemented?
+
+@ 
+
+
+@ Have put in main.s
 @.text
 @.global Init_Frame
 @	Init_Frame:
