@@ -16,3 +16,5 @@
 	@ Quit Game => clear + exit	N
 
 
+.global	draw_menu
+draw_menu:	

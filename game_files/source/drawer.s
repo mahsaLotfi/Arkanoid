@@ -8,18 +8,9 @@
 
 @ 
 
+.text
 
-@ Have put in main.s
-@.text
-@.global Init_Frame
-@	Init_Frame:
-@		PUSH	{lr}
-
-@		LDR	r0, =frameBufferInfo
-@		BL	initFbInfo
-
-@		POP	{pc}
-
+.global make_tile, draw_pxl, draw_HL, draw_char, draw_word, draw_black_screen
 
 @ r0 - x_start
 @ r1 - y_start
@@ -27,7 +18,6 @@
 @ r3 - length
 @ r4 - height
 
-.global make_tile
 make_tile:
 	length	.req 	r3
 	pxl_x_drawn	.req	r6
@@ -56,8 +46,7 @@ make_tile:
 		BLT	tileLoop
 
 	POP	{r5-r6, pc}
-
-.global draw_pxl
+	
 
 @ r0 - x_start
 @ r1 - y_start
@@ -95,7 +84,6 @@ draw_pxl:
 @ r2 - color
 @ r3 - length
 
-.global draw_HL
 draw_HL:
 	PUSH	{r6, lr}
 
@@ -121,7 +109,6 @@ draw_HL:
 @ r2 = y
 @ r3 = colour
 
-.global draw_char
 draw_char:
 	PUSH		{r4-r9, lr}
 
@@ -182,7 +169,6 @@ draw_char:
 @ r2 - y
 @ r3 - color
 
-.global draw_word
 draw_word:
 	PUSH	{r4-r7, lr}
 	MOV	r5, r0
@@ -205,7 +191,6 @@ draw_word:
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         
 @ Draws black rectangle
-.global draw_black_screen 
 draw_black_screen:
 	PUSH {r4, r5, lr}
 	MOV r4, #0

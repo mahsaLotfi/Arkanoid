@@ -1,19 +1,18 @@
-@ Assignment 3
-@ Created by: Kevin Huynh 10162332, Heavenal Cerna and Austin So
+@ SNES_controller: 
+
+@ Is used by:
+
+@ Uses:
 
 gpio_bA		.req	r11
 clearMask	.req	r10
 pButton		.req	r9
 
-.section	.text
+.text
 
+.global SNES
 
-
-.global main
-main:
-	ldr	r0, =authors		@ Prints the authors' names
-	bl	printf
-	
+SNES:
 	bl	getGpioPtr		@ Called to get	base address of GPIO in r0
 	ldr	r1, =GPIO_baseAddr	@ Loads GPIO_baseAddr address into r1
 	str	r0, [r1]		@ Stores GPIO base address into GPIO_baseAddr address
@@ -327,20 +326,4 @@ end_print:
 
 .section	.data
 
-
 GPIO_baseAddr:	.word	0
-
-authors:	.asciz	"\nCreated by: Kevin Huynh, Heavenel Cerna and Austin So\n"
-prompt:		.asciz	"\nPlease press a button...\n"
-x_button:	.asciz	"\nYou have pressed X\n"
-y_button:	.asciz	"\nYou have pressed Y\n"
-a_button:	.asciz	"\nYou have pressed A\n"
-b_button:	.asciz	"\nYou have pressed B\n"
-select:		.asciz	"\nYou have pressed Select\n"
-start:		.asciz	"\nProgram is terminating...\n"
-joy_up:		.asciz	"\nYou have pressed Joy-pad UP\n"
-joy_down:	.asciz	"\nYou have pressed Joy-pad DOWN\n"
-joy_left:	.asciz	"\nYou have pressed Joy-pad LEFT\n"
-joy_right:	.asciz	"\nYou have pressed Joy-pad RIGHT\n"
-left_trigger:	.asciz	"\nYou have pressed LEFT trigger\n"
-right_trigger:	.asciz	"\nYou have pressed RIGHT trigger\n"
