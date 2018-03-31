@@ -10,9 +10,12 @@ pButton		.req	r9
 
 .text
 
-.global SNES
+.global GPIO_init, button_press
 
-SNES:
+
+GPIO_init:
+	push	{fp, lr}
+	
 	bl	getGpioPtr		@ Called to get	base address of GPIO in r0
 	ldr	r1, =GPIO_baseAddr	@ Loads GPIO_baseAddr address into r1
 	str	r0, [r1]		@ Stores GPIO base address into GPIO_baseAddr address
@@ -32,85 +35,61 @@ SNES:
 	mov	r1, #0			@ Input function code
 	bl	init_GPIO		@ Data line to input
 
+	pop	{fp, pc}
 
+
+button_press:
+	push	{r4, fp, lr}
+
+wait_press:
 	mov	r4, #0xffff
-prompt_loop:
-	ldr	r0, =prompt		@ 
-	bl	printf			@ 
-	
 
-wait:
 	bl 	read_SNES
-	mov	pButton, r0		
-
-	mov 	r0,#10000		
-	bl	delayMicroseconds
+	cmp	r0, r4
+	beq	wait_press
 	
+read_press:				@ fix (idk)
 	bl 	read_SNES
 
 	cmp	pButton, r0		
-	beq 	wait			@ 
+	beq 	wait_press		@ 
 
 	cmp	r0, r4			
-	beq	wait
+	beq	wait_press
 
-	mov 	pButton, r0
-	mov 	r0,pButton		
+@	mov 	pButton, r0
+@	mov 	r0,pButton		
 	bl	check_button
-
-	cmp	pButton, #4
-	bne 	prompt_loop
-
-
-haltLoop$:
-	b		haltLoop$
+	
+	pop	{r4, fp, pc}
 
 
 @@@@@ ---------- Subroutines ---------- @@@@@
 
 
 init_GPIO:
-	cmp 	r0,#9
-	beq 	init_latch
-	
-	cmp 	r0,#11
-	beq 	init_clock
-		
-	b 	init_data
+	mov r3, #10				@ Get function Select Register number
+	sdiv r0, r0, r3
+	mov r6, r0				@ Keep parameters to safe variables
+	mov r4, r1
 
-init_latch:
-	ldr 	r3,[gpio_bA]		
-	
-	mov 	r4, #0b111		
-	bic	r3,r4,lsl #27		
+	@ Get least significant digit of line number and control bit for that digit
+	mov r3, #10
+	mul r1, r0, r3
+	sub r1, r6, r1
+	mov r3, #3
+	mul r5, r1, r3
 
-	orr 	r3,r1,lsl #27		
-	str 	r3,[gpio_bA]		
+	ldr	r0, [gpio_bA, r6, lsl #2] 	@ Load the value of Function Select Register 
 
-	mov	pc, lr 	
+	mov	r1, #7				@ Clear bits
+	bic	r0, r1, lsl r5
 
-init_data:
+	orr	r0, r4, lsl r5			@ Set bits to function code
 
-	ldr 	r3,[gpio_bA, #0x04]	
-	
-	mov 	r4, #0b111		
-	bic	r3,r4			
+	str	r0, [gpio_bA, r6, lsl #2]	@ Write back to Function Select Register 1
 
-	orr 	r3,r1			
-	str 	r3,[gpio_bA, #0x04]	
-
-	mov	pc, lr
-
-init_clock:
-	ldr 	r3,[gpio_bA, #0x04]	
-
-	mov 	r4, #0b111		
-	bic	r3,r4,lsl #3		
-
-	orr 	r3,r1,lsl #3		
-	str 	r3,[gpio_bA, #0x04]	
-
-	mov	pc, lr
+	mov	pc, lr				@ Returns call
 
 write_latch:
 	push	{r4}
@@ -212,110 +191,86 @@ check_button:
 	push	{lr}
 	mov	r1, #1
 
-print_B:
+B:
 	tst	r1, pButton
 	bne	print_Y
-	ldr	r0, =b_button		@ Prints X string
-	bl	printf
 
 	pop	{pc}			
 
-print_Y:
+Y:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_select
-	ldr	r0, =y_button		@ Prints Y string
-	bl	printf
 
 	pop	{pc}
 
-print_select:
+select:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_start
-	ldr	r0, =select		@ Prints A string
-	bl	printf
 
 	pop	{pc}			
 
-print_start:
+start:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_up
-	ldr	r0, =start		@ Prints B string
-	bl	printf
 
-	b	haltLoop$			
+	pop	{pc}			
 
-print_up:
+up:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_down
-	ldr	r0, =joy_up		@ Prints select string
-	bl	printf
 
 	pop	{pc}			@ Return call
 
-print_down:
+down:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_left
-	ldr	r0, =joy_down		@ Prints start string
-	bl	printf
 
 	pop	{pc}			@ Return call
 
-print_left:
+left:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_right
-	ldr	r0, =joy_left		@ Prints up string
-	bl	printf
 
 	pop	{pc}			@ Return call
 
-print_right:
+right:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_A
-	ldr	r0, =joy_right		@ Prints down string
-	bl	printf
 
 	pop	{pc}			@ Return call
 
-print_A:
+A:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_X
-	ldr	r0, =a_button		@ Prints left string
-	bl	printf
 
 	pop	{pc}			@ Return call
 
-print_X:
+X:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_lB
-	ldr	r0, =x_button		@ Prints right string
-	bl	printf
 
 	pop	{pc}			@ Return call
 
-print_lB:
+lB:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_rB
-	ldr	r0, =left_trigger	@ Prints left trigger
-	bl	printf
 
 	pop	{pc}			@ Return call
 
-print_rB:
+rB:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	end_print
-	ldr	r0, =right_trigger	@ Prints right trigger
-	bl	printf
 
 end_print:
 	pop	{pc}			@ Return call
