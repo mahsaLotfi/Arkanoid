@@ -8,6 +8,14 @@ SNES_controller	.req	r10
 menu_start	.req	r11
 menu_quit	.req	r12
 
+.global
+.aling 4
+
+.int 8
+.int 8
+.int 1024
+.int 768
+
 @ Implementation:			Implemented?
 
 @ Draw bkgd, title, authors		N
