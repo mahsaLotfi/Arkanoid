@@ -28,6 +28,7 @@ mm:
 	bl initFbinfo
 	
 	ldr r5, =menu_start		@loadframe buffer with meu_start image
+	bl menu_start
 	
 @ Draw bkgd, title, authors		N
 
