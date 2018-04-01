@@ -18,6 +18,9 @@ menu_quit	.req	r12
 
 @ Implementation:			Implemented?
 
+mm:
+	ldr r5, =framebufferinfo
+	bl initFbinfo
 @ Draw bkgd, title, authors		N
 
 @ Switch between 2 images		N
