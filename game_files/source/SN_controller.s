@@ -93,16 +93,16 @@ init_GPIO:
 
 write_latch:
 	push	{r4}
-	mov	r1, #9			@ 
-	ldr	r4, =GPIO_baseAddr	@ 
-	ldr	r2, [r4]		@ 
-	mov	r3, #1			@ 
-	lsl	r3, r1			@ 
+	mov	r1, #9			@ move number9 into r1
+	ldr	r4, =GPIO_baseAddr	@ lpad GPIO base address into r4
+	ldr	r2, [r4]		@ load r4 content into r2
+	mov	r3, #1			@ move number 1 into r3
+	lsl	r3, r1			@ logical shift left 9 bits for r3
 
-	teq	r0, #0			@ 
+	teq	r0, #0			@ test equal r0 to number 0
 
-	streq	r3, [r2, #40]		@ 
-	strne	r3, [r2, #28]		@ 
+	streq	r3, [r2, #40]		@ store r3 into r2 plus 40 if r0 equal to 0
+	strne	r3, [r2, #28]		@ store r3 into r2 plus 28 if r0 not equal to 0
 	pop	{r4}
 
 	mov	pc, lr			@ Return call
