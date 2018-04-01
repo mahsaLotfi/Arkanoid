@@ -4,6 +4,10 @@
 
 @ Uses: SNES_controller.s, menu_start.s, menu_quit.s
 
+SNES_controller	.req	r10
+menu_start	.req	r11
+menu_quit	.req	r12
+
 @ Implementation:			Implemented?
 
 @ Draw bkgd, title, authors		N
