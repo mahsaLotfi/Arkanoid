@@ -1,0 +1,29 @@
+
+
+.text
+
+.global	init_paddle, init_ball, init_bricks
+
+init_paddle:
+	ldr	r0, =paddle_coords
+	mov	r1, #308		@ Paddle: x coord *****
+	str	r1, [r0]		@ Store paddle x coord
+	mov	r2, #768		@ Paddle: y coord *****
+	str	r2, [r0, #4]		@ Store paddle y coord
+	
+init_ball:
+	ldr	r0, =ball_coords
+	mov	r1, #330		@ Ball: x coord *****
+	str	r1, [r0]		@ Store ball x coord
+	mov	r2, #746		@ Ball: y coord *****
+	str	r2, [r0, #4]		@ Store ball y coord
+	
+	ldr	r0, =ball_momentum
+	mov	r1, #0			@ 0 = right/up/45, 1 = left/down/60
+	str	r1, [r0]		@ Store ball x direction
+	str	r1, [r0, #4]		@ Store ball y direction
+	str	r1, [r0, #8]		@ Store ball angle
+	
+init_bricks:
+	mov	r1, 
+	
