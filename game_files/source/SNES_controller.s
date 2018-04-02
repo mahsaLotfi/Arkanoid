@@ -41,24 +41,23 @@ GPIO_init:
 button_press:
 	push	{r4, fp, lr}
 
-wait_press:
-	mov	r4, #0xffff
-
+wait:
 	bl 	read_SNES
-	cmp	r0, r4
-	beq	wait_press
+	mov	pButton, r0		
+
+	@ mov 	r0,#10000		
+	@ bl	delayMicroseconds
 	
-read_press:				@ fix (idk)
 	bl 	read_SNES
 
 	cmp	pButton, r0		
-	beq 	wait_press		@ 
+	beq 	wait			@ 
 
 	cmp	r0, r4			
-	beq	wait_press
+	beq	wait
 
-@	mov 	pButton, r0
-@	mov 	r0,pButton		
+	mov 	pButton, r0
+	mov 	r0,pButton		
 	bl	check_button
 	
 	pop	{r4, fp, pc}
@@ -187,6 +186,19 @@ clock_loop:
 
 
 @ Checks which button is presssed
+@ B - 1
+@ Y - 2
+@ select - 3
+@ start - 4
+@ up - 5
+@ down - 6
+@ left - 7
+@ right - 8
+@ A - 9
+@ X - 10
+@ lB - 11
+@ rB - 12
+
 check_button:
 	push	{lr}
 	mov	r1, #1
@@ -194,6 +206,7 @@ check_button:
 B:
 	tst	r1, pButton
 	bne	print_Y
+	mov	r0, #1
 
 	pop	{pc}			
 
@@ -201,6 +214,7 @@ Y:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_select
+	mov	r0, #2
 
 	pop	{pc}
 
@@ -208,6 +222,7 @@ select:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_start
+	mov	r0, #3
 
 	pop	{pc}			
 
@@ -215,6 +230,7 @@ start:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_up
+	mov	r0, #4
 
 	pop	{pc}			
 
@@ -222,6 +238,7 @@ up:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_down
+	mov	r0, #5
 
 	pop	{pc}			@ Return call
 
@@ -229,6 +246,7 @@ down:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_left
+	mov	r0, #6
 
 	pop	{pc}			@ Return call
 
@@ -236,6 +254,7 @@ left:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_right
+	mov	r0, #7
 
 	pop	{pc}			@ Return call
 
@@ -243,6 +262,7 @@ right:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_A
+	mov	r0, #8
 
 	pop	{pc}			@ Return call
 
@@ -250,6 +270,7 @@ A:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_X
+	mov	r0, #9
 
 	pop	{pc}			@ Return call
 
@@ -257,6 +278,7 @@ X:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_lB
+	mov	r0, #10
 
 	pop	{pc}			@ Return call
 
@@ -264,6 +286,7 @@ lB:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	print_rB
+	mov	r0, #11
 
 	pop	{pc}			@ Return call
 
@@ -271,8 +294,8 @@ rB:
 	lsl	r1, #1
 	tst	r1, pButton
 	bne	end_print
+	mov	r0, #12
 
-end_print:
 	pop	{pc}			@ Return call
 
 
