@@ -13,8 +13,8 @@ menu_quit	.req	r12
 
 .int 8
 .int 8
-.int 1024
-.int 768
+.int 720
+.int 960
 
 @ Implementation:			Implemented?
 @A tile might be rectangle/square with variable colour values.
