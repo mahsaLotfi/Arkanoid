@@ -1,4 +1,4 @@
-.text
+.section	.text
 .global initScore
 initScore:
 	push	{lr}
@@ -90,8 +90,8 @@ intToString:
 	mov	r4, #0
 	divideLoop:
 		cmp	r0, #10
-		ADDGE	r4, r4, #1
-		SUBGE	r0, #10
+		addge	r4, r4, #1
+		subge	r0, #10
 		bge	divideLoop
 
 	add	r1, r0, #48	@ r1 - second digit, r0 is first
@@ -105,7 +105,7 @@ gameOver:
     bl	clearPaddle
 	bl	getRidOfBall
 
-	ldr	r0,=gamelost
+	ldr	r0,=game_over
     mov	r1, #200
 	mov	r2, #200
 	bl      drawCenterTile
@@ -115,10 +115,10 @@ gameOver:
 gameWon:
 	bl	updateScoreAndLives
 
-	ldr	r0,=gamewon
+	ldr	r0,=game_won
     mov	r1, #200
 	mov	r2, #200
-	bl      drawCenterTile
+	bl  drawCenterTile
 	b	anybutton
 
 
@@ -155,7 +155,8 @@ gameWon:
 
 	bl	resetValuePacks
 	pop	{pc}
-.data
+
+.section	.data
 	scoreChar:	.asciz		"SCORE: "
 	livesChar:	.asciz		"LIVES: "
 

@@ -309,4 +309,3 @@ fixWalls:
 	paddlePos:	.int	228
 
 	paddleBoundary:	.int	484
-
