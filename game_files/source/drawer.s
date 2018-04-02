@@ -1,4 +1,6 @@
-@ Draws: Screen state, Update screen - Animation + Menu
+ Draws: Screen state, Update screen - Animation + Menu
+make
+Draws: Screen state, Update screen - Animation + Menu
 
 @ Is used by: 
 
@@ -19,16 +21,12 @@
 @ r4 - height
 
 make_tile:
-	length	.req 	r3
+	length		.req 	r3
 	pxl_x_drawn	.req	r6
-	offset	.req	r4
-	frame	.req	r5
-	width	.req	r6
-	x_val	.req	r7
-	y_val	.req	r8
-	color	.req	r9
+	offset		.req	r4
 
 	PUSH	{r5-r6, lr}
+	
 	@ length r3
 	height	.req	r4
 
@@ -48,38 +46,37 @@ make_tile:
 	POP	{r5-r6, pc}
 	
 
+@ Draws a pixel
 
 @ r0 - x-value
 @ r1 - y-value
 @ r2 - color
-@ Draws a pixel
+
 draw_pxl:
-	PUSH	{r3, lr}
+	PUSH	{r4, r5}
+	
+	offset	.req	r4
 
-	MOV	x_val, r0
-	MOV	y_val, r1
-	MOV	color, r2
+	LDR	r5, =frameBufferInfo
 
-	LDR	frame, =frameBufferInfo
+	@ Making the offset
 	LDR	width, [frame, #4]
-
-	@ making the offset
 	MUL	y_val, width
 	ADD	offset, x_val, y_val
-	LSL	offset, #2				@ offset * 4
+	LSL	offset, #2			@ offset * 4
 
-	@ Stores color at frame buffer pointer + offset
-	LDR	r3, [frame]
-	STR	color, [r3, offset]
+	@ Stores 'color' at (frame buffer pointer + offset)
+	LDR	fbp, [frame]
+	STR	color, [fbp, offset]
 
-	POP	{r3, pc}
+	POP	{r4, r5}
 
-
-	.unreq	offset
-	.unreq	frame
-	.unreq	width
+	bx	lr
+    
     
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+@ Draws a horizontal line
 
 @ r0 - x_start
 @ r1 - y_start
