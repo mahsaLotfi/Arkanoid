@@ -33,7 +33,7 @@ main:
 	    		mov 	r1, #720
 	    		mov 	r2, #960
 	    		ldreq	r0, =menuStart		@ state determines the screen
-	    		LDRne	r0, =menuQuit	
+	    		ldrne	r0, =menuQuit	
 
 			bl	drawTile
 
@@ -84,7 +84,7 @@ pauseMenu:
     		mov 	r2, #200
 
     		ldreq	r0, =pausedRestart	
-    		LDRne	r0, =pausedQuit
+    		ldrne	r0, =pausedQuit
 
 		bl	drawCenterTile		@ draws the menu
 		mov	r0, r5

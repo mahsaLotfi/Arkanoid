@@ -74,6 +74,29 @@ drawPx:
 	.unreq	frame
 	.unreq	width
 
+@ r0 - xStart
+@ r1 - yStart
+@ r2 - color
+@ r3 - length
+.global drawHLn
+drawHLn:
+	push	{r6, lr}
+
+	mov	pxDrawn, #0
+	hlPxLoop:
+		bl	drawPx
+		add	r0, r0, #1
+		add	pxDrawn, pxDrawn, #1
+		cmp	pxDrawn, length
+		ble	hlPxLoop
+
+	pop	{r6, lr}
+	mov	pc, lr
+
+
+	.unreq	length
+	.unreq	height
+	.unreq	pxDrawn
 
 @ Draw the character in r0
 @ r1=x
