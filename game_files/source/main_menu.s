@@ -2,7 +2,7 @@
 
 @ Is used by: main.s
 
-@ Uses: SNES_controller.s, menu_start.s, menu_quit.s
+@ Uses: SNES_controller.s, menu_start.s
 
 SNES_controller	.req	r10
 menu_start	.req	r11
@@ -33,7 +33,7 @@ menu_quit	.req	r12
 	@ Start Game => game		N
 	@ Quit Game => clear + exit	N
 	
-mm:
+start_menu:
 	mov r0, #100
 	mov r1, #100
 	
