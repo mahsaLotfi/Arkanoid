@@ -203,12 +203,12 @@ draw_black_screen:
     		bl	draw_pxl
     
     		add	r4, r4, #1
-    		CMP	r4, #768
+    		CMP	r4, #720
     		MOVEQ	r4, #0
     
    		ADDEQ r5, r5, #1
     
-    		CMP   r5, #1024
+    		CMP   r5, #960
     		BLT draw_black
     
     		pop {r4,r5, pc}
