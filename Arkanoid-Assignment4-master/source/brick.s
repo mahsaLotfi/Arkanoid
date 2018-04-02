@@ -1,416 +1,416 @@
 .section .text
 
-@ r0 - x code
-@ r1 - y code
-@ r2 - colorCode
-@ draws Brick and changes brick state
+// r0 - x code
+// r1 - y code
+// r2 - colorCode
+// draws Brick and changes brick state
 .global makeBrick
 makeBrick:
-	push	{r4-r6, lr}
-	mov	r4, r0
-	mov	r5, r1
-	mov	r6, r2
-	bl	codeToTile
-	strb	r6, [r0]	@ store the brick state
+	PUSH	{r4-r6, lr}
+	MOV	r4, r0
+	MOV	r5, r1
+	MOV	r6, r2
+	BL	codeToTile
+	STRB	r6, [r0]	// store the brick state
 
-	@ then draw brick
-	mov	r0, r4
-	mov	r1, r5
-	mov	r2, r6
-	bl	drawBrick
+	// then draw brick
+	MOV	r0, r4
+	MOV	r1, r5
+	MOV	r2, r6
+	BL	drawBrick
 
-	pop	{r4-r6, lr}
-	mov	pc, lr
+	POP	{r4-r6, lr}
+	MOV	pc, lr
 
 
-@ sets the bricks for the initial state
-@ no params or return values
+// sets the bricks for the initial state
+// no params or return values
 .global	initBricks
 initBricks:
-	push	{r4-r6, lr}
+	PUSH	{r4-r6, lr}
 
-	mov	r4, #0
-	mov	r5, #0
-	add	r6, r5, #3
+	MOV	r4, #0
+	MOV	r5, #0
+	ADD	r6, r5, #3
 
 	initBrickStateLoop:
-		mov	r0, r4
-		mov	r1, r5
+		MOV	r0, r4
+		MOV	r1, r5
 
-		bl	codeToTile
-		strb	r6, [r0]
+		BL	codeToTile
+		STRB	r6, [r0]
 
-		cmp	r0, #0
+		CMP	r0, #0
 
-		movne	r2, r6
-		movne	r0, r4
-		movne	r1, r5
-		blne	drawBrick
+		MOVNE	r2, r6
+		MOVNE	r0, r4
+		MOVNE	r1, r5
+		BLNE	drawBrick
 
-		@check X
-		add	r4, r4, #1
-		cmp	r4, #10
-		blt	initBrickStateLoop
+		//check X
+		ADD	r4, r4, #1
+		CMP	r4, #10
+		BLT	initBrickStateLoop
 
-		@check Y
-			add	r5, r5, #1
-			sub	R6, R6, #1
-			cmp	r5, #3
-			movlt	r4, #0
-			blt	initBrickStateLoop
+		//check Y
+			ADD	r5, r5, #1
+			SUB	R6, R6, #1
+			CMP	r5, #3
+			MOVLT	r4, #0
+			BLT	initBrickStateLoop
 
-	pop	{r4-r6, pc}
+	POP	{r4-r6, pc}
 
 
-@ r0 - brick x position
-@ r1 - brick y position
-@ r2 - brick type (0, 1, 2, 3)
+// r0 - brick x position
+// r1 - brick y position
+// r2 - brick type (0, 1, 2, 3)
 drawBrick:
 	xpos		.req	r5
 	ypos		.req	r6
 	colorCode	.req	r7
 
 
-	push	{r3-r8, lr}
-	bl	CodeToXY
+	PUSH	{r3-r8, lr}
+	BL	CodeToXY
 
-	mov	xpos, r0
-	mov	ypos, r1
-	mov	colorCode, r2
+	MOV	xpos, r0
+	MOV	ypos, r1
+	MOV	colorCode, r2
 
-	mov	r3, #64
-	mov	r4, #32
+	MOV	r3, #64
+	MOV	r4, #32
 
-	mov	r2, #0x0
-		@ make the outside brick
+	MOV	r2, #0x0
+		// make the outside brick
 
-	add	xpos, xpos, #4
-	add	ypos, ypos, #4
+	ADD	xpos, xpos, #4
+	ADD	ypos, ypos, #4
 
-	mov	r3, #56
-	mov	r4, #24
+	MOV	r3, #56
+	MOV	r4, #24
 
-	cmp	colorCode, #0
-	moveq	r2, #0
+	CMP	colorCode, #0
+	MOVEQ	r2, #0
 
-	cmp	colorCode, #1
-	moveq	r2, #0x00FF00	@ 1 hit
+	CMP	colorCode, #1
+	MOVEQ	r2, #0x00FF00	// 1 hit
 
-	cmp	colorCode, #2
-	moveq	r2, #0x007700	@ 2 hits
+	CMP	colorCode, #2
+	MOVEQ	r2, #0x007700	// 2 hits
 
-	cmp	colorCode, #3
-	moveq	r2, #0x003300	@ 3 hits
-
-
-	mov	r0, xpos
-	mov	r1, ypos
-
-	bl	makeTile
-
-	pop	{r3-r8, pc}
+	CMP	colorCode, #3
+	MOVEQ	r2, #0x003300	// 3 hits
 
 
-@ params
-@ r0 - x coordinate
-@ r1 - y coordinate
+	MOV	r0, xpos
+	MOV	r1, ypos
 
-@ returns 0 - didn't hit brick
-@ 	   1 - hit brick
+	BL	makeTile
+
+	POP	{r3-r8, pc}
+
+
+// params
+// r0 - x coordinate
+// r1 - y coordinate
+
+// returns 0 - didn't hit brick
+// 	   1 - hit brick
 .global	hitBrick
 hitBrick:
-	push	{r4-r7, lr}
+	PUSH	{r4-r7, lr}
 
-	@ store brick state on register
-	bl	XYtoCode
-	mov	r4, r0
-	mov	r5, r1
-	bl	codeToTile
-        ldrb	r7, [r0]
+	// store brick state on register
+	BL	XYtoCode
+	MOV	r4, r0
+	MOV	r5, r1
+	BL	codeToTile
+        LDRB	r7, [r0]
 
-	cmp	r7, #0
+	CMP	r7, #0
 
-	moveq	r0, #0		@ didn't hit brick
-	popeq	{r4-r7, lr}
-	moveq	pc, lr
+	MOVEQ	r0, #0		// didn't hit brick
+	POPEQ	{r4-r7, lr}
+	MOVEQ	pc, lr
 
-	sub	r2, r7, #1	@ degrade the brick
-	mov	r0, r4
-	mov	r1, r5
-	bl	makeBrick
-	@ r2 is the color
+	SUB	r2, r7, #1	// degrade the brick
+	MOV	r0, r4
+	MOV	r1, r5
+	BL	makeBrick
+	// r2 is the color
 
-	mov	r0, #1		@ brick is hit
-	pop	{r4-r7, lr}
-        mov	pc, lr
+	MOV	r0, #1		// brick is hit
+	POP	{r4-r7, lr}
+        MOV	pc, lr
 
-@ r0 r1 - xy code
-@ returns r0 r1 - xy
+// r0 r1 - xy code
+// returns r0 r1 - xy
 CodeToXY:
-	lsl	r0, r0, #6
-	add	r0, r0, #36
+	LSL	r0, r0, #6
+	ADD	r0, r0, #36
 
-	lsl	r1, r1, #5
-	add	r1, r1, #96
-	mov	pc, lr
+	LSL	r1, r1, #5
+	ADD	r1, r1, #96
+	MOV	pc, lr
 
-@ r0 r1 - xy position
-@ returns r0 r1 - xy code
+// r0 r1 - xy position
+// returns r0 r1 - xy code
 .global XYtoCode
 XYtoCode:
-	push	{r4,r5,lr}
+	PUSH	{r4,r5,lr}
 
-	mov	r4, r0
-	mov	r5, r1
+	MOV	r4, r0
+	MOV	r5, r1
 
-	cmp	r5, #96
-	movlt	r0, #44 @return a not real position
-	movlt	r1, #44
-        poplt 	{r4-r5, lr}
-	movlt	pc, lr
+	CMP	r5, #96
+	MOVLT	r0, #44 //return a not real position
+	MOVLT	r1, #44
+        POPLT 	{r4-r5, lr}
+	MOVLT	PC, LR
 
-	cmp	r5, #192
-	movgt	r0, #44 @return a not real position
-	movgt	r1, #44
-        popgt 	{r4-r5, lr}
-	movgt	pc, lr
+	CMP	r5, #192
+	MOVGT	r0, #44 //return a not real position
+	MOVGT	r1, #44
+        POPGT 	{r4-r5, lr}
+	MOVGT	PC, LR
 
-	mov r5, #0 @default layer
-	sub	r1, r1, #96
+	MOV r5, #0 //default layer
+	SUB	r1, r1, #96
 	yloop:
-	cmp	r1, #32
-	sub	r1, r1, #32
-	movlt	r1, r5
-	add	r5, r5, #1
-	bge	yloop
+	CMP	r1, #32
+	SUB	r1, r1, #32
+	MOVLT	r1, r5
+	ADD	r5, r5, #1
+	BGE	yloop
 
-	mov	r4, #0 @default start
-	sub	r0, r0, #36
+	MOV	r4, #0 //default start
+	SUB	r0, r0, #36
 	xloop:
-	cmp	r0, #64
-	sub	r0, r0, #64
-	movlt	r0, r4
-	add	r4,r4, #1
-	bge	xloop
+	CMP	r0, #64
+	SUB	r0, r0, #64
+	MOVLT	r0, r4
+	ADD	r4,r4, #1
+	BGE	xloop
 
 
-	pop	{r4,r5, lr}
-	mov	pc, lr
+	POP	{r4,r5, lr}
+	MOV	pc, lr
 
-@ params
-@r0 - xcode
-@r1 - ycode
+// params
+//r0 - xcode
+//r1 - ycode
 
-@ return
-@ r0 - brickStateAddress
+// return
+// r0 - brickStateAddress
 codeToTile:
-	push	{lr}
+	PUSH	{lr}
 
-	cmp	r0, #9
-	ldrgt	r0, =emptyTile @error check first value
-	popgt	{lr}
-	movgt	pc, lr
+	CMP	r0, #9
+	LDRGT	r0, =emptyTile //error check first value
+	POPGT	{lr}
+	MOVGT	pc, lr
 
-	cmp	r1, #1
-	blt	fromZero
-	beq	fromTen
+	CMP	r1, #1
+	BLT	fromZero
+	BEQ	fromTen
 
-	cmpgt	r1, #2
-	beq	fromTwenty
-	@ invaild input, return 0
-	ldr	r0, =emptyTile
-	pop	{lr}
-	mov	pc, lr
+	CMPGT	r1, #2
+	BEQ	fromTwenty
+	// invaild input, return 0
+	LDR	r0, =emptyTile
+	POP	{lr}
+	MOV	pc, lr
 
 
 	fromTwenty:
-		cmp	r0, #0
-		ldreq	r0, =tile20
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #0
+		LDREQ	r0, =tile20
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #1
-		ldreq	r0, =tile21
-		popeq	{lr}
-		moveq	pc, lr
-
-
-		cmp	r0, #2
-		ldreq	r0, =tile22
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #3
-		ldreq	r0, =tile23
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #1
+		LDREQ	r0, =tile21
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
 
-		cmp	r0, #4
-		ldreq	r0, =tile24
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #2
+		LDREQ	r0, =tile22
+		POPEQ	{lr}
+		MOVEQ	pc, lr
+
+		CMP	r0, #3
+		LDREQ	r0, =tile23
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
 
-		cmp	r0, #5
-		ldreq	r0, =tile25
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #4
+		LDREQ	r0, =tile24
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #6
-		ldreq	r0, =tile26
-		popeq	{lr}
-		moveq	pc, lr
 
-		cmp	r0, #7
-		ldreq	r0, =tile27
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #5
+		LDREQ	r0, =tile25
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #8
-		ldreq	r0, =tile28
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #6
+		LDREQ	r0, =tile26
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		ldr	r0, =tile29
-		pop	{lr}
-		mov	pc, lr
+		CMP	r0, #7
+		LDREQ	r0, =tile27
+		POPEQ	{lr}
+		MOVEQ	pc, lr
+
+		CMP	r0, #8
+		LDREQ	r0, =tile28
+		POPEQ	{lr}
+		MOVEQ	pc, lr
+
+		LDR	r0, =tile29
+		POP	{lr}
+		MOV	pc, lr
 
 	fromZero:
-		cmp	r0, #0
-		ldreq	r0, =tile0
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #0
+		LDREQ	r0, =tile0
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #1
-		ldreq	r0, =tile1
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #1
+		LDREQ	r0, =tile1
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #2
-		ldreq	r0, =tile2
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #2
+		LDREQ	r0, =tile2
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #3
-		ldreq	r0, =tile3
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #3
+		LDREQ	r0, =tile3
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #4
-		ldreq	r0, =tile4
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #4
+		LDREQ	r0, =tile4
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #5
-		ldreq	r0, =tile5
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #5
+		LDREQ	r0, =tile5
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #6
-		ldreq	r0, =tile6
-		popeq	{pc}
+		CMP	r0, #6
+		LDREQ	r0, =tile6
+		POPEQ	{pc}
 
-		cmp	r0, #7
-		ldreq	r0, =tile7
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #7
+		LDREQ	r0, =tile7
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #8
-		ldreq	r0, =tile8
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #8
+		LDREQ	r0, =tile8
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		ldr	r0, =tile9
-		pop	{lr}
-		mov	pc, lr
+		LDR	r0, =tile9
+		POP	{lr}
+		MOV	pc, lr
 
 	fromTen:
-		cmp	r0, #0
-		ldreq	r0, =tile10
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #0
+		LDREQ	r0, =tile10
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #1
-		ldreq	r0, =tile11
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #1
+		LDREQ	r0, =tile11
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #2
-		ldreq	r0, =tile12
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #2
+		LDREQ	r0, =tile12
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #3
-		ldreq	r0, =tile13
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #3
+		LDREQ	r0, =tile13
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #4
-		ldreq	r0, =tile14
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #4
+		LDREQ	r0, =tile14
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #5
-		ldreq	r0, =tile15
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #5
+		LDREQ	r0, =tile15
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #6
-		ldreq	r0, =tile16
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #6
+		LDREQ	r0, =tile16
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #7
-		ldreq	r0, =tile17
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #7
+		LDREQ	r0, =tile17
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		cmp	r0, #8
-		ldreq	r0, =tile18
-		popeq	{lr}
-		moveq	pc, lr
+		CMP	r0, #8
+		LDREQ	r0, =tile18
+		POPEQ	{lr}
+		MOVEQ	pc, lr
 
-		ldr	r0, =tile19
-		pop	{lr}
-		mov	pc, lr
+		LDR	r0, =tile19
+		POP	{lr}
+		MOV	pc, lr
 
-@ redraws all the bricks without
-@ modifying the states of the bricks
+// redraws all the bricks without
+// modifying the states of the bricks
 .global	makeAllBricks
 makeAllBricks:
-	push	{r4-r6, lr}
-	mov	r4, #0
-	mov	r5, #0
+	PUSH	{r4-r6, lr}
+	MOV	r4, #0
+	MOV	r5, #0
 
 	getBrickStateLoop:
-		mov	r0, r4
-		mov	r1, r5
+		MOV	r0, r4
+		MOV	r1, r5
 
-		bl	codeToTile
-		ldrb	r6, [r0]
+		BL	codeToTile
+		LDRB	r6, [r0]
 
-		mov	r2, r6
-		mov	r0, r4
-		mov	r1, r5
-		cmp	r2, #0
-		blne	drawBrick
+		MOV	r2, r6
+		MOV	r0, r4
+		MOV	r1, r5
+		CMP	r2, #0
+		BLNE	drawBrick
 
-		@check X
-		add	r4, r4, #1
-		cmp	r4, #10
-		blt	getBrickStateLoop
+		//check X
+		ADD	r4, r4, #1
+		CMP	r4, #10
+		BLT	getBrickStateLoop
 
-		@check Y
-			add	r5, r5, #1
-			cmp	r5, #3
-			movlt	r4, #0
-			blt	getBrickStateLoop
+		//check Y
+			ADD	r5, r5, #1
+			CMP	r5, #3
+			MOVLT	r4, #0
+			BLT	getBrickStateLoop
 
-	pop	{r4-r6, lr}
-	mov	pc, lr
+	POP	{r4-r6, lr}
+	MOV	pc, lr
 
-@returns 0 if not won or 1 if won
+//returns 0 if not won or 1 if won
 .global checkGameWon
 checkGameWon:
 	push {r4, r5, lr}
@@ -419,25 +419,25 @@ checkGameWon:
 
 checkallbricks:
 	ldrb r0, [r5, r4]
-	add  r4, r4, #1
-        cmp  r0, #0
-        movne r0, #0
+	ADD  r4, r4, #1
+        CMP  r0, #0
+        MOVNE r0, #0
         POPNE {r4,r5,lr}
-	movne pc, lr
+	MOVNE PC, lr
 
-	cmp r4, #30
-	blt checkallbricks
+	CMP r4, #30
+	BLT checkallbricks
 
-	mov r0, #1
-        pop {r4, r5, lr}
-	mov pc, lr
+	MOV r0, #1
+        POP {r4, r5, lr}
+	MOV pc, lr
 
 .section	.data
 
-@ 0 - broken
-@ 1 - 1 hits to break
-@ 2 - 2 hits to break
-@ 3 - 3 hit to break
+// 0 - broken
+// 1 - 1 hits to break
+// 2 - 2 hits to break
+// 3 - 3 hit to break
 
 
 	tile0:	.byte	1
@@ -447,7 +447,7 @@ checkallbricks:
 	tile20:	.byte 	3
 
 	tile1:	.byte	1
-	tile11:	.byte	2	@ special
+	tile11:	.byte	2	// special
 	tile21:	.byte	3
 
 	tile2:	.byte	1
@@ -477,7 +477,7 @@ checkallbricks:
 	tile27:	.byte	3
 
 	tile8:	.byte	1
-	tile18:	.byte	2	@ special
+	tile18:	.byte	2	// special
 	tile28:	.byte	3
 
 	tile9:	.byte	1

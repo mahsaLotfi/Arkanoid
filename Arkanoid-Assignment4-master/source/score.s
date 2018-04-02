@@ -1,162 +1,164 @@
-.section	.text
+.text
 .global initScore
 initScore:
-	push	{lr}
+	PUSH	{lr}
 
-	@ r0 - character
-	@ r1 - intial x
-	@ r2 - y
-	@ r3 - color
+	// r0 - character
+	// r1 - intial x
+	// r2 - y
+	// r3 - color
 
-	ldr	r0, =scoreChar
-	mov	r1, #88
-	mov	r2, #864
-	ldr	r3, =cWhite
-	bl	drawWord
-	pop	{pc}
+	LDR	r0, =scoreChar
+	MOV	r1, #88
+	MOV	r2, #864
+	LDR	r3, =cWhite
+	BL	drawWord
+	POP	{pc}
 
 .global	initLives
 initLives:
-	push	{lr}
+	PUSH	{lr}
 
-	@ r0 - character
-	@ r1 - intial x
-	@ r2 - y
-	@ r3 - color
+	// r0 - character
+	// r1 - intial x
+	// r2 - y
+	// r3 - color
 
-	ldr	r0, =livesChar
-	mov	r1, #468
-	mov	r2, #864
-	ldr	r3, =cWhite
-	bl	drawWord
-	pop	{pc}
+	LDR	r0, =livesChar
+	MOV	r1, #468
+	MOV	r2, #864
+	LDR	r3, =cWhite
+	BL	drawWord
+	POP	{pc}
 
 
 .global	updateScoreAndLives
 updateScoreAndLives:
-	push	{r4, lr}
+	PUSH	{r4, lr}
 
-	@ black out positions
-	mov	r0, #160
-	mov	r1, #863
-	mov	r2, #0x0
-	mov	r3, #32
-	mov	r4, r3
-	bl	makeTile
+	// black out positions
+	MOV	r0, #160
+	MOV	r1, #863
+	MOV	r2, #0x0
+	MOV	r3, #32
+	MOV	r4, r3
+	BL	makeTile
 
-	mov	r0, #544
-	mov	r1, #863
-	mov	r2, #0x0
-	mov	r3, #32
-	mov	r4, r3
-	bl	makeTile
+	MOV	r0, #544
+	MOV	r1, #863
+	MOV	r2, #0x0
+	MOV	r3, #32
+	MOV	r4, r3
+	BL	makeTile
 
-	@ write digits
+	// write digits
 
-	ldr	r0, =scoreCount
-	bl	intToString	@ r0 - first digit
-	mov	r4, r1		@ r1 - second digit
+	LDR	r0, =scoreCount
+	BL	intToString	// r0 - first digit
+	MOV	r4, r1		// r1 - second digit
 
-		mov	r1, #165
-		mov	r2, #864
-		bl	drawChar
+		MOV	r1, #165
+		MOV	r2, #864
+		BL	drawChar
 
-		mov	r0, r4
-		mov	r1, #176
-		mov	r2, #864
-		bl	drawChar
+		MOV	r0, r4
+		MOV	r1, #176
+		MOV	r2, #864
+		BL	drawChar
 
-	ldr	r0, =lifeCount
-	bl	intToString	@ r0 - first digit
-	mov	r4, r1		@ r1 - second digit
+	LDR	r0, =lifeCount
+	BL	intToString	// r0 - first digit
+	MOV	r4, r1		// r1 - second digit
 
-		mov	r1, #545
-		mov	r2, #864
-		bl	drawChar
+		MOV	r1, #545
+		MOV	r2, #864
+		BL	drawChar
 
-		mov	r0, r4
-		mov	r1, #556
-		mov	r2, #864
-		bl	drawChar
-	pop	{r4, pc}
+		MOV	r0, r4
+		MOV	r1, #556
+		MOV	r2, #864
+		BL	drawChar
+	POP	{r4, pc}
 
-@ changes intger to string for printing
-@ params: r0 - location of the integer
-@ returns: r0 - string code
+// changes intger to string for printing
+// params: r0 - location of the integer
+// returns: r0 - string code
 intToString:
-	push	{r4, r5, lr}
-	ldr	r0, [r0]
+	PUSH	{r4, r5, lr}
+	LDR	r0, [r0]
 
-	mov	r4, #0
+	MOV	r4, #0
 	divideLoop:
-		cmp	r0, #10
-		addge	r4, r4, #1
-		subge	r0, #10
-		bge	divideLoop
+		CMP	r0, #10
+		ADDGE	r4, r4, #1
+		SUBGE	r0, #10
+		BGE	divideLoop
 
-	add	r1, r0, #48	@ r1 - second digit, r0 is first
-	add	r0, r4, #48	@converts to ascii version
+	ADD	r1, r0, #48	// r1 - second digit, r0 is first
+	ADD	r0, r4, #48	//converts to ascii version
 
-	pop	{r4, r5, pc}
+	POP	{r4, r5, pc}
 
-.global gameOver
-gameOver:
-	bl	updateScoreAndLives
-    bl	clearPaddle
-	bl	getRidOfBall
+// behavior for when score is 0
+.global LOST
+LOST:
+	BL	updateScoreAndLives
+        BL	clearPaddle
+	BL	getRidOfBall
 
-	ldr	r0,=game_over
-    mov	r1, #200
-	mov	r2, #200
-	bl      drawCenterTile
-	b	anybutton
+	LDR	r0,=gamelost
+        MOV	r1, #200
+	MOV	r2, #200
+	BL      drawCenterTile
+	B	anybutton
 
-.global gameWon
-gameWon:
-	bl	updateScoreAndLives
+// behavior for win condition
+.global WIN
+WIN:
+	BL	updateScoreAndLives
 
-	ldr	r0,=game_won
-    mov	r1, #200
-	mov	r2, #200
-	bl  drawCenterTile
-	b	anybutton
-
-
-@ reiniitializes game vairables
-.global	resetScore:
-	push	{lr}
-
-	ldr	r0, =scoreCount
-	mov	r1, #0
-	str	r1, [r0]
-
-	ldr	r0, =lifeCount
-	mov	r1, #3
-	str	r1, [r0]
-
-	ldr	r0, =slopeCode
-	mov	r1, #0
-	str	r1, [r0]
-
-	ldr	r0, =prevX
-	mov	r1, #326
-	str	r1, [r0]
-
-	ldr	r0, =curX
-	str	r1, [r0]
-
-	ldr	r0, =prevY
-	mov	r1, #740
-	str	r1, [r0]
-
-	ldr	r0, =curY
-	str	r1, [r0]
+	LDR	r0,=gamewon
+        MOV	r1, #200
+	MOV	r2, #200
+	BL      drawCenterTile
+	B	anybutton
 
 
-	bl	resetValuePacks
-	pop	{pc}
+// reiniitializes game vairables
+.global	resetScore
+resetScore:
+	PUSH	{lr}
 
-.section	.data
+	LDR	r0, =scoreCount
+	MOV	r1, #0
+	STR	r1, [r0]
+
+	LDR	r0, =lifeCount
+	MOV	r1, #3
+	STR	r1, [r0]
+
+	LDR	r0, =slopeCode
+	MOV	r1, #0
+	STR	r1, [r0]
+
+	LDR	r0, =prevX
+	MOV	r1, #326
+	STR	r1, [r0]
+
+	LDR	r0, =curX
+	STR	r1, [r0]
+
+	LDR	r0, =prevY
+	MOV	r1, #740
+	STR	r1, [r0]
+
+	LDR	r0, =curY
+	STR	r1, [r0]
+
+
+	BL	resetValuePacks
+	POP	{pc}
+.data
 	scoreChar:	.asciz		"SCORE: "
 	livesChar:	.asciz		"LIVES: "
 

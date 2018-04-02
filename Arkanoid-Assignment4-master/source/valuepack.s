@@ -1,265 +1,265 @@
 .section	.text
 
-@ listens for drops
+// listens for drops
 .global dropListener
 dropListener:
-	push	{r4-r6, lr}
-		bl	tryCatchBall
-		bl	tryPaddle
-	pop	{r4-r6, pc}
+	PUSH	{r4-r6, lr}
+		BL	tryCatchBall
+		BL	tryPaddle
+	POP	{r4-r6, pc}
 
 
-@ checks whether paddle drop or catch ball drop is occuring
+// checks whether paddle drop or catch ball drop is occuring
 
 	tryPaddle:
-		push	{lr}
+		PUSH	{lr}
 
-		ldr	r0, =paddleDropState
-		ldr	r0, [r0]
+		LDR	r0, =paddleDropState
+		LDR	r0, [r0]
 
-		cmp	r0, #1
-			bleq	bigPaddleDrop
+		CMP	r0, #1
+			BLEQ	bigPaddleDrop
 			BLLT	paddleTileBroken
-		pop	{pc}
+		POP	{pc}
 
 	tryCatchBall:
-		push	{lr}
+		PUSH	{lr}
 
-		ldr	r0, =ballDropState
-		ldr	r0, [r0]
+		LDR	r0, =ballDropState
+		LDR	r0, [r0]
 
-		cmp	r0, #1
-			bleq	catchBallDrop
+		CMP	r0, #1
+			BLEQ	catchBallDrop
 			BLLT	ballTileBroken
-		pop	{pc}
+		POP	{pc}
 
-@ checks whetehr the brick holding the approrpaite til has been broken
+// checks whetehr the brick holding the approrpaite til has been broken
 
 ballTileBroken:
-	push	{r4-r6,lr}
+	PUSH	{r4-r6,lr}
 
-	mov	r5, #1
+	MOV	r5, #1
 
-	ldr	r0, =tile26
-	ldrb	r6, [r0]
+	LDR	r0, =tile26
+	LDRB	r6, [r0]
 
-	cmp	r6, #0
-		ldreq	r0, =ballDropState
+	CMP	r6, #0
+		LDREQ	r0, =ballDropState
 		STREQ	r5, [r0]
 
-	pop	{r4-r6,pc}
+	POP	{r4-r6,pc}
 
 
 
 paddleTileBroken:
-	push	{r4-r6,lr}
+	PUSH	{r4-r6,lr}
 
-	mov	r5, #1
+	MOV	r5, #1
 
-	ldr	r0, =tile20
-	ldrb	r6, [r0]
+	LDR	r0, =tile20
+	LDRB	r6, [r0]
 
-	cmp	r6, #0
-		ldreq	r0, =paddleDropState
+	CMP	r6, #0
+		LDREQ	r0, =paddleDropState
 		STREQ	r5, [r0]
 
-	pop	{r4-r6,pc}
+	POP	{r4-r6,pc}
 
-@ drops the value pack inrementally
+// drops the value pack inrementally
 bigPaddleDrop:
-	push	{r4-r8, lr}
+	PUSH	{r4-r8, lr}
 
-	mov	r0, #56
+	MOV	r0, #56
 
-	ldr	r1, =paddleDropY
-	ldr	r6, [r1]
+	LDR	r1, =paddleDropY
+	LDR	r6, [r1]
 
-	@ draws white tile
-	mov	r1, r6
-	mov	r2, #0xFFFFFF
-	mov	r3, #28
-	mov	r4, r3
-	bl	makeTile
+	// draws white tile
+	MOV	r1, r6
+	MOV	r2, #0xFFFFFF
+	MOV	r3, #28
+	MOV	r4, r3
+	BL	makeTile
 
-	add	r7, r6, #32
-	ldr	r1, =paddleDropY
-	str	r7, [r1]
+	ADD	r7, r6, #32
+	LDR	r1, =paddleDropY
+	STR	r7, [r1]
 
-	@ draws signifying value
-	mov	r0, #'+'
-	mov	r1, #64
-	add	r2, r6, #4
-	bl	drawChar
+	// draws signifying value
+	MOV	r0, #'+'
+	MOV	r1, #64
+	ADD	r2, r6, #4
+	BL	drawChar
 
-	mov	r0, #56
-	sub	r1, r6, #32
-	mov	r2, #0x0
-	mov	r3, #28
-	mov	r4, r3
-	bl	makeTile
+	MOV	r0, #56
+	SUB	r1, r6, #32
+	MOV	r2, #0x0
+	MOV	r3, #28
+	MOV	r4, r3
+	BL	makeTile
 
-	ldr	r0, =paddleDropY
-	ldr	r0, [r0]
-	mov	r1, #774
-
-
-	@ if drop is near the bottom check if the paddle caught it
-	cmp	r0, r1
-	blge	checkPaddleDrop
+	LDR	r0, =paddleDropY
+	LDR	r0, [r0]
+	MOV	r1, #774
 
 
-	pop	{r4-r8, pc}
+	// if drop is near the bottom check if the paddle caught it
+	CMP	r0, r1
+	BLGE	checkPaddleDrop
 
-@ check whether the paddle drop is caught
+
+	POP	{r4-r8, pc}
+
+// check whether the paddle drop is caught
 checkPaddleDrop:
-	push	{lr}
+	PUSH	{lr}
 
-	ldr	r0, =paddleDropState
-	mov	r1, #2
-	str	r1, [r0]
+	LDR	r0, =paddleDropState
+	MOV	r1, #2
+	STR	r1, [r0]
 
-	@ load paddle position
-	ldr	r0, =paddlePos
-	ldr	r0, [r0]
+	// load paddle position
+	LDR	r0, =paddlePosition
+	LDR	r0, [r0]
 
-	@ if paddle is 88 from the left
-	cmp	r0, #88
-	blle	superPaddle	@ change paddle to big paddle
+	// if paddle is 88 from the left
+	CMP	r0, #88
+	BLLE	bigPaddle	// change paddle to big paddle
 
-	mov	r0, #56
-	ldr	r1, =paddleDropY
-	ldr	r1, [r1]
-	sub	r1, r1, #32
-	mov	r2, #0x0
-	mov	r3, #28
-	mov	r4, r3
-	bl	makeTile
+	MOV	r0, #56
+	LDR	r1, =paddleDropY
+	LDR	r1, [r1]
+	SUB	r1, r1, #32
+	MOV	r2, #0x0
+	MOV	r3, #28
+	MOV	r4, r3
+	BL	makeTile
 
-	pop	{pc}
+	POP	{pc}
 
 catchBallDrop:
-	push	{r4-r8, lr}
+	PUSH	{r4-r8, lr}
 
-	mov	r0, #428
+	MOV	r0, #428
 
-	ldr	r1, =ballDropY
-	ldr	r6, [r1]
+	LDR	r1, =ballDropY
+	LDR	r6, [r1]
 
-	@ create the white tile
-	mov	r1, r6
-	mov	r2, #0xFFFFFF
-	mov	r3, #28
-	mov	r4, r3
-	bl	makeTile
+	// create the white tile
+	MOV	r1, r6
+	MOV	r2, #0xFFFFFF
+	MOV	r3, #28
+	MOV	r4, r3
+	BL	makeTile
 
-	add	r7, r6, #32
-	ldr	r1, =ballDropY
-	str	r7, [r1]
+	ADD	r7, r6, #32
+	LDR	r1, =ballDropY
+	STR	r7, [r1]
 
-	@ create the signifyuing character
-	mov	r0, #'-'
-	mov	r1, #434
-	add	r2, r6, #4
-	bl	drawChar
+	// create the signifyuing character
+	MOV	r0, #'-'
+	MOV	r1, #434
+	ADD	r2, r6, #4
+	BL	drawChar
 
-	mov	r0, #428
-	sub	r1, r6, #32
-	mov	r2, #0x0
-	mov	r3, #28
-	mov	r4, r3
-	bl	makeTile
+	MOV	r0, #428
+	SUB	r1, r6, #32
+	MOV	r2, #0x0
+	MOV	r3, #28
+	MOV	r4, r3
+	BL	makeTile
 
-	ldr	r0, =ballDropY
-	ldr	r0, [r0]
-	mov	r1, #774
+	LDR	r0, =ballDropY
+	LDR	r0, [r0]
+	MOV	r1, #774
 
 
-	@ if drop is near the bottom check if the paddle caught it
-	cmp	r0, r1
-	blge	checkBallDrop
+	// if drop is near the bottom check if the paddle caught it
+	CMP	r0, r1
+	BLGE	checkBallDrop
 
-	pop	{r4-r8, pc}
+	POP	{r4-r8, pc}
 
-@ cgecj whether ball drop is caught
+// cgecj whether ball drop is caught
 checkBallDrop:
-	push	{lr}
+	PUSH	{lr}
 
-	ldr	r0, =ballDropState
-	mov	r1, #2
-	str	r1, [r0]
+	LDR	r0, =ballDropState
+	MOV	r1, #2
+	STR	r1, [r0]
 
-	@ load paddle position
-	ldr	r0, =paddlePos
-	ldr	r0, [r0]
+	// load paddle position
+	LDR	r0, =paddlePosition
+	LDR	r0, [r0]
 
-	@ if paddle is 428 from the left
-	cmp	r0, #428
-	blle	enableCatchBall	@ change to catch ball
-	bgt	tryOtherSide
+	// if paddle is 428 from the left
+	CMP	r0, #428
+	BLLE	enableCatchBall	// change to catch ball
+	BGT	tryOtherSide
 
 	checkBallDrop2:
-		mov	r0, #428
-		ldr	r1, =ballDropY
-		ldr	r1, [r1]
-		sub	r1, r1, #32
-		mov	r2, #0x0
-		mov	r3, #28
-		mov	r4, r3
-		bl	makeTile
-		pop	{pc}
+		MOV	r0, #428
+		LDR	r1, =ballDropY
+		LDR	r1, [r1]
+		SUB	r1, r1, #32
+		MOV	r2, #0x0
+		MOV	r3, #28
+		MOV	r4, r3
+		BL	makeTile
+		POP	{pc}
 
 	tryOtherSide:
-		ldr	r1, =paddleSize
-		ldr	r1, [r1]
+		LDR	r1, =paddleSize
+		LDR	r1, [r1]
 
-		add	r0, r0, r1
-		cmp	r0, #428
-		blge	enableCatchBall
+		ADD	r0, r0, r1
+		CMP	r0, #428
+		BLGE	enableCatchBall
 
-		b	checkBallDrop2
+		B	checkBallDrop2
 
 
-@ debuging purposes only
+// debuging purposes only
 .global testPaddle
 testPaddle:
-	push	{lr}
+	PUSH	{lr}
 
-	ldr	r0, =paddleDropState
-	mov	r1, #1
-	str	r1, [r0]
+	LDR	r0, =paddleDropState
+	MOV	r1, #1
+	STR	r1, [r0]
 
-	pop	{pc}
+	POP	{pc}
 
 .global	testBall
 testBall:
-	push	{lr}
+	PUSH	{lr}
 
-	ldr	r0, =ballDropState
-	mov	r1, #1
-	str	r1,[r0]
+	LDR	r0, =ballDropState
+	MOV	r1, #1
+	STR	r1,[r0]
 
-	pop	{pc}
+	POP	{pc}
 
-@ resets the state values for value packs for restarting
+// resets the state values for value packs for restarting
 .global	resetValuePacks
 resetValuePacks:
-	ldr	r0, =paddleDropY
-	mov	r1, #192
-	str	r1, [r0]
+	LDR	r0, =paddleDropY
+	MOV	r1, #192
+	STR	r1, [r0]
 
-	ldr	r0, =ballDropY
-	mov	r1, #192
-	str	r1, [r0]
+	LDR	r0, =ballDropY
+	MOV	r1, #192
+	STR	r1, [r0]
 
-	ldr	r0, =paddleDropState
-	mov	r1, #0
-	str	r1, [r0]
+	LDR	r0, =paddleDropState
+	MOV	r1, #0
+	STR	r1, [r0]
 
-	ldr	r0, =ballDropState
-	mov	r1, #192
-	str	r1, [r0]
+	LDR	r0, =ballDropState
+	MOV	r1, #192
+	STR	r1, [r0]
 
-	mov	pc, lr
+	MOV	pc, lr
 
 .section	.data
 
@@ -267,8 +267,8 @@ resetValuePacks:
 	ballDropY:		.int	192
 
 
-	@ 0 - default
-	@ 1 - dropping
-	@ 2 - caught/finished
+	// 0 - default
+	// 1 - dropping
+	// 2 - caught/finished
 	paddleDropState:	.int	0
 	ballDropState:		.int	0

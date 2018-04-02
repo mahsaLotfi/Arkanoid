@@ -1,311 +1,307 @@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Code section @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 .section .text
 
 .global makeGame
 makeGame:
-		bl	resetScore
-		bl	initMap
+	BL	resetScore
 
-		bl	initScore
-		bl	initLives
-		bl	initBricks
-
-		bl	paddle
-		b	gameOver
-
-initMap:
-	push	{lr}
-
-	@  Create background
-		mov	r0, #4
-		mov	r1, #4
-		mov	r2, #0x007770
-		mov	r3, #704
-		mov	r4, #944
-		bl	makeTile
+		// draw background
+		MOV	r0, #4
+		MOV	r1, #4
+		MOV	r2, #0x007770
+		MOV	r3, #704
+		MOV	r4, #944
+		BL	makeTile
 
 
-		@ Create foreground
-		mov	r0, #36
-		mov	r1, #36
-		mov	r2, #0x0
-		mov	r3, #640
-		mov	r4, #880
-		bl	makeTile
+		// foreground
+		MOV	r0, #36
+		MOV	r1, #36
+		MOV	r2, #0x0
+		MOV	r3, #640
+		MOV	r4, #880
+		BL	makeTile
 
-	pop	{pc}
+		// initialize game mechanics
+		BL	initScore
+		BL	initLives
+		BL	initBricks
+
+		LDR	r0, =paddlePosition
+			MOV	r1, #228
+			STR	r1, [r0]
+
+		BL	paddle	// when done from paddle loop, game is lsot
+		B	LOST
+
 
 paddle:
-	push	{r4-r9, lr}
+	PUSH	{r4-r9, lr}
 
-	ldr	r0, =paddlePos
-	mov	r1, #228
-	str	r1, [r0]
+	LDR	r8, =paddleStart // default xstart for paddle
+		LDR	r8, [r8]
+		MOV	r0, r8
 
-	ldr	r8, =paddleInit @ default xstart for paddle
-		ldr	r8, [r8]
-		mov	r0, r8
-
-	mov	r4, #32		@default size of the paddle
-	mov	r7, #1500	@ pause length
-	bl	initBall
+	MOV	r4, #32		//default size of the paddle
+	MOV	r7, #1500	// pause length
+	BL	initBall
 
 	paddleLoop:
 
-		@ branch to other game mechanics
-		bl	checkMoveBall
-		bl	dropListener
-		bl	makeAllBricks
-		bl	fixWalls
-		bl	updateScoreAndLives
+		// branch to other game mechanics
+		BL	maybeMoveBall
+		BL	dropListener
+		BL	makeAllBricks
+		BL	fixWalls
+		BL	updateScoreAndLives
 
-		@ensure padde is fully drawn
-		ldr	r6, =paddleBoundary
-		ldr	r0, [r6]
+		//ensure padde is fully drawn
+		LDR	r6, =paddleBound
+		LDR	r0, [r6]
 
-			@paddle
-	 		add	r0, r8, #32
-			mov	r1, #774
-			mov	r2, #0x8800000
-			ldr	r3, =paddleSize
-			ldr	r3, [r3]
-			sub	r3, r3, #64
-			bl	makeTile
+			//paddle
+	 		ADD	r0, r8, #32
+			MOV	r1, #774
+			MOV	r2, #0x8800000
+			LDR	r3, =paddleSize
+			LDR	r3, [r3]
+			SUB	r3, r3, #64
+			BL	makeTile
 
-			@left edge of paddle
-			mov	r0, r8
-			mov	r1, #774
-			mov	r2, #0x330000
-			mov	r3, #32
-			bl	makeTile
+			//left edge of paddle
+			MOV	r0, r8
+			MOV	r1, #774
+			MOV	r2, #0x330000
+			MOV	r3, #32
+			BL	makeTile
 
-			@ right edge of paddle
-			ldr	r0, =paddleSize
-			ldr	r0, [r0]
-			add	r0, r0, r8
-			sub	r0, #32
-			mov	r1, #774
-			mov	r2, #0x330000
-			mov	r3, #32
-			bl	makeTile
+			// right edge of paddle
+			LDR	r0, =paddleSize
+			LDR	r0, [r0]
+			ADD	r0, r0, r8
+			SUB	r0, #32
+			MOV	r1, #774
+			MOV	r2, #0x330000
+			MOV	r3, #32
+			BL	makeTile
 
-		ldr	r8, =paddlePos
-		ldr	r8, [r8]
+		LDR	r8, =paddlePosition
+		LDR	r8, [r8]
 
-		@ check if game is won
-		bl	checkGameWon @check if game has been won
-        	cmp	r0, #1
-		popeq	{r4-r9, lr}
-        	beq	gameWon
+		// check if game is won
+		BL	checkGameWon //check if game has been won
+        	CMP	r0, #1
+		POPEQ	{r4-r9, lr}
+        	BEQ	WIN
 
-		@ branch out of game for lose implementation
-        	ldr	r0, =lifeCount
-        	ldr 	r0, [r0]
-        	cmp	r0, #0
-		popeq	{r4-r9, pc}
+		// branch out of game for lose implementation
+        	LDR	r0, =lifeCount
+        	LDR 	r0, [r0]
+        	CMP	r0, #0
+		POPEQ	{r4-r9, pc}
 
 
-		@Reading SNES buttons
+		//Reading SNES buttons
 
-		mov	r0, r7			@ delay
-		bl	readSNES
-		mov	r7, #1500
+		MOV	r0, r7			// delay
+		BL	readSNES
+		MOV	r7, #1500
 
-			cmp	r0, #4096		@ start
-			bleq	pauseMenu
+			CMP	r0, #4096		// start
+			BLEQ	pauseMenu
 
-			cmp	r0, #32768		@ b
-			bleq	launchBall
+			CMP	r0, #32768		// B
+			BLEQ	launchBall
 
-			cmp	r0, #16384		@ Y - testing purposes only
-@			bleq	testBall
+			CMP	r0, #16384		// Y - testing purposes only
+//			BLEQ	testBall
 
-			cmp	r0, #512		@ L
-			beq	moveLeft
+			CMP	r0, #512		// L
+			BEQ	moveLeft
 
-			cmp	r0, #256		@ R
-			beq	moveRight
+			CMP	r0, #256		// R
+			BEQ	moveRight
 
-			cmp	r0, #640		@ L + A
-			moveq	r7, #750
-			beq	moveLeft
+			CMP	r0, #640		// L + A
+			MOVEQ	r7, #750
+			BEQ	moveLeft
 
-			cmp	r0, #384		@ R + A
-			moveq	r7, #750
-			bne	paddleLoop
-			beq	moveRight
+			CMP	r0, #384		// R + A
+			MOVEQ	r7, #750
+			BNE	paddleLoop
+			BEQ	moveRight
 
-			cmp	r0, #128		@A
-			moveq	r7, #750
+			CMP	r0, #128		//A
+			MOVEQ	r7, #750
 
 		moveRight:
-			@ get the size of the paddle
-			ldr	r6, =paddleBoundary
-			ldr	r0, [r6]
-			cmp	r8, r0
-			bge	paddleLoop
+			// get the size of the paddle
+			LDR	r6, =paddleBound
+			LDR	r0, [r6]
+			CMP	r8, r0
+			BGE	paddleLoop
 
-				@repaint black where the paddle isn't
-				mov	r0, r8
-				mov	r1, #774
-				mov	r2, #0x0
-				mov	r3, #32
-				mov	r4, #32
-				bl	makeTile
+				//repaint black where the paddle isn't
+				MOV	r0, r8
+				MOV	r1, #774
+				MOV	r2, #0x0
+				MOV	r3, #32
+				MOV	r4, #32
+				BL	makeTile
 
-				@ change the paddle position
-				add	r8, r8, #32
-				ldr	r6, =paddlePos
-				str	r8, [r6]
-				mov	r0, r8
+				// change the paddle position
+				ADD	r8, r8, #32
+				LDR	r6, =paddlePosition
+				STR	r8, [r6]
+				MOV	r0, r8
 
-			bl	initBall
-			b	paddleLoop
+			BL	initBall
+			B	paddleLoop
 
 		moveLeft:
-			cmp	r8, #36
-			ble	paddleLoop
+			CMP	r8, #36
+			BLE	paddleLoop
 
-				@ repaint
-				ldr	r0, =paddleSize
-				ldr	r0, [r0]
-				sub	r0, r0, #32
-				add	r0, r8
+				// repaint
+				LDR	r0, =paddleSize
+				LDR	r0, [r0]
+				SUB	r0, r0, #32
+				ADD	r0, r8
 
-				@repaint black where the paddle isn't
-				mov	r1, #774
-				mov	r2, #0x0
-				mov	r3, #32
-				bl	makeTile
+				//repaint black where the paddle isn't
+				MOV	r1, #774
+				MOV	r2, #0x0
+				MOV	r3, #32
+				BL	makeTile
 
-				@ change the paddle position
-				sub	r8,r8, #32
-				ldr	r6, =paddlePos
-				str	r8, [r6]
-				mov	r0, r8
+				// change the paddle position
+				SUB	r8,r8, #32
+				LDR	r6, =paddlePosition
+				STR	r8, [r6]
+				MOV	r0, r8
 
-			bl	initBall
-			b	paddleLoop
+			BL	initBall
+			B	paddleLoop
 
-@ checks if ball will be moved
-@ no parameters or return value
-checkMoveBall:
-	push	{r4,r5, lr}
+// checks if ball will be moved
+// no parameters or return value
+maybeMoveBall:
+	PUSH	{r4,r5, lr}
 
-	ldr	r0, =isBallMovable
-	ldr	r1, [r0]
-	mov	r4, r0
+	LDR	r0, =willMoveBall
+	LDR	r1, [r0]
+	MOV	r4, r0
 
-	cmp	r1, #0
-	beq	moveBallLoop
+	CMP	r1, #0
+	BEQ	moveBallLoop
 
-	mov	r5, #1414		@ if A is held, the delay (r5) should be less than 1414
-	cmp	r7, r5			@ so move the ball slower
-	bge	moveBallLoop
+	MOV	r5, #1414		// if A is held, the delay (r5) should be less than 1414
+	CMP	r7, r5			// so move the ball slower
+	BGE	moveBallLoop
 
-	mov	r1, #0			@ ball not moved
-	str	r1, [r0]
-	pop	{r4,r5,pc}
+	MOV	r1, #0			// ball not moved
+	STR	r1, [r0]
+	POP	{r4,r5,pc}
 
-	moveBallLoop:			@ bakl moved
-		bl	moveBall
-		mov	r1, #1
-		mov	r0, r4
-		str	r1, [r0]
-		pop	{r4,r5,pc}
+	moveBallLoop:			// ball moved
+		BL	moveBall
+		MOV	r1, #1
+		MOV	r0, r4
+		STR	r1, [r0]
+		POP	{r4,r5,pc}
 
-.global anybutton		@ read any button (for the game over screen)
+.global anybutton		// read any button (for the game over screen)
 anybutton:
-	mov	r0, #8192
-        bl 	readSNES
-	cmp     r0, #0
-        bne	menusetup
-	b	anybutton
+	MOV	r0, #8192
+        BL 	readSNES
+	CMP     r0, #0
+        BNE	menusetup
+	B	anybutton
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Paddle section @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+.global bigPaddle
+bigPaddle:			// change paddle size to big paddle
+	PUSH	{lr}
+	BL	drawInitialPaddle
+
+	LDR	r0, =paddleSize
+	MOV	r1, #384
+	STR	r1, [r0]
+
+	LDR	r0, =paddleStart
+	MOV	r1, #0
+	STR	r1, [r0]
+
+	LDR	r0, =paddleBound
+	MOV	r1, #292
+	STR	r1, [r0]
+
+	POP	{pc}
 
 drawInitialPaddle:
-	push	{r4, lr}
+	PUSH	{r4, lr}
 
-	mov	r0, #228	@ x
-	mov	r1, #774	@ y
-	mov	r2, #0x880000	@ color
-	mov	r3, #192
-	mov	r4, #32		@ height
-	bl	makeTile
+	// init Paddle
+	MOV	r0, #228	// x
+	MOV	r1, #774	// y
+	MOV	r2, #0x880000	// color
+	MOV	r3, #192
+	MOV	r4, #32		// height
+	BL	makeTile
 
-	mov	r0, #228
-	mov	r1, #774
-	mov	r2, #0x330000
-	mov	r3, #32
-	mov	r4, r3
-	bl	makeTile
+	MOV	r0, #228
+	MOV	r1, #774
+	MOV	r2, #0x330000
+	MOV	r3, #32
+	MOV	r4, r3
+	BL	makeTile
 
-	pop	{r4, pc}
+	POP	{r4, pc}
+
 
 .global	clearPaddle
 clearPaddle:
-	push	{lr}
-	mov	r0, #36
-	mov	r1, #774
-	mov	r2, #0x0
-	mov	r3, #640
-	mov	r4, #32
-	bl	makeTile
-	pop	{lr}
-	mov	pc, lr
+	PUSH	{lr}
+	MOV	r0, #36
+	MOV	r1, #774
+	MOV	r2, #0x0
+	MOV	r3, #640
+	MOV	r4, #32
+	BL	makeTile
+	POP	{lr}
+	MOV	PC, LR
 
-@ Paddle for value pack
-.global superPaddle
-superPaddle:		
-	push	{lr}
-	bl	drawInitialPaddle
 
-	ldr	r0, =paddleSize
-	mov	r1, #384
-	str	r1, [r0]
-
-	ldr	r0, =paddleInit
-	mov	r1, #0
-	str	r1, [r0]
-
-	ldr	r0, =paddleBoundary
-	mov	r1, #292
-	str	r1, [r0]
-
-	pop	{pc}
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Wall section @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
+// ensures walls are not written over
 fixWalls:
-	push	{r4,lr}
+	PUSH	{r4,lr}
 
-	mov	r0, #4
-	mov	r1, #36
-	mov	r2, #0x007770
-	mov	r3, #31
-	mov	r4, #816
-	bl	makeTile
+	MOV	r0, #4
+	MOV	r1, #36
+	MOV	r2, #0x007770
+	MOV	r3, #31
+	MOV	r4, #816
+	BL	makeTile
 
-	mov	r0, #677
-	mov	r1, #36
-	mov	r2, #0x007770
-	mov	r3, #31
-	mov	r4, #816
-	bl	makeTile
+	MOV	r0, #677
+	MOV	r1, #36
+	MOV	r2, #0x007770
+	MOV	r3, #31
+	MOV	r4, #816
+	BL	makeTile
 
-	pop	{r4,pc}
+	POP	{r4,pc}
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Data section @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.data
-.global paddleInit, paddleSize, paddlePos
 
-	isBallMovable:	.int	1
 
-	paddleInit:		.int	228
+	.global paddleSize
+	paddleSize:	.int	192
 
-	paddleSize:		.int	192
+	.global paddleStart
+	paddleStart:	.int	228
 
-	paddlePos:	.int	228
+	.global	paddlePosition
+	paddlePosition:	.int	228
 
-	paddleBoundary:	.int	484
+	paddleBound:	.int	484
+
+	willMoveBall:	.int	1

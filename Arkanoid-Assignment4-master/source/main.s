@@ -1,191 +1,200 @@
-@ Assignment 4: Arkanoid
-@ Authors: Kevin Huynh, Heavenel Cerna, and Austin So
 
-@ Code Section
+
+
 .section    .text
+
+//constants
 
 .global main
 main:
+	gBase	.req	r10
+	prevbtn	.req	r9
 
-	@ Print Authors
-	ldr	r0, =msgAuthor	
-	bl	printf
+	// Creator Credits
+	LDR	r0, =msgCreator		// get the creator
+	BL	printf
 
-	@ Get GPIO base address
-	@ Store in memory for future use
-	@ Store base in variable
-	bl	initSNES
-	bl	Init_Frame
+	// Get GPIO base address
+	// Store in memory for future use
+	// Store base in variable
+	BL	initSNES
+	BL	Init_Frame
 
 
 	.global menusetup
 	menusetup:
-		mov	r4, #0 			@initial state is 0
-		mov	r6, #8496		@ initial wait is longer
+		MOV	r4, #0 			//initial state is 0
+		MOV	r6, #8496		// initial wait is longer
 
-		mov	r0, r6			@ pause SNES before reading
-		bl	readSNES
+		MOV	r0, r6			// pause SNES before reading
+		BL	readSNES
 
 	    .global startMenuLoop
 		startMenuLoop:
 
-		    	cmp 	r4, #0 @check state
+		    	CMP 	r4, #0 //check state
 
-	    		mov 	r1, #720
-	    		mov 	r2, #960
-	    		ldreq	r0, =menu_start		@ state determines the screen
-	    		ldrne	r0, =menu_quit
+	    		MOV 	r1, #720
+	    		MOV 	r2, #960
+	    		LDREQ	r0, =menu_start		// state determines the screen
+	    		LDRNE	r0, =menu_quit	
 
-			bl	drawTile
+			BL	drawTile
 
-			mov	r0, r6
-			bl	readSNES @check button press
-			mov	r6, #3750
+			MOV	r0, r6
+			BL	readSNES //check button press
+			MOV	r6, #3750
 
-				cmp	r0, #2048		@ U
-				moveq 	r4, #0
-				cmp	r0, #1024		@ D
-				moveq	r4, #1
-				cmp	r0, #128  		@A
+				CMP	r0, #2048		// U
+				MOVEQ 	r4, #0
+				CMP	r0, #1024		// D
+				MOVEQ	r4, #1
+				CMP	r0, #128  		//A
 
-			bne startMenuLoop
+			BNE startMenuLoop
 
-		@branch based on state
-		cmp	r4, #0
-		bne	terminate		@ clears the screen to quit
-		beq	makeGame		@ starts the game
+		//branch based on state
+		CMP	r4, #0
+		BNE	terminate		// clears the screen to quit
+		BEQ	makeGame		// starts the game
 
 
 
 .global terminate
-terminate:				@ infinite loop ending program
-	ldr	r0, =msgTerminate
-	bl	printf
+terminate:				// infinite loop ending program
+	LDR	r0, =msgTerminate
+	BL	printf
 
-	bl blackScreen
+	BL blackScreen
 	haltLoop$:
-		b	haltLoop$
+		B	haltLoop$
 
-@ loggers used for debugging purposes only
+	gBase	.req	r10
+	prevbtn	.req	r9
+
+// loggers used for debugging purposes only
 .global $
-$:	push	{r0-r3, lr}
-	ldr	r0, =msgAuthor
-	bl	printf
-	pop	{r0-r3, pc}
+$:	PUSH	{r0-r3, lr}
+	LDR	r0, =log$
+	BL	printf
+	POP	{r0-r3, pc}
 
 .global $1
-$1:	push	{r0-r3, lr}
-	ldr	r0, =loggerBrick
-	bl	printf
-	pop	{r0-r3, pc}
+$1:	PUSH	{r0-r3, lr}
+	LDR	r0, =log$1
+	BL	printf
+	POP	{r0-r3, pc}
 
 
 .global pauseMenu
 pauseMenu:
-		push	{r4-r5, lr}
-		mov	r4, #0		@ state
-		mov	r5, #16384	@ delay for SNES
+		PUSH	{r4-r5, lr}
+		MOV	r4, #0		// state
+		MOV	r5, #16384	// delay for SNES
 
-		mov	r0, r5
-		bl	readSNES		@ pause SNES reading
+		MOV	r0, r5
+		BL	readSNES		// pause SNES reading
 
 	pauseMenuLoop:
-	   	cmp 	r4, #0 @check state
+	   	CMP 	r4, #0 //check state
 
-    		mov 	r1, #200
-    		mov 	r2, #200
+    		MOV 	r1, #200
+    		MOV 	r2, #200
 
-    		ldreq	r0, =paused_restart
-    		ldrne	r0, =paused_quit
+    		LDREQ	r0, =paused_restart	
+    		LDRNE	r0, =paused_quit
 
-		bl	drawCenterTile		@ draws the menu
-		mov	r0, r5
-		bl	readSNES @check button press
-		mov	r5, #2048
+		BL	drawCenterTile		// draws the menu
+		MOV	r0, r5
+		BL	readSNES //check button press
+		MOV	r5, #2048
 
-			cmp	r0, #2048		@ U
-			moveq 	r4, #0
+			CMP	r0, #2048		// U
+			MOVEQ 	r4, #0
 
-			cmp	r0, #1024		@ D
-			moveq	r4, #1
+			CMP	r0, #1024		// D
+			MOVEQ	r4, #1
 
-			cmp	r0, #4096		@ Start
-			bleq	clearScreen
-			moveq	r0, #16384
-			bleq	readSNES
-			popeq	{r4,r5, pc}
+			CMP	r0, #4096		// Start
+			BLEQ	clearScreen
+			MOVEQ	r0, #16384
+			BLEQ	readSNES
+			POPEQ	{r4,r5, pc}
 
-			cmp	r0, #128  		@A
-		bne pauseMenuLoop
+			CMP	r0, #128  		//A
+		BNE pauseMenuLoop
 
-		@branch based on state
-		cmp	r4, #0		@ restart if equal
-		pop	{r4,r5, r0}
-		bne	menusetup	@ returns to menu
-		beq	makeGame	@ restarts the game
+		//branch based on state
+		CMP	r4, #0		// restart if equal
+		POP	{r4,r5, r0}
+		BNE	menusetup	// returns to menu
+		BEQ	makeGame	// restarts the game
 
-@ no arguments, void
+// no arguments, void
 clearScreen:
-	push	{r4,r5, lr}
+	PUSH	{r4,r5, lr}
 
-	mov r4, #260 @start x position of where menu is drawn
-	mov r5, #380 @start y position of where meun is drawn
+	MOV r4, #260 //start x position of where menu is drawn
+	MOV r5, #380 //start y position of where meun is drawn
 
 	clearScreenLoop:
-	mov	r0, r4
-    	mov	r1, r5
-    	mov	r2, #0
-    	bl	drawPx
+	MOV	r0, r4
+    	MOV	r1, r5
+    	MOV	r2, #0
+    	BL	drawPx
 
-   	add	r4, r4, #1
-    	cmp	r4, #460
-    	moveq	r4, #260
+   	ADD	r4, r4, #1
+    	CMP	r4, #460
+    	MOVEQ	r4, #260
 
-    	addeq   r5, r5, #1
-   	cmp	r5, #580
-        blt	clearScreenLoop
+    	ADDEQ   r5, r5, #1
+   	CMP	r5, #580
+        BLT	clearScreenLoop
 
-	pop	{r4, r5, pc}
+	POP	{r4, r5, pc}
 
-@ Data Section
 .section .data
+
 .align 2
 
-	@ GPIO Base Address
-	.global gpioBaseAddress
-	gpioBaseAddress:
-		.int	0
-
-	@ Frame Buffer Information
-	frameBufferInfo:
-		.int 0		@ Frame buffer pointer
-		.int 0		@ Screen width
-		.int 0		@ Screen height
-
-
-	@ Color values
-	.global cWhite, cIndigo, cGreen, cYellow,
-	cWhite:	c1:
-		.int	0xFFFFFF
-
-	cGreen: c3:
-		.int	0x00FF00
-
-	cYellow:
-		.int	0xFFFF00
-
-	cIndigo: c2:
-	.int 	0x4B0082
-
-	msgAuthor:
-		.asciz 			"Authors: Kevin Huynh, Heavenel Cerna, and Austin So\n"
+	msgCreator:
+		.asciz 			"Created by: Elvin Limpin and Jocelyn Donnelly\n"
 
 	msgTerminate:
 		.asciz	 		"Program is terminating...\n"
 
-	loggerBrick:
-		.asciz			"Brick logger initialized\n"
+	log$:
+		.asciz			"logger invoked\n"
 
-	.global logger
-	logger:
-		.asciz			"logger: %d\n"
+	log$1:
+		.asciz			"brick logger invoked\n"
+
+	.global log
+	log:
+		.asciz			"log: %d\n"
+
+	frameBufferInfo:
+		.int 0		// frame buffer pointer
+		.int 0		// screen width
+		.int 0		// screen height
+
+
+	.global cWhite
+	cWhite:	c1:
+		.int	0xFFFFFF
+
+	.global cIndigo
+	cIndigo: c2:
+		.int 	0x4B0082
+
+	.global cGreen
+	cGreen: c3:
+		.int	0x00FF00
+
+	.global cYellow
+	cYellow:
+		.int	0xFFFF00
+
+.global gpioBaseAddress
+gpioBaseAddress:
+	.int	0
