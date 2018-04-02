@@ -1,3 +1,6 @@
+.global purple_rec
+purple_rec:
+.align 4
 .ascii "e<Y?d:W\257e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377"
 .ascii "e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377"
 .ascii "e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377e=X\377"
