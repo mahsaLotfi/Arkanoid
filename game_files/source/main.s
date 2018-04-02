@@ -11,21 +11,19 @@
 	game_state	.req	r9
 
 main:
-	BL	GPIO_init				@ Store base in variable
+	BL	GPIO_init		@ Store base in variable
 	
 	ldr	r0, =frameBufferInfo	@ Initialize frame buffer
 	bl	initFbInfo
 
-	mov	game_state, #0			@ Initial state is 0
+	mov	game_state, #0		@ Initial state is 0
 
 m_menu:
-	ldr	r0, =10000		@ Delay 0.01s
-	bl	delayMicroseconds
-
-	bl	start_menu		@ Initialize main menu screen #####
+	bl	start_menu		@ Initialize main menu screen
+	@-------------
 	cmp	r0, #2			@ Returns: 1 = Start Game, 2 = Quit Game
 
-	beq	quit					@ If 2, then quit game
+	beq	quit			@ If 2, then quit game
 
 @ Draw the background map
 draw_map:
