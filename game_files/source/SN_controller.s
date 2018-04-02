@@ -127,18 +127,18 @@ write_clock:
 
 read_data:
 	push	{r4,r7}
-	mov	r0, #10			@ 
-	ldr	r4, =GPIO_baseAddr	@ 
-	ldr	r7, [r4]		@ 
-	ldr	r1, [r7, #52]		@ 
-	mov	r3, #1			@ 
-	lsl	r3, r0			@ 
+	mov	r0, #10			@ move number 10 into r0
+	ldr	r4, =GPIO_baseAddr	@ load GPIO basse address into r4
+	ldr	r7, [r4]		@ load r7 with r4
+	ldr	r1, [r7, #52]		@ load r1 with r7 plus 52
+	mov	r3, #1			@ move number 1 into r3
+	lsl	r3, r0			@ logical shift left r3 10 bits
 
-	and	r1, r3			@ 
-	teq	r1, #0			@ 
+	and	r1, r3			@ and r1 and r3 then store in r1
+	teq	r1, #0			@ test equal r1 with 0
 
-	moveq	r0, #0			@ 
-	movne	r0, #1			@ 
+	moveq	r0, #0			@ move number 0 into r0 if r1 = 0
+	movne	r0, #1			@ move number 1 into r0 if r1 != 0
 	pop	{r4,r7}
 
 	mov	pc, lr			@ Return call
@@ -146,44 +146,44 @@ read_data:
 
 read_SNES:
 	push	{r7,r8,lr}
-	mov	r0, #1			@
-	bl	write_clock		@ 
+	mov	r0, #1			@ move number 1 into r0
+	bl	write_clock		@ branch link to write_clock function
 
-	mov	r0, #1			@ 
-	bl	write_latch		@ 
+	mov	r0, #1			@ move nummber 1 into r0
+	bl	write_latch		@  branch link to write_latch
 
-	mov	r0, #12			@ 
-	bl	delayMicroseconds	@
+	mov	r0, #12			@ move number 12 into r0
+	bl	delayMicroseconds	@ brnach link to delatMicrseconds function
 
-	mov	r0, #0			@ 
-	bl	write_latch		@ 
+	mov	r0, #0			@ move number 0 into r0
+	bl	write_latch		@ branch link to write_latch
 
 	mov	r7, #0			@ Sampling button
 	mov	r8, #0			@ Loop counter
 
 
 clock_loop:
-	mov	r0, #6			@ 
-	bl	delayMicroseconds	@ 
+	mov	r0, #6			@ move number 6 into r0
+	bl	delayMicroseconds	@ branch link to delayMicraseconds function
 
-	mov	r0, #0			@ 
-	bl	write_clock		@ 
+	mov	r0, #0			@ move number 0 into r0
+	bl	write_clock		@ branch link to wrote_clock function
 
-	mov	r0, #6			@ 
-	bl	delayMicroseconds	@ 
+	mov	r0, #6			@ move number 6 into r0
+	bl	delayMicroseconds	@ branch link to delayMicroseconds function
 
-	bl	read_data		@ 
-	lsl	r0, r7			@ 
-	orr	r8, r0			@ 
+	bl	read_data		@ branch link read_data function
+	lsl	r0, r7			@ logical shift left r0 by r7
+	orr	r8, r0			@ or r8 and r0, store in r8
 
-	mov	r0, #1			@ 
-	bl	write_clock		@ 
+	mov	r0, #1			@ move number 1 into r0
+	bl	write_clock		@ branch link to write_clock
 
-	add	r7, #1			@ 
-	cmp	r7, #16			@ 
-	blt	clock_loop		@ 
-	mov	r0, r8			@ 
-	pop	{r7,r8,pc}		@ 
+	add	r7, #1			@ add r7 by 1
+	cmp	r7, #16			@ compare r7 to 16
+	blt	clock_loop		
+	mov	r0, r8			@ move r8 value into r0
+	pop	{r7,r8,pc}		
 
 
 @ Checks which button is presssed
