@@ -23,8 +23,6 @@ start_menu:
 
 	beq	quit			@ If 2, then quit game
 
-	bl	initValues		@ 
-
 @ Draw the background map
 draw_map:
 	bl				@ Draws the background image #####
@@ -33,18 +31,10 @@ draw_map:
 	
 init_objects:
 	@ Initialize paddle
-	ldr	r0, =paddle_coords
-	mov	r1, #			@ Paddle: x coord *****
-	str	r1, [r0]		@ Store paddle x coord
-	mov	r2, #			@ Paddle: y coord *****
-	str	r2, [r0, #4]		@ Store paddle y coord
+	bl	init_paddle
 	
 	@ Initialize ball
-	ldr	r0, =ball_coords
-	mov	r1, #			@ Ball: x coord *****
-	str	r1, [r0]		@ Store ball x coord
-	mov	r2, #			@ Ball: y coord *****
-	str	r2, [r0, #4]		@ Store ball y coord
+	bl	init_ball
 	
 	ldr	r0, =ball_momentum
 	mov	r1, #0			@ 0 = right/up/45, 1 = left/down/60
@@ -56,7 +46,7 @@ init_objects:
 	ldr	r0, =brick_coords	@ 
 	
 	@ Draw objects
-	bl	brick01			@ ???
+	
 	
 
 quit:
