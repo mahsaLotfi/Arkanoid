@@ -73,7 +73,6 @@ draw_pxl:
 	STR	color, [r3, offset]
 
 	POP	{r3, pc}
-	bx	lr
 
 
 	.unreq	offset
