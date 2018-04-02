@@ -14,11 +14,16 @@ main:
 		
 	bl	GPIO_init		@ Initialize GPIO
 
-start_menu:	
-	bl	mm			@ Print out main menu screen and wait for input (1, 2)
-	cmp	r0, #2			@ 1 = Start Game, 2 = Quit Game
+start_menu:
+	ldr	r0, =100000		@ Delay 0.1s
+	bl	delayMicroseconds
+
+	bl	start_menu		@ Initialize main menu screen #####
+	cmp	r0, #2			@ Returns: 1 = Start Game, 2 = Quit Game
 
 	beq	quit			@ If 2, then quit game
+
+	bl	initValues		@ 
 
 @ Draw the background map
 draw_map:
