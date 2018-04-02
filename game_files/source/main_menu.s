@@ -8,8 +8,9 @@ SNES_controller	.req	r10
 menu_start	.req	r11
 menu_quit	.req	r12
 
+
 .global
-.aling 4
+.align 4
 
 .int 8
 .int 8

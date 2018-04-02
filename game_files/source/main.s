@@ -4,21 +4,25 @@
 @ ##### - Check function call
 @ ***** - add values
 
-.text
+@ Code Section 
+.section	.text
+.global	main
 
-.global main
+	game_state	.req	r9
 
 main:
+	BL	init_SNES				@ Store base in variable
+	
 	ldr	r0, =frameBufferInfo	@ Initialize frame buffer
 	bl	initFbInfo
-		
-	bl	GPIO_init		@ Initialize GPIO
+
+	mov	game_state, #0			@ Initial state is 0
 
 start_menu:	
-	bl	mm			@ Print out main menu screen and wait for input (1, 2)
-	cmp	r0, #2			@ 1 = Start Game, 2 = Quit Game
+	bl	mm						@ Print out main menu screen and wait for input (1, 2)
+	cmp	r0, #2					@ 1 = Start Game, 2 = Quit Game
 
-	beq	quit			@ If 2, then quit game
+	beq	quit					@ If 2, then quit game
 
 @ Draw the background map
 draw_map:
@@ -59,12 +63,22 @@ quit:
 	
 	haltLoop$:
 		b	haltLoop$
-		
-.data
+	
+@ Data Section 	
+.section	.data
+.align 2
 
-paddle_coords:	.int	0, 0		@ x, y
-ball_coords:	.int	0, 0		@ x, y
-ball_momentum:	.int	0, 0, 0		@ x_dir, y_dir, angle(45/60)
+.global GPIO_base_address
+GPIO_base_address:
+	.int	0
 
-brick_coords:	@ 0 - , 1 - , 2 - , 3 - , 4 - 
+paddle_coords:	
+	.int	0, 0		@ x, y
+ball_coords:	
+	.int	0, 0		@ x, y
+ball_momentum:	
+	.int	0, 0, 0		@ x_dir, y_dir, angle(45/60)
+
+@ 0 - , 1 - , 2 - , 3 - , 4 - 
+brick_coords:	
 	.int	0,0,0,0,0,0,1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4,4,4
