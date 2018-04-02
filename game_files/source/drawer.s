@@ -48,12 +48,11 @@ make_tile:
 	POP	{r5-r6, pc}
 	
 
-@ Draws a pixel
-@ Input:
-@ r0 - x_start
-@ r1 - y_start
-@ r2 - color
 
+@ r0 - x-value
+@ r1 - y-value
+@ r2 - color
+@ Draws a pixel
 draw_pxl:
 	PUSH	{r3, lr}
 
@@ -67,12 +66,14 @@ draw_pxl:
 	@ making the offset
 	MUL	y_val, width
 	ADD	offset, x_val, y_val
-	LSL	offset, #2				@ * 4
+	LSL	offset, #2				@ offset * 4
 
+	@ Stores color at frame buffer pointer + offset
 	LDR	r3, [frame]
 	STR	color, [r3, offset]
 
 	POP	{r3, pc}
+	bx	lr
 
 
 	.unreq	offset
