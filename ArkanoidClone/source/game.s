@@ -250,14 +250,14 @@ drawInitialPaddle:
 	@ init Paddle
 	mov	r0, #228	@ x
 	mov	r1, #774	@ y
-	mov	r2, #0x6699	@ color
+	mov	r2, #0x33669900	@ color
 	mov	r3, #192
 	mov	r4, #32		@ height
 	bl	drawCell
 
 	mov	r0, #228
 	mov	r1, #774
-	mov	r2, #0xFFFFFF
+	mov	r2, #0x880000
 	mov	r3, #32
 	mov	r4, r3
 	bl	drawCell
