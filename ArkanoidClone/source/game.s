@@ -231,7 +231,7 @@ bigPaddle:			@ change paddle size to big paddle
 	bl	drawInitialPaddle
 
 	ldr	r0, =paddleSize
-	mov	r1, #384
+	mov	r1, #200
 	str	r1, [r0]
 
 	ldr	r0, =paddleStart
