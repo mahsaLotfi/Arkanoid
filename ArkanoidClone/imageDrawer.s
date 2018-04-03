@@ -1,24 +1,24 @@
-@r0= address of image data
-@r1=image width
-@r2=image length
-
+@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.text
+
+@r0 - Image address
+@r1 - Image width
+@r2 - Image length
 .global drawCenterTile
 drawCenterTile:
-	push	{r4-r9, lr}
-	
+
 	address	.req	r5
 	width	.req	r6
 	length	.req	r7
 	x	.req	r8
 	y	.req	r9
-	
-	@store values
+
+	push	{r4-r9, lr}
+
     mov	address, r0
 	mov	width,	r1
 	mov	length,	r2
 	
-	@initalize x and y start positions
 	mov x, #360
 	sub x, x, width, lsr #1
 	
@@ -27,23 +27,24 @@ drawCenterTile:
 
     add r4, width, x
 	
-centertileloop:
-    @draw a pixel
-    mov r0, x
-    mov r1, y
-    ldr r2, [address], #4
-    bl  drawPx
+	centerTileLoop:
+		mov r0, x
+		mov r1, y
+		ldr r2, [address], #4
+		bl  drawPx
     
-    add x, x, #1
+		add x, x, #1
     
-    cmp x, r4
-    subeq x, x, width
-    addeq y, y, #1
+		cmp x, r4
+		subeq x, x, width
+		addeq y, y, #1
     
-    mov r0, #480
-    add r0, r0, length, lsr #1
-    cmp y, r0
-    blt centertileloop
+		mov r0, #480
+		add r0, r0, length, lsr #1
+		cmp y, r0
+		blt centerTileLoop
+    
+		pop		{r4-r9, pc}
 
   	.unreq	address
 	.unreq	width
@@ -51,23 +52,21 @@ centertileloop:
 	.unreq	x
 	.unreq	y
     
-    pop		{r4-r9, pc}
-    
-@r0= address of image data
-@r1=image width
-@r2=image length
+@r0 - Image address
+@r1 - Image width
+@r2 - Image length
 .global drawTile
 drawTile:
 
-	push	{r5-r9, lr}
-	
 	address	.req	r5
 	width	.req	r6
 	length	.req	r7
+
+	push	{r5-r9, lr}
+
 	x	.req	r8
 	y	.req	r9
 
-	@intialize offset, x and y to 0
 	mov		x, #0
 	mov		y, #0
 	
@@ -76,27 +75,26 @@ drawTile:
 	mov	width,	r1
 	mov	length,	r2
 	
-tileloop:
-    @draw a pixel
-    mov r0, x
-    mov r1, y
-    ldr r3, [address], #4
-    mov r2, r3
-    bl  drawPx
+	tileLoop:
+		mov r0, x
+		mov r1, y
+		ldr r3, [address], #4
+		mov r2, r3
+		bl  drawPx
     
-    add x, x, #1
+		add x, x, #1
     
-    cmp x, width
-    moveq x, #0
-    addeq y, y, #1
+		cmp x, width
+		moveq x, #0
+		addeq y, y, #1
     
-    cmp y, length
-    blt tileloop
+		cmp y, length
+		blt tileLoop
+    
+		pop		{r5-r9, pc}
 
-  	.unreq	address
+	.unreq	address
 	.unreq	width
 	.unreq	length
 	.unreq	x
 	.unreq	y
-    
-    pop		{r5-r9, pc}

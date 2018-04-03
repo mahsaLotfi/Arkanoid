@@ -5,8 +5,8 @@
 @ r0 - X
 @ r1 - Y
 @ r2 - Color
-.global makeBrick
-makeBrick:
+.global generateBricks
+generateBricks:
 	push	{r4-r6, lr}
 	
 	mov	r4, r0			@ r4 - x
@@ -42,7 +42,7 @@ initBricks:
 	mov	r5, #0			@ y direction
 	add	r6, r5, #3
 
-	initBrickStateLoop:
+	initBrickLoop:
 		mov	r0, r4			@ r0 - x
 		mov	r1, r5			@ r1 - y
 
@@ -59,14 +59,14 @@ initBricks:
 		@ Checks X
 		add	r4, r4, #1
 		cmp	r4, #10
-		blt	initBrickStateLoop
+		blt	initBrickLoop
 
 		@ Check Y
 		add	r5, r5, #1
 		sub	r6, r6, #1
 		cmp	r5, #3
 		movlt	r4, #0
-		blt	initBrickStateLoop
+		blt	initBrickLoop
 
 	pop	{r4-r6, pc}
 
@@ -143,7 +143,7 @@ hitBrick:
 	sub	r2, r7, #1	@ Degrade the brick
 	mov	r0, r4
 	mov	r1, r5
-	bl	makeBrick
+	bl	generateBricks
 	@ r2 is the color
 
 	mov	r0, #1		@ Brick is hit
@@ -191,27 +191,26 @@ XYtoCode:
 	mov	r5, #0 			@ Default layer
 	sub	r1, r1, #96
 
-yloop:
-	cmp	r1, #32
-	sub	r1, r1, #32
-	movlt	r1, r5
-	add	r5, r5, #1
-	bge	yloop
+	yloop:
+		cmp	r1, #32
+		sub	r1, r1, #32
+		movlt	r1, r5
+		add	r5, r5, #1
+		bge	yloop
 
-	mov	r4, #0			@ Default start
-	sub	r0, r0, #36
+		mov	r4, #0			@ Default start
+		sub	r0, r0, #36
 
-xloop:
-	cmp	r0, #64
-	sub	r0, r0, #64
-	movlt	r0, r4
-	add	r4,r4, #1
-	bge	xloop
+	xloop:
+		cmp	r0, #64
+		sub	r0, r0, #64
+		movlt	r0, r4
+		add	r4,r4, #1
+		bge	xloop
 
 
-	pop	{r4,r5, lr}
-	
-	mov	pc, lr
+		pop	{r4,r5, lr}
+		mov	pc, lr
 
 @ Arguments:
 @ r0 - x
@@ -222,17 +221,16 @@ codeToTile:
 	push	{lr}
 
 	cmp	r0, #9
-	LDRGT	r0, =destroyedBrick 
-	popGT	{lr}
+	ldrgt	r0, =destroyedBrick 
+	popgt	{lr}
 	movgt	pc, lr
 
 	cmp	r1, #1
 	blt	fromZero
 	Beq	fromTen
 
-	CMPGT	r1, #2
+	cmpgt	r1, #2
 	Beq	fromTwenty
-	@ invaild input, return 0
 	ldr	r0, =destroyedBrick
 
 	pop	{lr}
@@ -390,8 +388,8 @@ codeToTile:
 		mov	pc, lr
 
 @ Re-draws all the bricks 
-.global	makeAllBricks
-makeAllBricks:
+.global	updateBricks
+updateBricks:
 	push	{r4-r6, lr}
 	
 	mov	r4, #0
@@ -426,14 +424,14 @@ getBrickStateLoop:
 
 @ Returns:
 @ r0: Is Game Won
-.global checkGameWon
-checkGameWon:
+.global isGameWon
+isGameWon:
 	push	{r4, r5, lr}
 	
 	mov	r4, #0
         ldr	r5, =brick0
 
-checkallbricks:
+checkBricks:
 	ldrb	r0, [r5, r4]
 	add	r4, r4, #1
         cmp	r0, #0
@@ -442,12 +440,11 @@ checkallbricks:
 	movne	PC, lr
 
 	cmp	r4, #30
-	blt	checkallbricks
+	blt	checkBricks
 
 	mov	r0, #1
 	
-        pop	{r4, r5, lr}
-	
+    pop	{r4, r5, lr}
 	mov	pc, lr
 
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@

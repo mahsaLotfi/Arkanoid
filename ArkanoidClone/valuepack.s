@@ -125,7 +125,7 @@ checkPaddleDrop:
 
 	@ if paddle is 88 from the left
 	cmp	r0, #88
-	blLE	bigPaddle	@ change paddle to big paddle
+	blLE	superPaddle	@ change paddle to big paddle
 
 	mov	r0, #56
 	ldr	r1, =paddleDropY
