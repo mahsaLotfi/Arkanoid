@@ -316,7 +316,7 @@ LOST:
 WIN:
 	bl	updateStats
 
-	ldr	r0,=gameWon
+	ldr	r0,=gameWonImage
         mov	r1, #200
 	mov	r2, #200
 	bl      drawCenterTile
