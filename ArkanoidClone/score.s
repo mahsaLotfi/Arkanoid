@@ -98,7 +98,7 @@ intTostring:
 		cmp	r0, #10
 		ADDGE	r4, r4, #1
 		SUBGE	r0, #10
-		BGE	divideLoop
+		bge	divideLoop
 
 	add	r1, r0, #48	@ r1 - second digit, r0 is first
 	add	r0, r4, #48	@converts to ascii version
