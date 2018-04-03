@@ -99,6 +99,7 @@ updateStats:
 
 toString:	
 	push	{r4, r5, lr}
+
 	ldr	r0, [r0]
 	mov	r4, #0
 	
@@ -106,7 +107,7 @@ toString:
 calcDigits:
 	cmp	r0, #10
 	blt	convertASCII
-	addge	r2, r2, #1
+	addge	r4, r4, #1
 	subge	r0, #10
 	
 	b	calcDigits
