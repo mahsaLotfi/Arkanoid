@@ -1,48 +1,53 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@ Text Section @@@@@@@@@@@@@@@@@@@@@@@@@
+
 .section	.text
 
+.global	check_drops, reset_value_packs
+
 @ listens for drops
-.global dropListener
-dropListener:
+check_drops:
 	push	{r4-r6, lr}
-		bl	tryCatchBall
-		bl	tryPaddle
+
+	bl	check_catch_ball_drop
+	bl	check_paddle_drop
+
 	pop	{r4-r6, pc}
 
 
 @ checks whether paddle drop or catch ball drop is occuring
+check_paddle_drop:
+	push	{lr}
 
-	tryPaddle:
-		push	{lr}
+	ldr	r0, =paddleDropState
+	ldr	r0, [r0]
 
-		ldr	r0, =paddleDropState
-		ldr	r0, [r0]
+	cmp	r0, #1
+	bleq	paddle_drop_fall
+	bllt	check_paddle_brick_broken
 
-		cmp	r0, #1
-			bleq	bigPaddleDrop
-			blLT	paddleTileBroken
-		pop	{pc}
+	pop	{pc}
 
-	tryCatchBall:
-		push	{lr}
+check_catch_ball_drop:
+	push	{lr}
 
-		ldr	r0, =ballDropState
-		ldr	r0, [r0]
+	ldr	r0, =ballDropState
+	ldr	r0, [r0]
 
-		cmp	r0, #1
-			bleq	catchBallDrop
-			blLT	ballTileBroken
-		pop	{pc}
+	cmp	r0, #1
+	bleq	catch_ball_drop_fall
+	bllt	check_catch_ball_brick_broken
+
+	pop	{pc}
 
 @ checks whetehr the brick holding the approrpaite til has been broken
 
-ballTileBroken:
+check_catch_ball_brick_broken:
 	push	{r4-r6,lr}
 
 	mov	r5, #1
 
 	ldr	r0, =brick25
-	LDRB	r6, [r0]
+	ldrb	r6, [r0]
 
 	cmp	r6, #0
 		ldreq	r0, =ballDropState
@@ -52,13 +57,13 @@ ballTileBroken:
 
 
 
-paddleTileBroken:
+check_paddle_brick_broken:
 	push	{r4-r6,lr}
 
 	mov	r5, #1
 
 	ldr	r0, =brick20
-	LDRB	r6, [r0]
+	ldrb	r6, [r0]
 
 	cmp	r6, #0
 		ldreq	r0, =paddleDropState
@@ -67,7 +72,7 @@ paddleTileBroken:
 	pop	{r4-r6,pc}
 
 @ drops the value pack inrementally
-bigPaddleDrop:
+paddle_drop_fall:
 	push	{r4-r8, lr}
 
 	mov	r0, #56
@@ -106,13 +111,13 @@ bigPaddleDrop:
 
 	@ if drop is near the bottom check if the paddle caught it
 	cmp	r0, r1
-	blGE	checkPaddleDrop
+	blge	paddle_drop_caught
 
 
 	pop	{r4-r8, pc}
 
 @ check whether the paddle drop is caught
-checkPaddleDrop:
+paddle_drop_caught:
 	push	{lr}
 
 	ldr	r0, =paddleDropState
@@ -125,7 +130,7 @@ checkPaddleDrop:
 
 	@ if paddle is 88 from the left
 	cmp	r0, #88
-	blLE	superPaddle	@ change paddle to big paddle
+	blle	superPaddle	@ change paddle to big paddle
 
 	mov	r0, #56
 	ldr	r1, =paddleDropY
@@ -138,7 +143,7 @@ checkPaddleDrop:
 
 	pop	{pc}
 
-catchBallDrop:
+catch_ball_drop_fall:
 	push	{r4-r8, lr}
 
 	mov	r0, #428
@@ -177,12 +182,12 @@ catchBallDrop:
 
 	@ if drop is near the bottom check if the paddle caught it
 	cmp	r0, r1
-	blGE	checkBallDrop
+	blge	catch_ball_drop_caught
 
 	pop	{r4-r8, pc}
 
 @ cgecj whether ball drop is caught
-checkBallDrop:
+catch_ball_drop_caught:
 	push	{lr}
 
 	ldr	r0, =ballDropState
@@ -195,55 +200,31 @@ checkBallDrop:
 
 	@ if paddle is 428 from the left
 	cmp	r0, #428
-	blLE	enableCatchBall	@ change to catch ball
-	BGT	tryOtherSide
+	blle	enableCatchBall	@ change to catch ball
+	bgt	tryOtherSide
 
-	checkBallDrop2:
-		mov	r0, #428
-		ldr	r1, =ballDropY
-		ldr	r1, [r1]
-		sub	r1, r1, #32
-		mov	r2, #0x0
-		mov	r3, #28
-		mov	r4, r3
-		bl	drawCell
-		pop	{pc}
-
-	tryOtherSide:
-		ldr	r1, =paddleSize
-		ldr	r1, [r1]
-
-		add	r0, r0, r1
-		cmp	r0, #428
-		blGE	enableCatchBall
-
-		B	checkBallDrop2
-
-
-@ debuging purposes only
-.global testPaddle
-testPaddle:
-	push	{lr}
-
-	ldr	r0, =paddleDropState
-	mov	r1, #1
-	str	r1, [r0]
-
+checkBallDrop2:
+	mov	r0, #428
+	ldr	r1, =ballDropY
+	ldr	r1, [r1]
+	sub	r1, r1, #32
+	mov	r2, #0x0
+	mov	r3, #28
+	mov	r4, r3
+	bl	drawCell
 	pop	{pc}
 
-.global	testBall
-testBall:
-	push	{lr}
+tryOtherSide:
+	ldr	r1, =paddleSize
+	ldr	r1, [r1]
+	add	r0, r0, r1
+	cmp	r0, #428
+	blge	enableCatchBall
 
-	ldr	r0, =ballDropState
-	mov	r1, #1
-	str	r1,[r0]
-
-	pop	{pc}
+	b	checkBallDrop2
 
 @ resets the state values for value packs for restarting
-.global	resetValuePacks
-resetValuePacks:
+reset_value_packs:
 	ldr	r0, =paddleDropY
 	mov	r1, #192
 	str	r1, [r0]
@@ -265,12 +246,11 @@ resetValuePacks:
 @@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.data
 
-	paddleDropY:		.int    192
-	ballDropY:		.int	192
+paddleDropY:		.int    192
+ballDropY:		.int	192
 
-
-	@ 0 - default
-	@ 1 - dropping
-	@ 2 - caught/finished
-	paddleDropState:	.int	0
-	ballDropState:		.int	0
+@ 0 - default
+@ 1 - dropping
+@ 2 - caught/finished
+paddleDropState:	.int	0
+ballDropState:		.int	0

@@ -1,7 +1,10 @@
 @@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+
 .section	.text
 
 .global makeGame
+
+
 makeGame:
 	bl	resetScore
 
@@ -56,7 +59,7 @@ paddle:
 
 	paddleLoop:
 		bl	isBallMovable
-		bl	dropListener
+		bl	check_drops
 		bl	updateBricks
 		bl	updateStats
 		bl	fixBorder
@@ -107,8 +110,8 @@ paddle:
 		bl	readSNES
 		mov	r7, #1500
 
-		cmp	r0, #409
-		bleq	pauseMenu
+		cmp	r0, #199
+		bleq	pause_menu
 
 		cmp	r0, #32768
 		bleq	launchBall
@@ -213,7 +216,7 @@ anybutton:
 	mov	r0, #8192
         bl 	readSNES
 	cmp     r0, #0
-        bne	menusetup
+        bne	start_menu
 	b	anybutton
 
 @ PowerUp Element

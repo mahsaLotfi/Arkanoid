@@ -95,8 +95,8 @@
 					@ pressed are valid
 
 		@ save button pressed to r1
-		cmp	r0, #32768	@ code for button B
-		ldreq	r1, =msgB1	@ if code is b, load string for B
+		cmp	r0, #32768	@ code for button b
+		ldreq	r1, =msgB1	@ if code is b, load string for b
 		moveq	notNull, #1	@ turn on not null flag
 
 		cmp	r0, #16384	@ same goes for the rest of the buttons

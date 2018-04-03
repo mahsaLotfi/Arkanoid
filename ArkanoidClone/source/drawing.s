@@ -124,11 +124,11 @@ drawChar:
 		ldr		px, =initX
 		ldr		px, [px]		@ init the X coordinate
 		mov		mask, #0x01		@ set the bitmask to 1 in the LSB
-		LDRB		row, [chAdr], #1	@ load the row byte, post increment chAdr
+		ldrb		row, [chAdr], #1	@ load the row byte, post increment chAdr
 
 	rowLoop:
 		tst		row, mask		@ test row byte against the bitmask
-		Beq		noPixel
+		beq		noPixel
 
 		mov		r0, px
 		mov		r1, py
@@ -140,12 +140,12 @@ drawChar:
 		lsl		mask, #1		@ shift bitmask left by 1
 
 		tst		mask,	#0x100		@ test if the bitmask has shifted 8 times (test 9th bit)
-		Beq		rowLoop
+		beq		rowLoop
 
 		add		py,py, #1		@ increment y coordinate by 1
 
 		tst		chAdr, #0xF
-		Bne		charLoop		@ loop back to charLoop$, unless address evenly divisibly by 16 (ie: at the next char)
+		bne		charLoop		@ loop back to charLoop$, unless address evenly divisibly by 16 (ie: at the next char)
 
 	.unreq	chAdr
 	.unreq	px
@@ -168,7 +168,7 @@ drawWord:
 	mov	r7, r2
 	mov	r4, r3
 	drawWordLoop:
-		LDRB	r0, [r5], #1
+		ldrb	r0, [r5], #1
 		cmp	r0, #0
 		popeq	{r4-r7, pc}
 
@@ -177,7 +177,7 @@ drawWord:
 		mov	r3, r4
 		bl	drawChar
 		add	r6, r6, #11
-		B	drawWordLoop
+		b	drawWordLoop
 
 .global blackScreen @blacks out game screen takes and returns no arguments
 blackScreen:

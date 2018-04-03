@@ -78,21 +78,21 @@ changeSlope:
 	ldr	r3, [r3]
 	mov	r6, r3
 
-	ldr	r0, =xandy	@for debugging purposes
+@	ldr	r0, =xandy	for debugging purposes
 @	bl	printf
 
 	@ check if walls are hit
 	cmp	r4,#644
-	blGE	switch45
+	blge	switch45
 
 	cmp	r5, #36
-	blLE	switch60
+	blle	switch60
 
 	cmp	r4, #36
-	blLE	switch45
+	blle	switch45
 
 	cmp	r5, #740		@ check if paddle catches the ball
-	blGE	checkIfCaught
+	blge	checkIfCaught
 
 	bl	checkCorners		@ check if other corners have hit something
 
@@ -208,7 +208,7 @@ checkCorners: @makes function calls to avoid checking the same brick
 	add	r1, r5, #32 @bottom right
 	bl	XYtoCode
 	cmp 	r0, r6
-	Beq	skip
+	beq	skip
 
 	mov	r6, r0
 	mov	r7, r1
@@ -219,7 +219,7 @@ checkCorners: @makes function calls to avoid checking the same brick
 	bl	XYtoCode
 
 	cmp	r1, r7
-	Beq	skip
+	beq	skip
 
 	bl	bottomright
 	orr	r9, r9, r0
@@ -288,23 +288,23 @@ checkIfCaught:
 	add	r7, r7, r5	@ rightbound of paddle
 
 	cmp	r6, r5		@ R ball - L paddle
-	blLT	ballDies	@ if ball too far right, ball will die
+	bllt	ballDies	@ if ball too far right, ball will die
 	popLT	{r4-r8, pc}
 
 	cmp	r7, r4		@ R paddle - L ball
-	blLT	ballDies	@ if paddle too far right, ball will die
+	bllt	ballDies	@ if paddle too far right, ball will die
 	popLT	{r4-r8, pc}
 
 	@checkRightBound
 		sub	r7, r7, #48	@edge of paddle
 		cmp	r7, r4		@ edge of paddle - L ball
-		blLT	switch45Paddle	@ bounce 45
+		bllt	switch45Paddle	@ bounce 45
 		popLT	{r4-r8, pc}
 
 	@checkLeftBound
 		add	r5, r5, #48	@ edge of paddle
 		cmp	r6, r5		@ R ball - edge of paddle
-		blLE	switch45Paddle	@ bounce 45
+		blle	switch45Paddle	@ bounce 45
 		blGT	switch60Paddle
 	pop	{r4-r8, pc}
 
@@ -408,7 +408,7 @@ switch60Paddle:
 	ldr	r0, [r0]
 
 	cmp	r0, #748
-		blGE	switch45
+		blge	switch45
 		popGE	{pc}
 
 	ldr	r0, =ballSlope
@@ -439,7 +439,7 @@ switch45Paddle:
 	ldr	r0, [r0]
 
 	cmp	r0, #748
-		blGE	switch45
+		blge	switch45
 		popGE	{pc}
 
 	ldr	r0, =ballSlope

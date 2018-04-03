@@ -125,7 +125,7 @@ hitBrick:
 	mov	r4, r0
 	mov	r5, r1
 	bl	codeToTile
-        LDRB	r7, [r0]
+        ldrb	r7, [r0]
 
 	cmp	r7, #0
 
@@ -220,10 +220,10 @@ codeToTile:
 
 	cmp	r1, #1
 	blt	fromZero
-	Beq	fromTen
+	beq	fromTen
 
 	cmpgt	r1, #2
-	Beq	fromTwenty
+	beq	fromTwenty
 	ldr	r0, =destroyedBrick
 
 	pop	{lr}
@@ -448,7 +448,7 @@ checkBricks:
 @ 2 - Medium Brick
 @ 3 - Strong Brick
 
-    .global brick20
+    .global brick20, brick25
 
 	doBrick:	.byte	1
 	destroyedBrick:	.byte	0
@@ -475,7 +475,7 @@ checkBricks:
 	brick18:	.byte	2
 	brick19:	.byte	2
 
-    brick20:	.byte 	3
+	brick20:	.byte 	3
 	brick21:	.byte	3
 	brick22:	.byte	3
 	brick23:	.byte	3

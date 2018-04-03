@@ -13,7 +13,7 @@ initScore:
 	ldr	r0, =scoreChar
 	mov	r1, #60
 	mov	r2, #55
-	ldr	r3, =cWhite
+	ldr	r3, =white
 	bl	drawWord
 	pop	{pc}
 
@@ -29,7 +29,7 @@ initLives:
 	ldr	r0, =livesChar
 	mov	r1, #550
 	mov	r2, #55
-	ldr	r3, =cWhite
+	ldr	r3, =white
 	bl	drawWord
 	pop	{pc}
 
@@ -116,7 +116,7 @@ GAME_OVER:
         mov	r1, #720
 	mov	r2, #960
 	bl      drawCenterTile
-	B	anybutton
+	b	anybutton
 
 @ behavior for win condition
 .global GAME_WIN
@@ -127,7 +127,7 @@ GAME_WIN:
     mov	r1, #720
 	mov	r2, #960
 	bl      drawCenterTile
-	B	anybutton
+	b	anybutton
 
 
 @ reinitializes game vairables
@@ -162,7 +162,7 @@ resetScore:
 	str	r1, [r0]
 
 
-	bl	resetValuePacks
+	bl	reset_value_packs
 	pop	{pc}
 
 @@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
