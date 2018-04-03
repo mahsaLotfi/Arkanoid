@@ -109,8 +109,8 @@ LOST:
 	bl	getRidOfBall
 
 	ldr	r0,=gameOver
-    mov	r1, #720
-	mov	r2, #960
+        mov	r1, #200
+	mov	r2, #200
 	bl      drawCenterTile
 	B	anybutton
 
@@ -120,8 +120,8 @@ WIN:
 	bl	updateStats
 
 	ldr	r0,=gameWonImage
-    mov	r1, #720
-	mov	r2, #960
+        mov	r1, #200
+	mov	r2, #200
 	bl      drawCenterTile
 	B	anybutton
 
