@@ -14,7 +14,7 @@ drawBall:
 	@crosswise
 	add	r0, r5, #0
 	add	r1, r6, #4
-	mov	r2, #0x0000FF
+	mov	r2, #0xFFFFFF
 	mov	r3, #32
 	mov	r4, #24
 	bl	drawCell
@@ -22,7 +22,7 @@ drawBall:
 	@lengthwise
 	add	r0, r5, #4		@x
 	add	r1, r6, #0		@y
-	mov	r2, #0x000FF
+	mov	r2, #0xFFFFFF
 	mov	r3, #23
 	mov	r4, #32
 	bl	drawCell
