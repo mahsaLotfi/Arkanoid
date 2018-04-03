@@ -108,7 +108,7 @@ changeSlope:
 		ldr	r1, [r1]
 
 		bl	hitBrick @returns if hit
-	        ldr     r1, =scoreCount
+	        ldr     r1, =score
 		ldr	r2, [r1]
 	        add	r2, r2, r0
 
@@ -125,7 +125,7 @@ changeSlope:
 		ldr	r1, [r1]
 
 		bl	hitBrick @returns if hit
-        	ldr     r1, =scoreCount
+        	ldr     r1, =score
 		ldr	r2, [r1]
 
         	add	r2, r2, r0
@@ -142,7 +142,7 @@ changeSlope:
 	  	add	r1, r1, #32
 
 		bl	hitBrick
-	        ldr     r1, =scoreCount
+	        ldr     r1, =score
 		ldr	r2, [r1]
 	        add	r2, r2, r0
 		str	r2, [r1]
@@ -159,7 +159,7 @@ changeSlope:
 	  	add	r1, r1, #32
 
 		bl	hitBrick
-	        ldr     r1, =scoreCount
+	        ldr     r1, =score
 		ldr	r2, [r1]
 	        add	r2, r2, r0
 		str	r2, [r1]
@@ -237,7 +237,7 @@ skip:   cmp	r9, #0
 @ paddle catches ball as effect of value pack
 ballIsCaught:
 	push	{lr}
-		ldr	r0, =lifeCount
+		ldr	r0, =lives
 		ldr	r1, [r0]
 		add	r1, r1, #1
 		str	r1, [r0]

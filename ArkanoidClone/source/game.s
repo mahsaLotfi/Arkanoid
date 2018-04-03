@@ -10,7 +10,7 @@ makeGame:
 		mov	r2, #0xFFFFFF
 		mov	r3, #704
 		mov	r4, #944
-		bl	makeTile
+		bl	drawCell
 
 		@ draw background
 		mov	r0, #9
@@ -18,7 +18,7 @@ makeGame:
 		mov	r2, #0x6699
 		mov	r3, #702
 		mov	r4, #944
-		bl	makeTile
+		bl	drawCell
 
 
 		@ foreground
@@ -27,7 +27,7 @@ makeGame:
 		mov	r2, #0x0
 		mov	r3, #640
 		mov	r4, #880
-		bl	makeTile
+		bl	drawCell
 
 		@ initialize game mechanics
 		bl	initScore
@@ -60,7 +60,7 @@ paddle:
 		bl	dropListener
 		bl	makeAllBricks
 		bl	fixWalls
-		bl	updateScoreAndLives
+		bl	updateStats
 
 		@ensure padde is fully drawn
 		ldr	r6, =paddleBound
@@ -73,14 +73,14 @@ paddle:
 			ldr	r3, =paddleSize
 			ldr	r3, [r3]
 			sub	r3, r3, #64
-			bl	makeTile
+			bl	drawCell
 
 			@left edge of paddle
 			mov	r0, r8
 			mov	r1, #774
 			mov	r2, #0x330000
 			mov	r3, #32
-			bl	makeTile
+			bl	drawCell
 
 			@ right edge of paddle
 			ldr	r0, =paddleSize
@@ -90,7 +90,7 @@ paddle:
 			mov	r1, #774
 			mov	r2, #0x330000
 			mov	r3, #32
-			bl	makeTile
+			bl	drawCell
 
 		ldr	r8, =paddlePosition
 		ldr	r8, [r8]
@@ -102,7 +102,7 @@ paddle:
         	beq	WIN
 
 		@ branch out of game for lose implementation
-        	ldr	r0, =lifeCount
+        	ldr	r0, =lives
         	ldr 	r0, [r0]
         	cmp	r0, #0
 		popeq	{r4-r9, pc}
@@ -154,7 +154,7 @@ paddle:
 				mov	r2, #0x0
 				mov	r3, #32
 				mov	r4, #32
-				bl	makeTile
+				bl	drawCell
 
 				@ change the paddle position
 				add	r8, r8, #32
@@ -179,7 +179,7 @@ paddle:
 				mov	r1, #774
 				mov	r2, #0x0
 				mov	r3, #32
-				bl	makeTile
+				bl	drawCell
 
 				@ change the paddle position
 				sub	r8,r8, #32
@@ -253,14 +253,14 @@ drawInitialPaddle:
 	mov	r2, #0x6699	@ color
 	mov	r3, #192
 	mov	r4, #32		@ height
-	bl	makeTile
+	bl	drawCell
 
 	mov	r0, #228
 	mov	r1, #774
 	mov	r2, #0xFFFFFF
 	mov	r3, #32
 	mov	r4, r3
-	bl	makeTile
+	bl	drawCell
 
 	pop	{r4, pc}
 
@@ -273,7 +273,7 @@ clearPaddle:
 	mov	r2, #0x0
 	mov	r3, #640
 	mov	r4, #32
-	bl	makeTile
+	bl	drawCell
 	pop	{lr}
 	mov	PC, LR
 
@@ -287,21 +287,21 @@ fixWalls:
 	mov	r2, #0x6699
 	mov	r3, #22
 	mov	r4, #816
-	bl	makeTile
+	bl	drawCell
 
 	mov	r0, #677
 	mov	r1, #36
 	mov	r2, #0x007770
 	mov	r3, #31
 	mov	r4, #816
-	bl	makeTile
+	bl	drawCell
 
 	pop	{r4,pc}
 
 @ behavior for when score is 0
 .global LOST
 LOST:
-	bl	updateScoreAndLives
+	bl	updateStats
         bl	clearPaddle
 	bl	getRidOfBall
 
@@ -314,7 +314,7 @@ LOST:
 @ behavior for win condition
 .global WIN
 WIN:
-	bl	updateScoreAndLives
+	bl	updateStats
 
 	ldr	r0,=gameWon
         mov	r1, #200
@@ -326,11 +326,11 @@ WIN:
 @ reiniitializes game vairables
 .global	resetScore
 resetScore:
-	ldr	r0, =scoreCount
+	ldr	r0, =score
 	mov	r1, #0
 	str	r1, [r0]
 
-	ldr	r0, =lifeCount
+	ldr	r0, =lives
 	mov	r1, #3
 	str	r1, [r0]
 
