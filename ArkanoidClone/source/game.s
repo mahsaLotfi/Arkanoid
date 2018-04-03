@@ -1,4 +1,3 @@
-@@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section .text
 
 .global makeGame
@@ -290,6 +289,64 @@ fixWalls:
 	bl	makeTile
 
 	pop	{r4,pc}
+
+@ behavior for when score is 0
+.global LOST
+LOST:
+	bl	updateScoreAndLives
+        bl	clearPaddle
+	bl	getRidOfBall
+
+	ldr	r0,=gameOver
+        mov	r1, #200
+	mov	r2, #200
+	bl      drawCenterTile
+	B	anybutton
+
+@ behavior for win condition
+.global WIN
+WIN:
+	bl	updateScoreAndLives
+
+	ldr	r0,=gameWon
+        mov	r1, #200
+	mov	r2, #200
+	bl      drawCenterTile
+	B	anybutton
+
+
+@ reiniitializes game vairables
+.global	resetScore
+resetScore:
+	ldr	r0, =scoreCount
+	mov	r1, #0
+	str	r1, [r0]
+
+	ldr	r0, =lifeCount
+	mov	r1, #3
+	str	r1, [r0]
+
+	ldr	r0, =slopeCode
+	mov	r1, #0
+	str	r1, [r0]
+
+	ldr	r0, =prevX
+	mov	r1, #326
+	str	r1, [r0]
+
+	ldr	r0, =curX
+	str	r1, [r0]
+
+	ldr	r0, =prevY
+	mov	r1, #740
+	str	r1, [r0]
+
+	ldr	r0, =curY
+	str	r1, [r0]
+
+	bl	resetValuePacks
+	
+	mov	pc, lr
 
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.data
