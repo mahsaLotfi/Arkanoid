@@ -35,13 +35,6 @@ initBricks:
 	mov	r5, #0			@ y direction
 	add	r6, r5, #3
 
-initBricks:
-	push	{r4-r6, lr}
-
-	mov	r4, #0			@ x direction
-	mov	r5, #0			@ y direction
-	add	r6, r5, #3
-
 	initBrickLoop:
 		mov	r0, r4			@ r0 - x
 		mov	r1, r5			@ r1 - y
@@ -485,7 +478,6 @@ checkBricks:
     brick20:	.byte 	3
 	brick21:	.byte	3
 	brick22:	.byte	3
-	brick23:	.byte	3
 	brick23:	.byte	3
 	brick24:	.byte	3
 	brick25:	.byte	3
