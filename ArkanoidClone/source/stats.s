@@ -98,24 +98,18 @@ updateStats:
 @ returns r0 (string code)
 
 toString:	
-	push	{r4, r5, lr}
-
+push	{r4, r5, lr}
 	ldr	r0, [r0]
-	mov	r2, #0
-	
-@ Calculates the number's first and second digit
-calcDigits:
-	cmp	r0, #10
-	blt	convertASCII
-	addge	r4, r4, #1
-	subge	r0, #10
-	
-	b	calcDigits
 
-@ Converts to ASCII
-convertASCII:
-	add	r1, r0, #48		@ r1 - Second digit
-	add	r0, r2, #48		@ r0 - First digit
+	mov	r4, #0
+	divideLoop:
+		cmp	r0, #10
+		ADDGE	r4, r4, #1
+		SUBGE	r0, #10
+		bge	divideLoop
+
+	add	r1, r0, #48	@ r1 - second digit, r0 is first
+	add	r0, r4, #48	@converts to ascii version
 
 	pop	{r4, r5, pc}
 
