@@ -8,15 +8,15 @@ makeGame:
 		mov	r0, #0
 		mov	r1, #0
 		mov	r2, #0xFFFFFF
-		mov	r3, #704
-		mov	r4, #944
+		mov	r3, #720
+		mov	r4, #960
 		bl	drawCell
 
 		@ draw background
 		mov	r0, #9
 		mov	r1, #4
-		mov	r2, #0xFFFFF366
-		mov	r3, #704
+		mov	r2, #0x6699
+		mov	r3, #702
 		mov	r4, #944
 		bl	drawCell
 
@@ -250,7 +250,7 @@ drawInitialPaddle:
 	@ init Paddle
 	mov	r0, #228	@ x
 	mov	r1, #774	@ y
-	mov	r2, #0x336699	@ color
+	mov	r2, #0x006699	@ color
 	mov	r3, #192
 	mov	r4, #32		@ height
 	bl	drawCell
@@ -284,14 +284,14 @@ fixWalls:
 
 	mov	r0, #9
 	mov	r1, #36
-	mov	r2, #0xFFF7FFFE
-	mov	r3, #31
+	mov	r2, #0x6699
+	mov	r3, #22
 	mov	r4, #816
 	bl	drawCell
 
 	mov	r0, #677
 	mov	r1, #36
-	mov	r2, #0x007770
+	mov	r2, #0x6699
 	mov	r3, #31
 	mov	r4, #816
 	bl	drawCell
