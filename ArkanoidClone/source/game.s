@@ -18,9 +18,6 @@ makeGame:
 
 		mov	r2, #0x6699
 		mov	r3, #702
-
-		mov	r2, #0xFFFFF366
-		mov	r3, #704
 		mov	r4, #944
 		bl	drawCell
 
@@ -291,8 +288,6 @@ fixWalls:
 	mov	r1, #36
 	mov	r2, #0x6699
 	mov	r3, #22
-	mov	r2, #0xFFF7FFFE
-	mov	r3, #31
 	mov	r4, #816
 	bl	drawCell
 
