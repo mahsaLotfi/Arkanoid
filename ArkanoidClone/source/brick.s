@@ -107,7 +107,7 @@ drawBrick:
 	mov	r0, xpos
 	mov	r1, ypos
 
-	bl	makeTile
+	bl	drawCell
 
 	pop	{r3-r8, pc}
 

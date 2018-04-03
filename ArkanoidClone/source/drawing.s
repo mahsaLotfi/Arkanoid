@@ -14,8 +14,8 @@ Init_Frame:
 @ r2 - color
 @ r3 - length
 @ r4 - xLength (height)
-.global makeTile
-makeTile:
+.global drawCell
+drawCell:
 	length	.req 	r3
 	pxDrawn	.req	r6
 	offset	.req	r4

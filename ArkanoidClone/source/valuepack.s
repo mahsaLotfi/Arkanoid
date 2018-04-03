@@ -80,7 +80,7 @@ bigPaddleDrop:
 	mov	r2, #0xFFFFFF
 	mov	r3, #28
 	mov	r4, r3
-	bl	makeTile
+	bl	drawCell
 
 	add	r7, r6, #32
 	ldr	r1, =paddleDropY
@@ -97,7 +97,7 @@ bigPaddleDrop:
 	mov	r2, #0x0
 	mov	r3, #28
 	mov	r4, r3
-	bl	makeTile
+	bl	drawCell
 
 	ldr	r0, =paddleDropY
 	ldr	r0, [r0]
@@ -134,7 +134,7 @@ checkPaddleDrop:
 	mov	r2, #0x0
 	mov	r3, #28
 	mov	r4, r3
-	bl	makeTile
+	bl	drawCell
 
 	pop	{pc}
 
@@ -151,7 +151,7 @@ catchBallDrop:
 	mov	r2, #0xFFFFFF
 	mov	r3, #28
 	mov	r4, r3
-	bl	makeTile
+	bl	drawCell
 
 	add	r7, r6, #32
 	ldr	r1, =ballDropY
@@ -168,7 +168,7 @@ catchBallDrop:
 	mov	r2, #0x0
 	mov	r3, #28
 	mov	r4, r3
-	bl	makeTile
+	bl	drawCell
 
 	ldr	r0, =ballDropY
 	ldr	r0, [r0]
@@ -206,7 +206,7 @@ checkBallDrop:
 		mov	r2, #0x0
 		mov	r3, #28
 		mov	r4, r3
-		bl	makeTile
+		bl	drawCell
 		pop	{pc}
 
 	tryOtherSide:

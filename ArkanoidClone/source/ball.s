@@ -17,7 +17,7 @@ drawBall:
 	mov	r2, #0x0000FF
 	mov	r3, #32
 	mov	r4, #24
-	bl	makeTile
+	bl	drawCell
 
 	@lengthwise
 	add	r0, r5, #4		@x
@@ -25,7 +25,7 @@ drawBall:
 	mov	r2, #0x000FF
 	mov	r3, #23
 	mov	r4, #32
-	bl	makeTile
+	bl	drawCell
 
 	pop	{r4-r6, pc}
 
@@ -61,7 +61,7 @@ getRidOfBall:
 	ldr	r1, [r1]
 
 	mov	r2, #0x0
-	bl	makeTile
+	bl	drawCell
 
 	@ update ball location
 		ldr	r4, =curX
@@ -119,7 +119,7 @@ unlaunch:
 	bl	getRidOfBall
 
 	@ decrement life
-	ldr	r1, =lifeCount
+	ldr	r1, =lives
 	ldr	r0, [r1]
 	sub	r0, r0, #1
 	str	r0, [r1]
