@@ -231,7 +231,7 @@ bigPaddle:			@ change paddle size to big paddle
 	bl	drawInitialPaddle
 
 	ldr	r0, =paddleSize
-	mov	r1, #384
+	mov	r1, #180
 	str	r1, [r0]
 
 	ldr	r0, =paddleStart
@@ -303,7 +303,7 @@ fixWalls:
 
 
 	.global paddleSize
-	paddleSize:	.int	192
+	paddleSize:	.int	120
 
 	.global paddleStart
 	paddleStart:	.int	228
@@ -311,6 +311,6 @@ fixWalls:
 	.global	paddlePosition
 	paddlePosition:	.int	228
 
-	paddleBound:	.int	484
+	paddleBound:	.int	412
 
 	willmoveBall:	.int	1
