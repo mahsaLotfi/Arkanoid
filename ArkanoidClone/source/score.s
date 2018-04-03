@@ -155,7 +155,7 @@ resetScore:
 	str	r1, [r0]
 
 	ldr	r0, =prevY
-	mov	r1, #720
+	mov	r1, #740
 	str	r1, [r0]
 
 	ldr	r0, =curY
