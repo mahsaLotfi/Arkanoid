@@ -12,7 +12,7 @@ initScore:
 
 	ldr	r0, =scoreChar
 	mov	r1, #90
-	mov	r2, #80
+	mov	r2, #55
 	ldr	r3, =cWhite
 	bl	drawWord
 	pop	{pc}
@@ -28,7 +28,7 @@ initLives:
 
 	ldr	r0, =livesChar
 	mov	r1, #600
-	mov	r2, #80
+	mov	r2, #55
 	ldr	r3, =cWhite
 	bl	drawWord
 	pop	{pc}
@@ -40,14 +40,14 @@ updateStats:
 
 	@ black out positions
 	mov	r0, #195
-	mov	r1, #79
+	mov	r1, #54
 	mov	r2, #0x0
 	mov	r3, #32
 	mov	r4, r3
 	bl	drawCell
 
 	mov	r0, #575
-	mov	r1, #79
+	mov	r1, #54
 	mov	r2, #0x0
 	mov	r3, #32
 	mov	r4, r3
@@ -60,12 +60,12 @@ updateStats:
 	mov	r4, r1		@ r1 - second digit
 
 		mov	r1, #200
-		mov	r2, #80
+		mov	r2, #55
 		bl	drawChar
 
 		mov	r0, r4
 		mov	r1, #211
-		mov	r2, #80
+		mov	r2, #55
 		bl	drawChar
 
 	ldr	r0, =lives
@@ -73,13 +73,17 @@ updateStats:
 	mov	r4, r1		@ r1 - second digit
 
 		mov	r1, #580
-		mov	r2, #80
+		mov	r2, #55
 		bl	drawChar
 
 		mov	r0, r4
 		mov	r1, #591
 		mov	r2, #864
 		bl	drawChar
+
+		bl	initLives
+		bl	initScore
+
 	pop	{r4, pc}
 
 @ changes intger to string for printing
@@ -109,8 +113,8 @@ LOST:
 	bl	getRidOfBall
 
 	ldr	r0,=gameOver
-        mov	r1, #200
-	mov	r2, #200
+        mov	r1, #720
+	mov	r2, #960
 	bl      drawCenterTile
 	B	anybutton
 
@@ -120,8 +124,8 @@ WIN:
 	bl	updateStats
 
 	ldr	r0,=gameWonImage
-        mov	r1, #200
-	mov	r2, #200
+        mov	r1, #720
+	mov	r2, #960
 	bl      drawCenterTile
 	B	anybutton
 
@@ -151,7 +155,7 @@ resetScore:
 	str	r1, [r0]
 
 	ldr	r0, =prevY
-	mov	r1, #740
+	mov	r1, #55
 	str	r1, [r0]
 
 	ldr	r0, =curY
