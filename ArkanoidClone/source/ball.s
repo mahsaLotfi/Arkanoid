@@ -170,9 +170,9 @@ isLaunched:
 
 .global	prevX, prevY, curX, curY
 
-prevX:	.int	354
+prevX:	.int	326
 prevY:	.int	740
-curX:	.int	354
+curX:	.int	326
 curY:	.int	740
 
 @  0: unlaunched

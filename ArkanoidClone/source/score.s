@@ -39,7 +39,7 @@ updateStats:
 	push	{r4, lr}
 
 	@ black out positions
-	mov	r0, #115
+	mov	r0, #135
 	mov	r1, #54
 	mov	r2, #0x0
 	mov	r3, #32
@@ -59,12 +59,12 @@ updateStats:
 	bl	intTostring	@ r0 - first digit
 	mov	r4, r1		@ r1 - second digit
 
-		mov	r1, #120
+		mov	r1, #140
 		mov	r2, #55
 		bl	drawChar
 
 		mov	r0, r4
-		mov	r1, #121
+		mov	r1, #151
 		mov	r2, #55
 		bl	drawChar
 
