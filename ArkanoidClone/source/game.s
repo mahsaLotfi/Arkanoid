@@ -69,7 +69,7 @@ paddle:
 			@paddle
 	 		add	r0, r8, #32
 			mov	r1, #774
-			mov	r2, #0x8800000
+			mov	r2, #0x6699
 			ldr	r3, =paddleSize
 			ldr	r3, [r3]
 			sub	r3, r3, #64
@@ -78,7 +78,7 @@ paddle:
 			@left edge of paddle
 			mov	r0, r8
 			mov	r1, #774
-			mov	r2, #0x330000
+			mov	r2, #0xFFFFFF
 			mov	r3, #32
 			bl	drawCell
 
@@ -88,7 +88,7 @@ paddle:
 			add	r0, r0, r8
 			sub	r0, #32
 			mov	r1, #774
-			mov	r2, #0x330000
+			mov	r2, #0xFFFFFF
 			mov	r3, #32
 			bl	drawCell
 
