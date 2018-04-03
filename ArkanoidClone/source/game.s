@@ -15,13 +15,9 @@ makeGame:
 		@ draw background
 		mov	r0, #9
 		mov	r1, #4
-<<<<<<< HEAD
+
 		mov	r2, #0x6699
 		mov	r3, #702
-=======
-		mov	r2, #0xFFFFF366
-		mov	r3, #704
->>>>>>> parent of f85ca1f... Update game.s
 		mov	r4, #944
 		bl	drawCell
 
@@ -256,7 +252,7 @@ drawInitialPaddle:
 	mov	r0, #228	@ x
 
 	mov	r1, #774	@ y
-	mov	r2, #0x33669900	@ color
+	mov	r2, #0x336699	@ color
 	mov	r3, #192
 	mov	r4, #32		@ height
 	bl	drawCell
@@ -290,13 +286,8 @@ fixWalls:
 
 	mov	r0, #9
 	mov	r1, #36
-<<<<<<< HEAD
 	mov	r2, #0x6699
 	mov	r3, #22
-=======
-	mov	r2, #0xFFF7FFFE
-	mov	r3, #31
->>>>>>> parent of f85ca1f... Update game.s
 	mov	r4, #816
 	bl	drawCell
 
