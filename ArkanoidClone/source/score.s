@@ -34,8 +34,8 @@ initLives:
 	pop	{pc}
 
 
-.global	updateScoreAndLives
-updateScoreAndLives:
+.global	updateStats
+updateStats:
 	push	{r4, lr}
 
 	@ black out positions
@@ -44,18 +44,18 @@ updateScoreAndLives:
 	mov	r2, #0x0
 	mov	r3, #32
 	mov	r4, r3
-	bl	makeTile
+	bl	drawCell
 
 	mov	r0, #544
 	mov	r1, #863
 	mov	r2, #0x0
 	mov	r3, #32
 	mov	r4, r3
-	bl	makeTile
+	bl	drawCell
 
 	@ write digits
 
-	ldr	r0, =scoreCount
+	ldr	r0, =score
 	bl	intTostring	@ r0 - first digit
 	mov	r4, r1		@ r1 - second digit
 
@@ -68,7 +68,7 @@ updateScoreAndLives:
 		mov	r2, #864
 		bl	drawChar
 
-	ldr	r0, =lifeCount
+	ldr	r0, =lives
 	bl	intTostring	@ r0 - first digit
 	mov	r4, r1		@ r1 - second digit
 
@@ -104,7 +104,7 @@ intTostring:
 @ behavior for when score is 0
 .global LOST
 LOST:
-	bl	updateScoreAndLives
+	bl	updateStats
         bl	clearPaddle
 	bl	getRidOfBall
 
@@ -117,9 +117,9 @@ LOST:
 @ behavior for win condition
 .global WIN
 WIN:
-	bl	updateScoreAndLives
+	bl	updateStats
 
-	ldr	r0,=gameWon
+	ldr	r0,=gameWonImage
         mov	r1, #200
 	mov	r2, #200
 	bl      drawCenterTile
@@ -131,11 +131,11 @@ WIN:
 resetScore:
 	push	{lr}
 
-	ldr	r0, =scoreCount
+	ldr	r0, =score
 	mov	r1, #0
 	str	r1, [r0]
 
-	ldr	r0, =lifeCount
+	ldr	r0, =lives
 	mov	r1, #3
 	str	r1, [r0]
 
@@ -166,8 +166,8 @@ resetScore:
 	scoreChar:	.asciz		"SCORE: "
 	livesChar:	.asciz		"LIVES: "
 
-	.global scoreCount
-	scoreCount:	.int	12
+	.global score
+	score:	.int	12
 
-	.global	lifeCount
-	lifeCount:	.int	3
+	.global	lives
+	lives:	.int	3

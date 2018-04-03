@@ -275,7 +275,7 @@ clearPaddle:
 	mov	r4, #32
 	bl	drawCell
 	pop	{lr}
-	mov	PC, LR
+	mov	PC, LRz
 
 
 @ ensures walls are not written over
@@ -285,7 +285,7 @@ fixWalls:
 	mov	r0, #9
 	mov	r1, #36
 	mov	r2, #0x6699
-	mov	r3, #22
+	mov	r3, #
 	mov	r4, #816
 	bl	drawCell
 
