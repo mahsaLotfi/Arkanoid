@@ -99,13 +99,13 @@ updateStats:
 
 toString:	
 	ldr	r0, [r0]
-	mov	r2, #0
+	mov	r4, #0
 	
 @ Calculates the number's first and second digit
 calcDigits:
 	cmp	r0, #10
 	blt	convertASCII
-	addge	r2, #1
+	addge	r2, r2, #1
 	subge	r0, #10
 	
 	b	calcDigits
@@ -113,7 +113,7 @@ calcDigits:
 @ Converts to ASCII
 convertASCII:
 	add	r1, r0, #48		@ r1 - Second digit
-	add	r0, r2, #48		@ r0 - First digit
+	add	r0, r4, #48		@ r0 - First digit
 
 	mov	pc, lr
 
