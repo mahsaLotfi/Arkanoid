@@ -258,7 +258,7 @@ drawInitialPaddle:
 	mov	r0, #228
 	mov	r1, #774
 	mov	r2, #0xFFFFFF
-	mov	r3, #192
+	mov	r3, #32
 	mov	r4, r3
 	bl	drawCell
 
