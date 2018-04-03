@@ -41,7 +41,7 @@ ballTileBroken:
 
 	mov	r5, #1
 
-	ldr	r0, =tile26
+	ldr	r0, =brick25
 	LDRB	r6, [r0]
 
 	cmp	r6, #0
@@ -57,7 +57,7 @@ paddleTileBroken:
 
 	mov	r5, #1
 
-	ldr	r0, =tile20
+	ldr	r0, =brick20
 	LDRB	r6, [r0]
 
 	cmp	r6, #0
