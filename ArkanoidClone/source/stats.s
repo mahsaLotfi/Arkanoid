@@ -97,9 +97,9 @@ updateStats:
 @ r0 - location of the integer
 @ returns r0 (string code)
 
-toString:	
+toString:
 	ldr	r0, [r0]
-	mov	r4, #0
+	mov	r2, #0
 	
 @ Calculates the number's first and second digit
 calcDigits:
@@ -113,7 +113,7 @@ calcDigits:
 @ Converts to ASCII
 convertASCII:
 	add	r1, r0, #48		@ r1 - Second digit
-	add	r0, r4, #48		@ r0 - First digit
+	add	r0, r2, #48		@ r0 - First digit
 
 	mov	pc, lr
 
