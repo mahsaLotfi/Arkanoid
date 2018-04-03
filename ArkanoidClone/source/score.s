@@ -27,7 +27,7 @@ initLives:
 	@ r3 - color
 
 	ldr	r0, =livesChar
-	mov	r1, #600
+	mov	r1, #550
 	mov	r2, #55
 	ldr	r3, =cWhite
 	bl	drawWord
@@ -72,13 +72,13 @@ updateStats:
 	bl	intTostring	@ r0 - first digit
 	mov	r4, r1		@ r1 - second digit
 
-		mov	r1, #580
+		mov	r1, #630
 		mov	r2, #55
 		bl	drawChar
 
 		mov	r0, r4
-		mov	r1, #591
-		mov	r2, #864
+		mov	r1, #641
+		mov	r2, #55
 		bl	drawChar
 
 		bl	initLives
@@ -124,7 +124,7 @@ WIN:
 	bl	updateStats
 
 	ldr	r0,=gameWonImage
-        mov	r1, #720
+    mov	r1, #720
 	mov	r2, #960
 	bl      drawCenterTile
 	B	anybutton
@@ -155,7 +155,7 @@ resetScore:
 	str	r1, [r0]
 
 	ldr	r0, =prevY
-	mov	r1, #55
+	mov	r1, #720
 	str	r1, [r0]
 
 	ldr	r0, =curY
