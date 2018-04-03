@@ -95,13 +95,13 @@ drawBrick:
 	moveq	r2, #0
 
 	cmp	colorCode, #1
-	moveq	r2, #0x00FF00	@ 1 hit
+	moveq	r2, #0x99FF		@ 1 hit
 
 	cmp	colorCode, #2
-	moveq	r2, #0x007700	@ 2 hits
+	moveq	r2, #0x66FF	@ 2 hits
 
 	cmp	colorCode, #3
-	moveq	r2, #0x003300	@ 3 hits
+	moveq	r2, #0x6699	@ 3 hits
 
 
 	mov	r0, xpos
