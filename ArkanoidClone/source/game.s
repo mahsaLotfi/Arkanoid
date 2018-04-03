@@ -250,7 +250,7 @@ drawInitialPaddle:
 
 	mov	r0, #228
 	mov	r1, #774
-	mov	r2, #0x330000
+	mov	r2, #0x880000
 	mov	r3, #32
 	mov	r4, r3
 	bl	makeTile
