@@ -4,11 +4,19 @@
 makeGame:
 	bl	resetScore
 
-		@ draw background
-		mov	r0, #4
-		mov	r1, #4
-		mov	r2, #0x33669900
+		@ draw draw border
+		mov	r0, #0
+		mov	r1, #0
+		mov	r2, #0xFFFFFF
 		mov	r3, #704
+		mov	r4, #944
+		bl	makeTile
+
+		@ draw background
+		mov	r0, #9
+		mov	r1, #4
+		mov	r2, #0x6699
+		mov	r3, #702
 		mov	r4, #944
 		bl	makeTile
 
@@ -274,10 +282,10 @@ clearPaddle:
 fixWalls:
 	push	{r4,lr}
 
-	mov	r0, #4
+	mov	r0, #9
 	mov	r1, #36
-	mov	r2, #0x33669900
-	mov	r3, #31
+	mov	r2, #0x6699
+	mov	r3, #22
 	mov	r4, #816
 	bl	makeTile
 
