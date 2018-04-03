@@ -11,7 +11,7 @@ initScore:
 	@ r3 - color
 
 	ldr	r0, =scoreChar
-	mov	r1, #90
+	mov	r1, #60
 	mov	r2, #55
 	ldr	r3, =cWhite
 	bl	drawWord
@@ -39,14 +39,14 @@ updateStats:
 	push	{r4, lr}
 
 	@ black out positions
-	mov	r0, #195
+	mov	r0, #115
 	mov	r1, #54
 	mov	r2, #0x0
 	mov	r3, #32
 	mov	r4, r3
 	bl	drawCell
 
-	mov	r0, #575
+	mov	r0, #625
 	mov	r1, #54
 	mov	r2, #0x0
 	mov	r3, #32
@@ -59,12 +59,12 @@ updateStats:
 	bl	intTostring	@ r0 - first digit
 	mov	r4, r1		@ r1 - second digit
 
-		mov	r1, #200
+		mov	r1, #120
 		mov	r2, #55
 		bl	drawChar
 
 		mov	r0, r4
-		mov	r1, #211
+		mov	r1, #121
 		mov	r2, #55
 		bl	drawChar
 
