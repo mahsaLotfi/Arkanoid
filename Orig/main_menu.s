@@ -1,23 +1,13 @@
+
 @ Main Menu: Drawing and Interaction with SNES controller
 
 @ Is used by: main.s
 
 @ Uses: SNES_controller.s, menu_start.s
 
-SNES_controller	.req	r10
-menu_start	.req	r11
-menu_quit	.req	r12
-
 .global	start_menu
 
 @ Implementation:			Implemented?
-@A tile might be rectangle/square with variable colour values.
-@Use Image-to-ASCII Java application on D2L:
-@Convert a tile to a colour bitmap.
-@Generated ascii values are colour values in row-major order.
-@Load colour values and store in the framebuffer.
-@You need to know width/height of your tile.
-
 @ Draw bkgd, title, authors		N
 
 @ Switch between 2 images		N
@@ -33,15 +23,20 @@ start_menu:
 	ldr	r0, =100000		@ Delay 0.1s
 	bl	delayMicroseconds
 
-	mov r0, #100
-	mov r1, #100
-	ldr r2, =menu_start		@loadframe buffer with menu_start image
-	bl draw_menu
+	@ Draw 
+	mov	r0, #100
+	mov	r1, #100
+	ldr	r2, =main_start		@ loadframe buffer with menu_start image
+	bl	draw
+	
+	
 	
 	pop	{r4-r10, fp, pc}
 	
 
 .section .data
-.align
 
-	
+.align	4
+.global	main_start
+main_start:
+	.word	mainmenu, 
