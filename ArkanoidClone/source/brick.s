@@ -1,89 +1,95 @@
-@@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+@ Brick objects
+
+
 .section .text
 
-@ r0 - x code
-@ r1 - y code
-@ r2 - colorCode
-@ draws Brick and changes brick state
-.global makeBrick
+.global makeBrick, initBricks, hitBreak, XYtoCode, makeAllBricks
+
+@ Updates and draws brick
+@ r0 - x
+@ r1 - y
+@ r2 - color
+
 makeBrick:
 	push	{r4-r6, lr}
-	mov	r4, r0
-	mov	r5, r1
-	mov	r6, r2
+	
+	mov	r4, r0			@ r4 - x
+	mov	r5, r1			@ r5 - y
+	mov	r6, r2			@ r6 - color
 	bl	codeToTile
-	strB	r6, [r0]	@ store the brick state
+	strb	r6, [r0]		@ Stores the brick's type
 
-	@ then draw brick
-	mov	r0, r4
-	mov	r1, r5
-	mov	r2, r6
+	@ Draws the brick
+	mov	r0, r4			@ r0 - x
+	mov	r1, r5			@ r1 - y
+	mov	r2, r6			@ r2 - Brick's type
 	bl	drawBrick
 
 	pop	{r4-r6, lr}
+	
 	mov	pc, lr
 
 
-@ sets the bricks for the initial state
-@ no params or return values
-.global	initBricks
+@ Initializes the brick
+
 initBricks:
 	push	{r4-r6, lr}
 
-	mov	r4, #0
-	mov	r5, #0
+	mov	r4, #0			@ x direction
+	mov	r5, #0			@ y direction
 	add	r6, r5, #3
 
-	initBrickStateLoop:
-		mov	r0, r4
-		mov	r1, r5
+initBrickStateLoop:
+	mov	r0, r4			@ r0 - x
+	mov	r1, r5			@ r1 - y
 
-		bl	codeToTile
-		strB	r6, [r0]
+	bl	codeToTile
+	strb	r6, [r0]		@ Stores the brick's type
 
-		cmp	r0, #0
+	@ Checks if there was an error for getting the brick's type
+	cmp	r0, #0
+	movne	r2, r6
+	movne	r0, r4
+	movne	r1, r5
+	blne	drawBrick
 
-		movne	r2, r6
-		movne	r0, r4
-		movne	r1, r5
-		blne	drawBrick
+	@ Checks X
+	add	r4, r4, #1
+	cmp	r4, #10
+	blt	initBrickStateLoop
 
-		@check X
-		add	r4, r4, #1
-		cmp	r4, #10
-		blt	initBrickStateLoop
-
-		@check Y
-			add	r5, r5, #1
-			sub	R6, R6, #1
-			cmp	r5, #3
-			movLT	r4, #0
-			blt	initBrickStateLoop
+	@ Check Y
+	add	r5, r5, #1
+	sub	r6, r6, #1
+	cmp	r5, #3
+	movlt	r4, #0
+	blt	initBrickStateLoop
 
 	pop	{r4-r6, pc}
 
 
-@ r0 - brick x position
-@ r1 - brick y position
-@ r2 - brick type (0, 1, 2, 3)
+@ Draws the brick
+@ r0 - brick's x position
+@ r1 - brick's y position
+@ r2 - brick type (0-3)
+
 drawBrick:
 	xpos		.req	r5
 	ypos		.req	r6
 	colorCode	.req	r7
 
-
 	push	{r3-r8, lr}
+	
 	bl	CodeToXY
 
-	mov	xpos, r0
-	mov	ypos, r1
-	mov	colorCode, r2
+	mov	xpos, r0		@ r0 - x
+	mov	ypos, r1		@ r1 - y
+	mov	colorCode, r2		@ r2 - Brick's type
 
 	mov	r3, #64
 	mov	r4, #32
 
-	mov	r2, #0x0
-		@ make the outside brick
+	mov	r2, #0x0		@ Make the outside brick
 
 	add	xpos, xpos, #4
 	add	ypos, ypos, #4
@@ -98,10 +104,10 @@ drawBrick:
 	moveq	r2, #0x99FF		@ 1 hit
 
 	cmp	colorCode, #2
-	moveq	r2, #0x66FF	@ 2 hits
+	moveq	r2, #0x66FF		@ 2 hits
 
 	cmp	colorCode, #3
-	moveq	r2, #0x6699	@ 3 hits
+	moveq	r2, #0x6699		@ 3 hits
 
 
 	mov	r0, xpos
@@ -112,52 +118,61 @@ drawBrick:
 	pop	{r3-r8, pc}
 
 
-@ params
-@ r0 - x coordinate
-@ r1 - y coordinate
+@ Arguments
+@ r0 - x
+@ r1 - y
 
-@ returns 0 - didn't hit brick
-@ 	   1 - hit brick
-.global	hitBrick
+@ returns 0 - didn't hit brick, 1 - hit brick
+
 hitBrick:
 	push	{r4-r7, lr}
 
-	@ store brick state on register
+	@ Store brick state on register
 	bl	XYtoCode
 	mov	r4, r0
 	mov	r5, r1
 	bl	codeToTile
         LDRB	r7, [r0]
 
+	@ Checks to see if the brick has been hit
 	cmp	r7, #0
-
-	moveq	r0, #0		@ didn't hit brick
+	moveq	r0, #0			@ Did not hit brick
 	popeq	{r4-r7, lr}
 	moveq	pc, lr
 
-	sub	r2, r7, #1	@ degrade the brick
+	sub	r2, r7, #1		@ Brick becomes lower tier/disappears
 	mov	r0, r4
 	mov	r1, r5
 	bl	makeBrick
-	@ r2 is the color
 
-	mov	r0, #1		@ brick is hit
+	mov	r0, #1			@ Brick has been hit
+	
 	pop	{r4-r7, lr}
+	
         mov	pc, lr
 
-@ r0 r1 - xy code
-@ returns r0 r1 - xy
+
+@ 
+@ Arguments:
+@ r0 - x
+@ r1 - y
+
+@ returns r0 - x, r1 - y
+
 CodeToXY:
 	lsl	r0, r0, #6
 	add	r0, r0, #36
 
 	lsl	r1, r1, #5
 	add	r1, r1, #96
+	
 	mov	pc, lr
 
+
+@ 
 @ r0 r1 - xy position
 @ returns r0 r1 - xy code
-.global XYtoCode
+
 XYtoCode:
 	push	{r4,r5,lr}
 
@@ -165,275 +180,296 @@ XYtoCode:
 	mov	r5, r1
 
 	cmp	r5, #96
-	movLT	r0, #44 @return a not real position
-	movLT	r1, #44
-        popLT 	{r4-r5, lr}
-	movLT	PC, LR
+	movlt	r0, #44			@ Return a not real position
+	movlt	r1, #44
+        poplt 	{r4-r5, lr}
+	
+	movlt	PC, LR
 
 	cmp	r5, #192
-	movGT	r0, #44 @return a not real position
-	movGT	r1, #44
-        popGT 	{r4-r5, lr}
-	movGT	PC, LR
+	movgt	r0, #44			@ Return a not real position
+	movgt	r1, #44
+        popgt 	{r4-r5, lr}
+	
+	movgt	PC, LR
 
-	mov r5, #0 @default layer
+	mov	r5, #0 			@ Default layer
 	sub	r1, r1, #96
-	yloop:
+
+yloop:
 	cmp	r1, #32
 	sub	r1, r1, #32
-	movLT	r1, r5
+	movlt	r1, r5
 	add	r5, r5, #1
-	BGE	yloop
+	bge	yloop
 
-	mov	r4, #0 @default start
+	mov	r4, #0			@ Default start
 	sub	r0, r0, #36
-	xloop:
+
+xloop:
 	cmp	r0, #64
 	sub	r0, r0, #64
-	movLT	r0, r4
+	movlt	r0, r4
 	add	r4,r4, #1
-	BGE	xloop
+	bge	xloop
 
 
 	pop	{r4,r5, lr}
+	
 	mov	pc, lr
 
-@ params
-@r0 - xcode
-@r1 - ycode
 
-@ return
-@ r0 - brickStateAddress
+@ Get the Brick's type
+@ Arguments
+@ r0 - x
+@ r1 - y
+
+@ Return
+@ r0 - Brick's type address
+
 codeToTile:
 	push	{lr}
 
+	@ Error check for the first value
 	cmp	r0, #9
-	LDRGT	r0, =emptyTile @error check first value
-	popGT	{lr}
-	movGT	pc, lr
+	ldrgt	r0, =emptyTile
+	
+	popgt	{lr}
+	
+	movgt	pc, lr
 
+	@ Checks for type of brick
 	cmp	r1, #1
 	blt	fromZero
-	Beq	fromTen
+	beq	fromTen
 
-	CMPGT	r1, #2
-	Beq	fromTwenty
-	@ invaild input, return 0
-	ldr	r0, =emptyTile
+	cmpgt	r1, #2
+	beq	fromTwenty
+	
+	@ Invalid input Error
+	ldr	r0, =emptyTile		@ Returns 0
+
+	pop	{lr}
+	
+	mov	pc, lr
+
+fromTwenty:
+	cmp	r0, #0
+	ldreq	r0, =tile20
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #1
+	ldreq	r0, =tile21
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #2
+	ldreq	r0, =tile22
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #3
+	ldreq	r0, =tile23
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #4
+	ldreq	r0, =tile24
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #5
+	ldreq	r0, =tile25
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #6
+	ldreq	r0, =tile26
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #7
+	ldreq	r0, =tile27
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #8
+	ldreq	r0, =tile28
+	popeq	{lr}
+	moveq	pc, lr
+
+	ldr	r0, =tile29
 	pop	{lr}
 	mov	pc, lr
 
+fromZero:
+	cmp	r0, #0
+	ldreq	r0, =tile0
+	popeq	{lr}
+	moveq	pc, lr
 
-	fromTwenty:
-		cmp	r0, #0
-		ldreq	r0, =tile20
-		popeq	{lr}
-		moveq	pc, lr
+	cmp	r0, #1
+	ldreq	r0, =tile1
+	popeq	{lr}
+	moveq	pc, lr
 
-		cmp	r0, #1
-		ldreq	r0, =tile21
-		popeq	{lr}
-		moveq	pc, lr
+	cmp	r0, #2
+	ldreq	r0, =tile2
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #3
+	ldreq	r0, =tile3
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #4
+	ldreq	r0, =tile4
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #5
+	ldreq	r0, =tile5
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #6
+	ldreq	r0, =tile6
+	popeq	{pc}
+
+	cmp	r0, #7
+	ldreq	r0, =tile7
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #8
+	ldreq	r0, =tile8
+	popeq	{lr}
+	moveq	pc, lr
+
+	ldr	r0, =tile9
+	pop	{lr}
+	mov	pc, lr
+
+fromTen:
+	cmp	r0, #0
+	ldreq	r0, =tile10
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #1
+	ldreq	r0, =tile11
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #2
+	ldreq	r0, =tile12
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #3
+	ldreq	r0, =tile13
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #4
+	ldreq	r0, =tile14
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #5
+	ldreq	r0, =tile15
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #6
+	ldreq	r0, =tile16
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #7
+	ldreq	r0, =tile17
+	popeq	{lr}
+	moveq	pc, lr
+
+	cmp	r0, #8
+	ldreq	r0, =tile18
+	popeq	{lr}
+	moveq	pc, lr
+
+	ldr	r0, =tile19
+	
+	pop	{lr}
+	
+	mov	pc, lr
 
 
-		cmp	r0, #2
-		ldreq	r0, =tile22
-		popeq	{lr}
-		moveq	pc, lr
+@ Redraws all the bricks without
+@ Modifying the states of the bricks
 
-		cmp	r0, #3
-		ldreq	r0, =tile23
-		popeq	{lr}
-		moveq	pc, lr
-
-
-		cmp	r0, #4
-		ldreq	r0, =tile24
-		popeq	{lr}
-		moveq	pc, lr
-
-
-		cmp	r0, #5
-		ldreq	r0, =tile25
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #6
-		ldreq	r0, =tile26
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #7
-		ldreq	r0, =tile27
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #8
-		ldreq	r0, =tile28
-		popeq	{lr}
-		moveq	pc, lr
-
-		ldr	r0, =tile29
-		pop	{lr}
-		mov	pc, lr
-
-	fromZero:
-		cmp	r0, #0
-		ldreq	r0, =tile0
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #1
-		ldreq	r0, =tile1
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #2
-		ldreq	r0, =tile2
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #3
-		ldreq	r0, =tile3
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #4
-		ldreq	r0, =tile4
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #5
-		ldreq	r0, =tile5
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #6
-		ldreq	r0, =tile6
-		popeq	{pc}
-
-		cmp	r0, #7
-		ldreq	r0, =tile7
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #8
-		ldreq	r0, =tile8
-		popeq	{lr}
-		moveq	pc, lr
-
-		ldr	r0, =tile9
-		pop	{lr}
-		mov	pc, lr
-
-	fromTen:
-		cmp	r0, #0
-		ldreq	r0, =tile10
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #1
-		ldreq	r0, =tile11
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #2
-		ldreq	r0, =tile12
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #3
-		ldreq	r0, =tile13
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #4
-		ldreq	r0, =tile14
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #5
-		ldreq	r0, =tile15
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #6
-		ldreq	r0, =tile16
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #7
-		ldreq	r0, =tile17
-		popeq	{lr}
-		moveq	pc, lr
-
-		cmp	r0, #8
-		ldreq	r0, =tile18
-		popeq	{lr}
-		moveq	pc, lr
-
-		ldr	r0, =tile19
-		pop	{lr}
-		mov	pc, lr
-
-@ redraws all the bricks without
-@ modifying the states of the bricks
-.global	makeAllBricks
 makeAllBricks:
 	push	{r4-r6, lr}
+	
 	mov	r4, #0
 	mov	r5, #0
 
-	getBrickStateLoop:
-		mov	r0, r4
-		mov	r1, r5
+getBrickStateLoop:
+	mov	r0, r4
+	mov	r1, r5
 
-		bl	codeToTile
-		LDRB	r6, [r0]
+	bl	codeToTile
+	ldrb	r6, [r0]
 
-		mov	r2, r6
-		mov	r0, r4
-		mov	r1, r5
-		cmp	r2, #0
-		blne	drawBrick
+	mov	r2, r6
+	mov	r0, r4
+	mov	r1, r5
+	cmp	r2, #0
+	blne	drawBrick
 
-		@check X
-		add	r4, r4, #1
-		cmp	r4, #10
-		blt	getBrickStateLoop
+	@ Check X
+	add	r4, r4, #1
+	cmp	r4, #10
+	blt	getBrickStateLoop
 
-		@check Y
-			add	r5, r5, #1
-			cmp	r5, #3
-			movLT	r4, #0
-			blt	getBrickStateLoop
+	@ Check Y
+	add	r5, r5, #1
+	cmp	r5, #3
+	movlt	r4, #0
+	blt	getBrickStateLoop
 
 	pop	{r4-r6, lr}
+	
 	mov	pc, lr
 
-@returns 0 if not won or 1 if won
-.global checkGameWon
+
+@ Returns 0 if not won or 1 if won
+
 checkGameWon:
-	push {r4, r5, lr}
-	mov r4, #0
-        ldr r5, =tile0
+	push	{r4, r5, lr}
+	
+	mov	r4, #0
+        ldr	r5, =tile0
 
 checkallbricks:
-	ldrb r0, [r5, r4]
-	add  r4, r4, #1
-        cmp  r0, #0
-        movne r0, #0
-        popne {r4,r5,lr}
-	movne PC, lr
+	ldrb	r0, [r5, r4]
+	add	r4, r4, #1
+        cmp	r0, #0
+        movne	r0, #0
+        popne	{r4,r5,lr}
+	movne	PC, lr
 
-	cmp r4, #30
-	blt checkallbricks
+	cmp	r4, #30
+	blt	checkallbricks
 
-	mov r0, #1
-        pop {r4, r5, lr}
-	mov pc, lr
+	mov	r0, #1
+	
+        pop	{r4, r5, lr}
+	
+	mov	pc, lr
 
-@@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+
+
 .section	.data
 
 @ 0 - broken
@@ -441,55 +477,55 @@ checkallbricks:
 @ 2 - 2 hits to break
 @ 3 - 3 hit to break
 
+tile0:	.byte	1
+tile10:	.byte 	2
 
-	tile0:	.byte	1
-	tile10:	.byte 	2
+.global	tile20
+tile20:	.byte 	3
 
-	.global	tile20
-	tile20:	.byte 	3
+tile1:	.byte	1
+tile11:	.byte	2		@ special
+tile21:	.byte	3
 
-	tile1:	.byte	1
-	tile11:	.byte	2	@ special
-	tile21:	.byte	3
+tile2:	.byte	1
+tile12:	.byte	2
+tile22:	.byte	3
 
-	tile2:	.byte	1
-	tile12:	.byte	2
-	tile22:	.byte	3
+tile3:	.byte	1
+tile13:	.byte	2
+tile23:	.byte	3
 
-	tile3:	.byte	1
-	tile13:	.byte	2
-	tile23:	.byte	3
+tile4:	.byte	1
+tile14:	.byte	2
+tile24:	.byte	3
 
-	tile4:	.byte	1
-	tile14:	.byte	2
-	tile24:	.byte	3
+tile5:	.byte	1
+tile15:	.byte	2
+tile25:	.byte	3
 
-	tile5:	.byte	1
-	tile15:	.byte	2
-	tile25:	.byte	3
+tile6:	.byte	1
+tile16:	.byte	2
 
-	tile6:	.byte	1
-	tile16:	.byte	2
+.global	tile26
 
-	.global	tile26
-	tile26:	.byte	3
+tile26:	.byte	3
 
-	tile7:	.byte	1
-	tile17:	.byte	2
-	tile27:	.byte	3
+tile7:	.byte	1
+tile17:	.byte	2
+tile27:	.byte	3
 
-	tile8:	.byte	1
-	tile18:	.byte	2	@ special
-	tile28:	.byte	3
+tile8:	.byte	1
+tile18:	.byte	2		@ special
+tile28:	.byte	3
 
-	tile9:	.byte	1
-	tile19:	.byte	2
+tile9:	.byte	1
+tile19:	.byte	2
 
-	tile29:	.byte	3
+tile29:	.byte	3
 
-	doTile:	.byte	1
+doTile:	.byte	1
 
-	emptyTile:	.byte	0
-	codeLog:	.asciz	"code: (%d, %d)\n"
+emptyTile:	.byte	0
+codeLog:	.asciz	"code: (%d, %d)\n"
 
-	test:		.asciz  "array values: {%d}, %d"
+test:		.asciz  "array values: {%d}, %d"
