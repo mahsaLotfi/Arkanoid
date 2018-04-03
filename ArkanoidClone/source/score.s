@@ -6,13 +6,13 @@ initScore:
 	push	{lr}
 
 	@ r0 - character
-	@ r1 - intial x
+	@ r1 - x
 	@ r2 - y
 	@ r3 - color
 
 	ldr	r0, =scoreChar
-	mov	r1, #88
-	mov	r2, #864
+	mov	r1, #90
+	mov	r2, #40
 	ldr	r3, =cWhite
 	bl	drawWord
 	pop	{pc}
@@ -22,13 +22,13 @@ initLives:
 	push	{lr}
 
 	@ r0 - character
-	@ r1 - intial x
+	@ r1 - x
 	@ r2 - y
 	@ r3 - color
 
 	ldr	r0, =livesChar
-	mov	r1, #468
-	mov	r2, #864
+	mov	r1, #500
+	mov	r2, #40
 	ldr	r3, =cWhite
 	bl	drawWord
 	pop	{pc}

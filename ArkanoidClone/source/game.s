@@ -306,10 +306,10 @@ fixWalls:
 	paddleSize:	.int	120
 
 	.global paddleStart
-	paddleStart:	.int	228
+	paddleStart:	.int	300
 
 	.global	paddlePosition
-	paddlePosition:	.int	228
+	paddlePosition:	.int	300
 
 	paddleBound:	.int	540
 

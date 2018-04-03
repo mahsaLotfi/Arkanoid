@@ -10,7 +10,6 @@ drawBall:
 	ldr	r1, =curY
 	ldr	r6, [r1]
 
-
 	@crosswise
 	add	r0, r5, #0
 	add	r1, r6, #4
