@@ -1,91 +1,95 @@
-@@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+ 
 .section	.text
 
-.global initScore
-initScore:
+.global Score
+Score:
 	push	{lr}
 
 	@ r0 - character
-	@ r1 - intial x
+	@ r1 - x
 	@ r2 - y
 	@ r3 - color
 
 	ldr	r0, =scoreChar
-	mov	r1, #88
-	mov	r2, #864
+	mov	r1, #60
+	mov	r2, #55
 	ldr	r3, =cWhite
-	bl	drawWord
+	bl	printWord
 	pop	{pc}
 
-.global	initLives
-initLives:
+.global	Lives
+Lives:
 	push	{lr}
 
 	@ r0 - character
-	@ r1 - intial x
+	@ r1 - x
 	@ r2 - y
 	@ r3 - color
 
 	ldr	r0, =livesChar
-	mov	r1, #468
-	mov	r2, #864
+	mov	r1, #550
+	mov	r2, #55
 	ldr	r3, =cWhite
-	bl	drawWord
+	bl	printWord
 	pop	{pc}
 
 
-.global	updateScoreAndLives
-updateScoreAndLives:
+.global	Update
+Update:
 	push	{r4, lr}
 
 	@ black out positions
-	mov	r0, #160
-	mov	r1, #863
+	mov	r0, #135
+	mov	r1, #54
 	mov	r2, #0x0
 	mov	r3, #32
 	mov	r4, r3
-	bl	makeTile
+	bl	drawCell
 
-	mov	r0, #544
-	mov	r1, #863
+	mov	r0, #625
+	mov	r1, #54
 	mov	r2, #0x0
 	mov	r3, #32
 	mov	r4, r3
-	bl	makeTile
+	bl	drawCell
 
 	@ write digits
 
-	ldr	r0, =scoreCount
-	bl	intTostring	@ r0 - first digit
+	ldr	r0, =score
+	bl	toString	@ r0 - first digit
 	mov	r4, r1		@ r1 - second digit
 
-		mov	r1, #165
-		mov	r2, #864
-		bl	drawChar
+		mov	r1, #140
+		mov	r2, #55
+		bl	printChar
 
 		mov	r0, r4
-		mov	r1, #176
-		mov	r2, #864
-		bl	drawChar
+		mov	r1, #151
+		mov	r2, #55
+		bl	printChar
 
-	ldr	r0, =lifeCount
-	bl	intTostring	@ r0 - first digit
+	ldr	r0, =lives
+	bl	toString	@ r0 - first digit
 	mov	r4, r1		@ r1 - second digit
 
-		mov	r1, #545
-		mov	r2, #864
-		bl	drawChar
+		mov	r1, #630
+		mov	r2, #55
+		bl	printChar
 
 		mov	r0, r4
-		mov	r1, #556
-		mov	r2, #864
-		bl	drawChar
+		mov	r1, #641
+		mov	r2, #55
+		bl	printChar
+
+		bl	Lives
+		bl	Score
+
 	pop	{r4, pc}
 
 @ changes intger to string for printing
 @ params: r0 - location of the integer
 @ returns: r0 - string code
-intTostring:
+toString:
 	push	{r4, r5, lr}
 	ldr	r0, [r0]
 
@@ -104,38 +108,38 @@ intTostring:
 @ behavior for when score is 0
 .global LOST
 LOST:
-	bl	updateScoreAndLives
+	bl	Update
         bl	clearPaddle
-	bl	getRidOfBall
+	bl	clearBall
 
 	ldr	r0,=gameOver
-        mov	r1, #200
-	mov	r2, #200
+        mov	r1, #720
+	mov	r2, #960
 	bl      drawCenterTile
 	B	anybutton
 
 @ behavior for win condition
 .global WIN
 WIN:
-	bl	updateScoreAndLives
+	bl	Update
 
-	ldr	r0,=gameWon
-        mov	r1, #200
-	mov	r2, #200
+	ldr	r0,=gameWonImage
+    mov	r1, #720
+	mov	r2, #960
 	bl      drawCenterTile
 	B	anybutton
 
 
-@ reiniitializes game vairables
+@ reinitializes game vairables
 .global	resetScore
 resetScore:
 	push	{lr}
 
-	ldr	r0, =scoreCount
+	ldr	r0, =score
 	mov	r1, #0
 	str	r1, [r0]
 
-	ldr	r0, =lifeCount
+	ldr	r0, =lives
 	mov	r1, #3
 	str	r1, [r0]
 
@@ -144,7 +148,7 @@ resetScore:
 	str	r1, [r0]
 
 	ldr	r0, =prevX
-	mov	r1, #326
+	mov	r1, #354
 	str	r1, [r0]
 
 	ldr	r0, =curX
@@ -161,13 +165,13 @@ resetScore:
 	bl	resetValuePacks
 	pop	{pc}
 
-@@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
+ 
 .section	.data
 	scoreChar:	.asciz		"SCORE: "
 	livesChar:	.asciz		"LIVES: "
 
-	.global scoreCount
-	scoreCount:	.int	12
+	.global score
+	score:	.int	0
 
-	.global	lifeCount
-	lifeCount:	.int	3
+	.global	lives
+	lives:	.int	3

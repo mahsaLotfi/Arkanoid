@@ -1,4 +1,4 @@
-@@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+ 
 .text
 .global Init_Frame
 Init_Frame:
@@ -13,11 +13,11 @@ Init_Frame:
 @ r1 - yStart
 @ r2 - color
 @ r3 - length
-@ r4 - xLength (height)
+@ r4 - height
 .global drawCell
 drawCell:
 	length	.req 	r3
-	pxDrawn	.req	r6
+	cellDrawn	.req	r6
 	offset	.req	r4
 	frame	.req	r5
 	width	.req	r6
@@ -32,15 +32,15 @@ drawCell:
 	ldr	r5, =frameBufferInfo
 	ldr	r5, [r5, #4]
 
-	mov	pxDrawn, #0
-	tileLoop:
-		bl	drawHLn
+	mov	cellDrawn, #0
+	cellLoop:
+		bl	drawHL
 		add	r0, r0, r5
 		sub	r0, r0, length
 		sub	r0, r0, #1
-		add	pxDrawn, pxDrawn, #1
-		cmp	pxDrawn, height
-		ble	tileLoop
+		add	cellDrawn, cellDrawn, #1
+		cmp	cellDrawn, height
+		ble	cellLoop
 
 	pop	{r5-r6, pc}
 
@@ -59,7 +59,7 @@ drawPx:
 	ldr	frame, =frameBufferInfo
 	ldr	width, [frame, #4]
 
-	@ making the offset
+	@ calculate offset
 	mul	yval, width
 	add	offset, xval, yval
 	lsl	offset, #2	@ * 4
@@ -78,17 +78,17 @@ drawPx:
 @ r1 - yStart
 @ r2 - color
 @ r3 - length
-.global drawHLn
-drawHLn:
+.global drawHL
+drawHL:
 	push	{r6, lr}
 
-	mov	pxDrawn, #0
-	hlPxLoop:
+	mov	cellDrawn, #0
+	hlLoop:
 		bl	drawPx
 		add	r0, r0, #1
-		add	pxDrawn, pxDrawn, #1
-		cmp	pxDrawn, length
-		ble	hlPxLoop
+		add	cellDrawn, cellDrawn, #1
+		cmp	cellDrawn, length
+		ble	hlLoop
 
 	pop	{r6, lr}
 	mov	pc, lr
@@ -96,59 +96,59 @@ drawHLn:
 
 	.unreq	length
 	.unreq	height
-	.unreq	pxDrawn
+	.unreq	cellDrawn
 
 @ Draw the character in r0
 @ r1=x
 @ r2=y
 @ r3=colour
-.global drawChar
-drawChar:
+.global printChar
+printChar:
 	push		{r4-r9, lr}
 
-	chAdr		.req	r4
+	charAddress		.req	r4
 	px		.req	r5
 	py		.req	r6
 	row		.req	r7
 	mask		.req	r8
         colour		.req	r9
 
-	ldr		chAdr, =font		@ load the address of the font map
-	add		chAdr,	r0, lsl #4	@ char address = font base + (char * 16)
+	ldr		charAddress, =font		@ load the address of the font map
+	add		charAddress,	r0, lsl #4	@ char address = font base + (char * 16)
 
-	mov		py, r2			@ init the Y coordinate (pixel coordinate)
+	mov		py, r2			@ initialize y 
 
 	ldr		r2 , =initX
 	str		r1, [r2]
 
 	charLoop:
 		ldr		px, =initX
-		ldr		px, [px]		@ init the X coordinate
+		ldr		px, [px]		@ initialize X 
 		mov		mask, #0x01		@ set the bitmask to 1 in the LSB
-		LDRB		row, [chAdr], #1	@ load the row byte, post increment chAdr
+		LDRB		row, [charAddress], #1	@ load the row byte, post increment charAddress
 
 	rowLoop:
 		tst		row, mask		@ test row byte against the bitmask
-		Beq		noPixel
+		Beq		noPx
 
 		mov		r0, px
 		mov		r1, py
 		mov		r2, colour
-		bl		drawPx			@ draw pixel at (px, py)
+		bl		drawPx			@ draw pixel 
 
-	noPixel:
-		add		px, px, #1		@ increment x coordinate by 1
+	noPx:
+		add		px, px, #1		@ increment x  by 1
 		lsl		mask, #1		@ shift bitmask left by 1
 
 		tst		mask,	#0x100		@ test if the bitmask has shifted 8 times (test 9th bit)
 		Beq		rowLoop
 
-		add		py,py, #1		@ increment y coordinate by 1
+		add		py,py, #1		@ increment y  by 1
 
-		tst		chAdr, #0xF
-		Bne		charLoop		@ loop back to charLoop$, unless address evenly divisibly by 16 (ie: at the next char)
+		tst		charAddress, #0xF
+		Bne		charLoop		@ loop back to charLoop, unless address evenly divisibly by 16 
 
-	.unreq	chAdr
+	.unreq	charAddress
 	.unreq	px
 	.unreq	py
 	.unreq	row
@@ -161,14 +161,14 @@ drawChar:
 @ r1 - initial x
 @ r2 - y
 @ r3 - color
-.global drawWord
-drawWord:
+.global printWord
+printWord:
 	push	{r4-r7, lr}
 	mov	r5, r0
 	mov	r6, r1
 	mov	r7, r2
 	mov	r4, r3
-	drawWordLoop:
+	wordLoop:
 		LDRB	r0, [r5], #1
 		cmp	r0, #0
 		popeq	{r4-r7, pc}
@@ -176,17 +176,17 @@ drawWord:
 		mov	r1, r6
 		mov	r2, r7
 		mov	r3, r4
-		bl	drawChar
+		bl	printChar
 		add	r6, r6, #11
-		B	drawWordLoop
+		B	wordLoop
 
-.global blackScreen @blacks out game screen takes and returns no arguments
-blackScreen:
+.global blackScn @black screen 
+blackScn:
 	push {r4, r5, lr}
 	mov r4, #0
 	mov r5, #0
 
-drawblackscreen:
+drawBlackScn:
 	mov	r0, r4
 	mov	r1, r5
 	mov	r2, #0
@@ -198,10 +198,10 @@ drawblackscreen:
    	 	addeq r5, r5, #1
 
     cmp   r5, #960
-    blt drawblackscreen
+    blt drawBlackScn
     pop {r4,r5, pc}
 
-@@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
+ 
 .section .data
 
 .align 4

@@ -1,24 +1,24 @@
-@@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+ 
 .section .text
 
 @ r0 - x code
 @ r1 - y code
 @ r2 - colorCode
 @ draws Brick and changes brick state
-.global makeBrick
-makeBrick:
+.global createBrick
+createBrick:
 	push	{r4-r6, lr}
 	mov	r4, r0
 	mov	r5, r1
 	mov	r6, r2
-	bl	codeToTile
+	bl	makingTile
 	strB	r6, [r0]	@ store the brick state
 
 	@ then draw brick
 	mov	r0, r4
 	mov	r1, r5
 	mov	r2, r6
-	bl	drawBrick
+	bl	printBrick
 
 	pop	{r4-r6, lr}
 	mov	pc, lr
@@ -26,19 +26,19 @@ makeBrick:
 
 @ sets the bricks for the initial state
 @ no params or return values
-.global	initBricks
-initBricks:
+.global	InitBrick
+InitBrick:
 	push	{r4-r6, lr}
 
 	mov	r4, #0
 	mov	r5, #0
 	add	r6, r5, #3
 
-	initBrickStateLoop:
+	brickLoop:
 		mov	r0, r4
 		mov	r1, r5
 
-		bl	codeToTile
+		bl	makingTile
 		strB	r6, [r0]
 
 		cmp	r0, #0
@@ -46,19 +46,19 @@ initBricks:
 		movne	r2, r6
 		movne	r0, r4
 		movne	r1, r5
-		blne	drawBrick
+		blne	printBrick
 
 		@check X
 		add	r4, r4, #1
 		cmp	r4, #10
-		blt	initBrickStateLoop
+		blt	brickLoop
 
 		@check Y
 			add	r5, r5, #1
 			sub	R6, R6, #1
 			cmp	r5, #3
 			movLT	r4, #0
-			blt	initBrickStateLoop
+			blt	brickLoop
 
 	pop	{r4-r6, pc}
 
@@ -66,7 +66,7 @@ initBricks:
 @ r0 - brick x position
 @ r1 - brick y position
 @ r2 - brick type (0, 1, 2, 3)
-drawBrick:
+printBrick:
 	xpos		.req	r5
 	ypos		.req	r6
 	colorCode	.req	r7
@@ -95,13 +95,13 @@ drawBrick:
 	moveq	r2, #0
 
 	cmp	colorCode, #1
-	moveq	r2, #0x00FF00	@ 1 hit
+	moveq	r2, #0x99FF	@ 1 hit
 
 	cmp	colorCode, #2
-	moveq	r2, #0x007700	@ 2 hits
+	moveq	r2, #0x66FF	@ 2 hits
 
 	cmp	colorCode, #3
-	moveq	r2, #0x003300	@ 3 hits
+	moveq	r2, #0x6699	@ 3 hits
 
 
 	mov	r0, xpos
@@ -126,7 +126,7 @@ hitBrick:
 	bl	XYtoCode
 	mov	r4, r0
 	mov	r5, r1
-	bl	codeToTile
+	bl	makingTile
         LDRB	r7, [r0]
 
 	cmp	r7, #0
@@ -138,7 +138,7 @@ hitBrick:
 	sub	r2, r7, #1	@ degrade the brick
 	mov	r0, r4
 	mov	r1, r5
-	bl	makeBrick
+	bl	createBrick
 	@ r2 is the color
 
 	mov	r0, #1		@ brick is hit
@@ -204,7 +204,7 @@ XYtoCode:
 
 @ return
 @ r0 - brickStateAddress
-codeToTile:
+makingTile:
 	push	{lr}
 
 	cmp	r0, #9
@@ -213,18 +213,18 @@ codeToTile:
 	movGT	pc, lr
 
 	cmp	r1, #1
-	blt	fromZero
-	Beq	fromTen
+	blt	StartAtZero
+	Beq	StartAtTen
 
 	CMPGT	r1, #2
-	Beq	fromTwenty
+	Beq	StartAtTwenty
 	@ invaild input, return 0
 	ldr	r0, =emptyTile
 	pop	{lr}
 	mov	pc, lr
 
 
-	fromTwenty:
+	StartAtTwenty:
 		cmp	r0, #0
 		ldreq	r0, =tile20
 		popeq	{lr}
@@ -277,7 +277,7 @@ codeToTile:
 		pop	{lr}
 		mov	pc, lr
 
-	fromZero:
+	StartAtZero:
 		cmp	r0, #0
 		ldreq	r0, =tile0
 		popeq	{lr}
@@ -326,7 +326,7 @@ codeToTile:
 		pop	{lr}
 		mov	pc, lr
 
-	fromTen:
+	StartAtTen:
 		cmp	r0, #0
 		ldreq	r0, =tile10
 		popeq	{lr}
@@ -378,8 +378,8 @@ codeToTile:
 
 @ redraws all the bricks without
 @ modifying the states of the bricks
-.global	makeAllBricks
-makeAllBricks:
+.global	allBricks
+allBricks:
 	push	{r4-r6, lr}
 	mov	r4, #0
 	mov	r5, #0
@@ -388,14 +388,14 @@ makeAllBricks:
 		mov	r0, r4
 		mov	r1, r5
 
-		bl	codeToTile
+		bl	makingTile
 		LDRB	r6, [r0]
 
 		mov	r2, r6
 		mov	r0, r4
 		mov	r1, r5
 		cmp	r2, #0
-		blne	drawBrick
+		blne	printBrick
 
 		@check X
 		add	r4, r4, #1
@@ -433,7 +433,7 @@ checkallbricks:
         pop {r4, r5, lr}
 	mov pc, lr
 
-@@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+ 
 .section	.data
 
 @ 0 - broken
@@ -446,7 +446,7 @@ checkallbricks:
 	tile10:	.byte 	2
 
 	.global	tile20
-	tile20:	.byte 	3
+	tile20:	.byte 	1
 
 	tile1:	.byte	1
 	tile11:	.byte	2	@ special

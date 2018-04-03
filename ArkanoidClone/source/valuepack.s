@@ -90,7 +90,7 @@ bigPaddleDrop:
 	mov	r0, #'+'
 	mov	r1, #64
 	add	r2, r6, #4
-	bl	drawChar
+	bl	printChar
 
 	mov	r0, #56
 	sub	r1, r6, #32
@@ -120,7 +120,7 @@ checkPaddleDrop:
 	str	r1, [r0]
 
 	@ load paddle position
-	ldr	r0, =paddlePosition
+	ldr	r0, =paddlePos
 	ldr	r0, [r0]
 
 	@ if paddle is 88 from the left
@@ -161,7 +161,7 @@ catchBallDrop:
 	mov	r0, #'-'
 	mov	r1, #434
 	add	r2, r6, #4
-	bl	drawChar
+	bl	printChar
 
 	mov	r0, #428
 	sub	r1, r6, #32
@@ -190,7 +190,7 @@ checkBallDrop:
 	str	r1, [r0]
 
 	@ load paddle position
-	ldr	r0, =paddlePosition
+	ldr	r0, =paddlePos
 	ldr	r0, [r0]
 
 	@ if paddle is 428 from the left
@@ -262,7 +262,7 @@ resetValuePacks:
 
 	mov	pc, lr
 
-@@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
+ 
 .section	.data
 
 	paddleDropY:		.int    192

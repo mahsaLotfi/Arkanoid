@@ -1,27 +1,27 @@
 .section .text
 
-.global makeGame
-makeGame:
+.global startGame
+startGame:
 	bl	resetScore
 
-		@ draw draw border
+		@ drawing the border
 		mov	r0, #0
 		mov	r1, #0
 		mov	r2, #0xFFFFFF
-		mov	r3, #704
-		mov	r4, #944
+		mov	r3, #720
+		mov	r4, #960
 		bl	drawCell
 
-		@ draw background
+		@ drawing the background
 		mov	r0, #9
 		mov	r1, #4
-		mov	r2, #0xFFFFF366
-		mov	r3, #704
+		mov	r2, #0x6699
+		mov	r3, #702
 		mov	r4, #944
 		bl	drawCell
 
 
-		@ foreground
+		@ creating the foreground
 		mov	r0, #36
 		mov	r1, #36
 		mov	r2, #0x0
@@ -29,89 +29,89 @@ makeGame:
 		mov	r4, #880
 		bl	drawCell
 
-		@ initialize game mechanics
-		bl	initScore
-		bl	initLives
-		bl	initBricks
+		@ initialize the game stats and elements
+		bl	Score
+		bl	Lives
+		bl	InitBrick
 
-		ldr	r0, =paddlePosition
-			mov	r1, #228
+		ldr	r0, =paddlePos
+			mov	r1, #300
 			str	r1, [r0]
 
-		bl	paddle	@ when done from paddle loop, game is lsot
+		bl	paddle										@ if exit paddle loop, it means the game is lost
 		b	LOST
 
 
 paddle:
 	push	{r4-r9, lr}
 
-	ldr	r8, =paddleStart @ default xstart for paddle
+	ldr	r8, =paddleStart								@ the starting x coordinate for paddle
 		ldr	r8, [r8]
 		mov	r0, r8
 
-	mov	r4, #32		@default size of the paddle
-	mov	r7, #1500	@ pause length
+	mov	r4, #32											@ the size of paddle
+	mov	r7, #1500										@ pause menu dimensions
 	bl	initBall
 
 	paddleLoop:
 
-		@ branch to other game mechanics
+		@ branch link to other game functions
 		bl	maybemoveBall
 		bl	dropListener
-		bl	makeAllBricks
+		bl	allBricks
 		bl	fixWalls
-		bl	updateStats
+		bl	Update
 
-		@ensure padde is fully drawn
+		@check paddle drawn successfully
 		ldr	r6, =paddleBound
 		ldr	r0, [r6]
 
 			@paddle
 	 		add	r0, r8, #32
 			mov	r1, #774
-			mov	r2, #0x8800000
+			mov	r2, #0x6699
 			ldr	r3, =paddleSize
 			ldr	r3, [r3]
 			sub	r3, r3, #64
 			bl	drawCell
 
-			@left edge of paddle
+			@ paddle left side
 			mov	r0, r8
 			mov	r1, #774
-			mov	r2, #0x330000
+			mov	r2, #0xFFFFFF
 			mov	r3, #32
 			bl	drawCell
 
-			@ right edge of paddle
+			@ paddle right side
 			ldr	r0, =paddleSize
 			ldr	r0, [r0]
 			add	r0, r0, r8
 			sub	r0, #32
 			mov	r1, #774
-			mov	r2, #0x330000
+			mov	r2, #0xFFFFFF
 			mov	r3, #32
 			bl	drawCell
 
-		ldr	r8, =paddlePosition
+		ldr	r8, =paddlePos
 		ldr	r8, [r8]
 
-		@ check if game is won
+		@ see if game is won
 		bl	checkGameWon @check if game has been won
         	cmp	r0, #1
 		popeq	{r4-r9, lr}
         	beq	WIN
 
-		@ branch out of game for lose implementation
+		@ exit game loop if lose
         	ldr	r0, =lives
         	ldr 	r0, [r0]
         	cmp	r0, #0
 		popeq	{r4-r9, pc}
 
 
-		@Reading SneS buttons
+		@read SNES input
 
 		mov	r0, r7			@ delay
-		bl	readSneS
+		bl	readSNES
 		mov	r7, #1500
 
 			cmp	r0, #4096		@ start
@@ -119,9 +119,6 @@ paddle:
 
 			cmp	r0, #32768		@ b
 			bleq	launchBall
-
-			cmp	r0, #16384		@ Y - testing purposes only
-@			bleq	testBall
 
 			cmp	r0, #512		@ L
 			beq	moveLeft
@@ -142,7 +139,7 @@ paddle:
 			moveq	r7, #750
 
 		moveRight:
-			@ get the size of the paddle
+			@ retrieve paddle size
 			ldr	r6, =paddleBound
 			ldr	r0, [r6]
 			cmp	r8, r0
@@ -158,7 +155,7 @@ paddle:
 
 				@ change the paddle position
 				add	r8, r8, #32
-				ldr	r6, =paddlePosition
+				ldr	r6, =paddlePos
 				str	r8, [r6]
 				mov	r0, r8
 
@@ -181,32 +178,31 @@ paddle:
 				mov	r3, #32
 				bl	drawCell
 
-				@ change the paddle position
+				@ update paddle position
 				sub	r8,r8, #32
-				ldr	r6, =paddlePosition
+				ldr	r6, =paddlePos
 				str	r8, [r6]
 				mov	r0, r8
 
 			bl	initBall
 			b	paddleLoop
 
-@ checks if ball will be moved
-@ no parameters or return value
+@ check if ball move
 maybemoveBall:
 	push	{r4,r5, lr}
 
-	ldr	r0, =willmoveBall
+	ldr	r0, =willBallMove
 	ldr	r1, [r0]
 	mov	r4, r0
 
 	cmp	r1, #0
 	beq	moveBallLoop
 
-	mov	r5, #1414		@ if A is held, the delay (r5) should be less than 1414
-	cmp	r7, r5			@ so move the ball slower
+	mov	r5, #1414		@ if A button is hold, then delay < 1414
+	cmp	r7, r5			@ slow down ball movement
 	bge	moveBallLoop
 
-	mov	r1, #0			@ ball not moved
+	mov	r1, #0			@ no ball move
 	str	r1, [r0]
 	pop	{r4,r5,pc}
 
@@ -217,47 +213,46 @@ maybemoveBall:
 		str	r1, [r0]
 		pop	{r4,r5,pc}
 
-.global anybutton		@ read any button (for the game over screen)
+.global anybutton			@ any button press after game lose
 anybutton:
 	mov	r0, #8192
-        bl 	readSneS
+        bl 	readSNES
 	cmp     r0, #0
         bne	menusetup
 	b	anybutton
 
 .global bigPaddle
-bigPaddle:			@ change paddle size to big paddle
+bigPaddle:					@ enlarge paddle size
 	push	{lr}
-	bl	drawInitialPaddle
 
 	ldr	r0, =paddleSize
-	mov	r1, #384
+	mov	r1, #200
 	str	r1, [r0]
 
 	ldr	r0, =paddleStart
-	mov	r1, #0
+	mov	r1, #300
 	str	r1, [r0]
 
 	ldr	r0, =paddleBound
-	mov	r1, #292
+	mov	r1, #476
 	str	r1, [r0]
 
 	pop	{pc}
 
-drawInitialPaddle:
+drawInitPaddle:
 	push	{r4, lr}
 
 	@ init Paddle
-	mov	r0, #228	@ x
+	mov	r0, #300	@ x
 	mov	r1, #774	@ y
-	mov	r2, #0x336699	@ color
-	mov	r3, #192
+	mov	r2, #0x006699	@ color
+	mov	r3, #120
 	mov	r4, #32		@ height
 	bl	drawCell
 
-	mov	r0, #228
+	mov	r0, #300
 	mov	r1, #774
-	mov	r2, #0x880000
+	mov	r2, #0xFFFFFF
 	mov	r3, #32
 	mov	r4, r3
 	bl	drawCell
@@ -284,33 +279,33 @@ fixWalls:
 
 	mov	r0, #9
 	mov	r1, #36
-	mov	r2, #0xFFF7FFFE
-	mov	r3, #31
+	mov	r2, #0x6699
+	mov	r3, #26
 	mov	r4, #816
 	bl	drawCell
 
 	mov	r0, #677
 	mov	r1, #36
-	mov	r2, #0x007770
+	mov	r2, #0x6699
 	mov	r3, #31
 	mov	r4, #816
 	bl	drawCell
 
 	pop	{r4,pc}
 
-@@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+ 
 .section	.data
 
 
 	.global paddleSize
-	paddleSize:	.int	192
+	paddleSize:	.int	120
 
 	.global paddleStart
-	paddleStart:	.int	228
+	paddleStart:	.int	300
 
-	.global	paddlePosition
-	paddlePosition:	.int	228
+	.global	paddlePos
+	paddlePos:	.int	0
 
-	paddleBound:	.int	484
+	paddleBound:	.int	556
 
-	willmoveBall:	.int	1
+	willBallMove:	.int	1

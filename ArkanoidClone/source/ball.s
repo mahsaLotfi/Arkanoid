@@ -1,8 +1,13 @@
-@@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+@ Ball Attributes
+
 .section	.text
 
-.global drawBall
-drawBall:
+
+.global printBall, initBall, clearBall, launchBall, unlaunch, launched
+
+@ Draws the ball
+
+printBall:
 	push	{r4-r6, lr}
 	ldr	r0, =curX
 	ldr	r5, [r0]
@@ -10,50 +15,56 @@ drawBall:
 	ldr	r1, =curY
 	ldr	r6, [r1]
 
-
-	@crosswise
+	@ Crosswise
 	add	r0, r5, #0
 	add	r1, r6, #4
-	mov	r2, #0x0000FF
+	mov	r2, #0xFFFF
 	mov	r3, #32
 	mov	r4, #24
 	bl	drawCell
 
-	@lengthwise
-	add	r0, r5, #4		@x
-	add	r1, r6, #0		@y
-	mov	r2, #0x000FF
+	@ Lengthwise
+	add	r0, r5, #4		@ x
+	add	r1, r6, #0		@ y
+	mov	r2, #0xFFFF
 	mov	r3, #23
 	mov	r4, #32
 	bl	drawCell
 
 	pop	{r4-r6, pc}
 
-@ no params or return values
-.global initBall
+
+@ No params or return values
+
 initBall:
 	push	{r4-r6,lr}
-	add	r4, r0, #64
 
-	bl	isLaunched
+	ldr	r6, =paddleSize
+	ldr	r6, [r6]
+
+	cmp	r6, #200
+
+	addlt	r4, r0, #46
+	addge	r4, r0, #90
+	
+	bl	launched
 	cmp	r0, #0
 	popne	{r4-r6, pc}
 
 	ldr	r5, =curX
 	str	r4, [r5]
-	bl	drawBall
-	bl	getRidOfBall
+
+	bl	clearBall
+	bl	printBall
 
 	pop	{r4-r6, pc}
 
-@ removes ball
-@ no params or return values
-.global	getRidOfBall
-getRidOfBall:
-	push	{r4-r5, lr}
 
-	mov	r3, #32
-	mov	r4, r3
+@ Removes ball
+@ No params or return values
+
+clearBall:
+	push	{r4-r5, lr}
 
 	ldr	r0, =prevX
 	ldr	r0, [r0]
@@ -61,6 +72,10 @@ getRidOfBall:
 	ldr	r1, [r1]
 
 	mov	r2, #0x0
+
+	mov	r3, #32
+	mov	r4, r3
+
 	bl	drawCell
 
 	@ update ball location
@@ -76,12 +91,13 @@ getRidOfBall:
 
 	pop	{r4-r5, pc}
 
-@ launches the ball
-.global launchBall
+
+@ Launches the ball
+
 launchBall:
 	push	{r4-r7,lr}
 
-	bl	isLaunched		@ if already launched, ignore
+	bl	launched		@ if already launched, ignore
 	cmp	r0, #1
 	popeq	{r4-r7,pc}
 
@@ -89,12 +105,13 @@ launchBall:
 	mov	r1, #0
 	strB	r1, [r0]
 
-	bl	getRidOfBall
+	bl	clearBall
 	bl	launch
 
 	pop	{r4-r7,pc}
 
-@ inner function for launch ball
+
+@ Inner function for launch ball
 launch:
 	push	{lr}
 
@@ -104,7 +121,7 @@ launch:
 
 	pop	{pc}
 
-.global unlaunch
+
 unlaunch:
 	push	{lr}
 
@@ -116,7 +133,7 @@ unlaunch:
 	mov	r1, #0
 	str	r1, [r0]
 
-	bl	getRidOfBall
+	bl	clearBall
 
 	@ decrement life
 	ldr	r1, =lives
@@ -132,7 +149,7 @@ unlaunch:
 	str	r2, [r0]
 	str	r2, [r1]
 
-	ldr	r0, =paddlePosition
+	ldr	r0, =paddlePos
 	ldr	r0, [r0]
 	add	r0, #64
 
@@ -144,9 +161,8 @@ unlaunch:
 	pop	{pc}
 
 
-@ return if ball is launched
-.global	isLaunched
-isLaunched:
+@ Return if ball is launched
+launched:
 	push	{lr}
 
 	ldr	r0, =slopeCode
@@ -157,32 +173,28 @@ isLaunched:
 	movne	r0, #1
 	pop	{pc}
 
-@@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
+
+
 .section	.data
 
-	.global	prevX
-	prevX:	.int	326
+.global	prevX, prevY, curX, curY
 
-	.global	prevY
-	prevY:	.int	740
+prevX:	.int	326
+prevY:	.int	740
+curX:	.int	326
+curY:	.int	740
 
-	.global curX
-	curX:	.int	326
+@  0: unlaunched
+@  9: 45 up right
+@  7: 45 up left
+@ 89: 60 up right
+@ 87: 60 up left
+@  3: 45 down right
+@  1: 45 down left
+@ 23: 60 down right
+@ 21: 60 down left
+@ hint: these numbers mimic the numpad
 
-	.global curY
-	curY:	.int	740
+.global slopeCode
 
-
-	@  0: unlaunched
-	@  9: 45 up right
-	@  7: 45 up left
-	@ 89: 60 up right
-	@ 87: 60 up left
-	@  3: 45 down right
-	@  1: 45 down left
-	@ 23: 60 down right
-	@ 21: 60 down left
-	@ hint: these numbers mimic the numpad
-
-	.global slopeCode
-	slopeCode:	.int	0
+slopeCode:	.int	0

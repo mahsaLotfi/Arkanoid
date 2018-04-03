@@ -461,7 +461,7 @@ switch45Paddle:
 	str	r2, [r0]
 	pop	{pc}
 
-@@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
+ 
 .section	.data
 
 

@@ -1,10 +1,10 @@
-@@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+ 
 .section	.text
 	gBase	.req	r9
 
 @ functions 
-.global	initSneS
-	initSneS:
+.global	initSNES
+	initSNES:
 		push	{lr}
 		bl	getGpioPtr		@ load base address
 		ldr	r1, =gpioBaseAddress	@ load to variable
@@ -31,8 +31,8 @@
 @ returns:
 @ r0 - code for button pressed
 
-.global readSneS
-	readSneS:
+.global readSNES
+	readSNES:
 		push	{r6-r8, lr}
 		btns	.req	r8
 		mov	r6, r0
@@ -55,7 +55,7 @@
 		inc	.req	r7
 		mov	inc, #0			@ increment
 
-		pulseLoop:
+		pulse:
 			mov	r0, r6
 			bl	delayMicroseconds
 
@@ -76,7 +76,7 @@
 
 			add	inc, #1		@ increment
 			cmp	inc, #16	@ end when greater than/equal to 16
-			blt	pulseLoop
+			blt	pulse
 
 		mov	r0, btns		@ return buttons
 		pop	{r6-r8, pc}
@@ -89,61 +89,61 @@
 .global	getButton
 	getButton:
 		push	{r4,lr}
-		notNull	.req	r4
+		notNULL	.req	r4
 
-		mov	notNull, #0	@ ensures that the buttons
+		mov	notNULL, #0	@ ensures that the buttons
 					@ pressed are valid
 
 		@ save button pressed to r1
 		cmp	r0, #32768	@ code for button B
 		ldreq	r1, =msgB1	@ if code is b, load string for B
-		moveq	notNull, #1	@ turn on not null flag
+		moveq	notNULL, #1	@ turn on not null flag
 
 		cmp	r0, #16384	@ same goes for the rest of the buttons
 		ldreq	r1, =msgB2
-		moveq	notNull, #1
+		moveq	notNULL, #1
 
 		cmp	r0, #8192
 		ldreq	r1, =msgB3
-		moveq	notNull, #1
+		moveq	notNULL, #1
 
 		cmp	r0, #4096	@ code for start
 		ldreq	r1, =msgB4	@ pop and go to terminate code
-		moveq	notNull, #1
+		moveq	notNULL, #1
 
 		cmp	r0, #2048
 		ldreq	r1, =msgB5
-		moveq	notNull, #1
+		moveq	notNULL, #1
 
 		cmp	r0, #1024
 		ldreq	r1, =msgB6
-		moveq	notNull, #1
+		moveq	notNULL, #1
 
 		cmp	r0, #512
 		ldreq	r1, =msgB7
-		moveq	notNull, #1
+		moveq	notNULL, #1
 
 		cmp	r0, #256
 		ldreq	r1, =msgB8
-		moveq	notNull, #1
+		moveq	notNULL, #1
 
 		cmp	r0, #128
 		ldreq	r1, =msgB9
-		moveq	notNull, #1
+		moveq	notNULL, #1
 
 		cmp	r0, #64
 		ldreq	r1, =msgB10
-		moveq	notNull, #1
+		moveq	notNULL, #1
 
 		cmp	r0, #32
 		ldreq	r1, =msgB11
-		moveq	notNull, #1
+		moveq	notNULL, #1
 
 		cmp	r0, #16
 		ldreq	r1, =msgB12
-		moveq	notNull, #1
+		moveq	notNULL, #1
 
-		cmp	notNull, #1	@ if null string, do not print
+		cmp	notNULL, #1	@ if null string, do not print
 		bleq	printf
 
 		movne	r0, #59999	@ delay to make button printing smoother
@@ -151,7 +151,7 @@
 
 		pop	{r4, pc}
 
-		.unreq	notNull
+		.unreq	notNULL
 
 	Init_GPIO:
 
@@ -161,7 +161,7 @@
 		push	{r4, r5, lr}		@ store vars in stack
 
 		toAdd	.req	r3		@ name r3 immediate scratch value
-		fSel	.req	r4		@ name r4 function select
+		FuncSel	.req	r4		@ name r4 function select
 
 		mov	r2, #0
 
@@ -173,7 +173,7 @@
 		lsl	toAdd, r2, #2		@ toAdd is the increment from gBase
 
 
-		ldr	fSel, [gBase, toAdd]	@ load GPIO to r1
+		ldr	FuncSel, [gBase, toAdd]	@ load GPIO to r1
 
 		add	r0, r0, lsl #1		@ r0 is multiplied to become the pin number
 		lsl	r1, r0			@ function code is left shifted to pin number
@@ -181,12 +181,12 @@
 		mov	r5, #0b111		@ set bitmask
 		lsl	r5, r0
 
-		bic	fSel, r5		@ bit clear at desired pins
-		orr	fSel, r1		@ apply function code
-		str	fSel, [gBase, toAdd]	@ store back to gBase
+		bic	FuncSel, r5		@ bit clear at desired pins
+		orr	FuncSel, r1		@ apply function code
+		str	FuncSel, [gBase, toAdd]	@ store back to gBase
 
 		pop	{r4, r5, pc}
-		.unreq	fSel			@ unset register names
+		.unreq	FuncSel			@ unset register names
 		.unreq	toAdd
 
 
@@ -219,7 +219,7 @@
 
 	.unreq	gBase
 
-@@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
+ 
 .section	.data
 	@ Buttons
 		msgB1:	.asciz		"B\n"
