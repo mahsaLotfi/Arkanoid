@@ -10,7 +10,7 @@
 
 .text
 
-.global make_tile, draw_pxl, draw_HL, draw_char, draw_word, draw_black_screen
+.global make_tile, draw_ASCII, draw_pxl, draw_HL, draw_char, draw_word, draw_black_screen
 
 @ r0 - x_start
 @ r1 - y_start
@@ -47,6 +47,56 @@ make_tile:
 
 	POP	{r5-r6, pc}
 	
+	
+@ Draws an ACSII image
+@ r0 - x-coordinate
+@ r1 - y-coordinate
+@ r2 - Address of coordinate and dimensions
+
+draw_ASCII:
+	push	{r4-r9, lr}
+	
+	color	.req	r3
+	map_x	.req	r4
+	map_y	.req	r5
+	cur_col	.req	r6
+	cur_row	.req	r7
+	width	.req	r8
+	length	.req	r9
+	
+	ldr	color, [r2]		@ Load color into r3
+	ldr	width, [r2, #4]		@ 
+	ldr	length, [r2, #8]	@ 
+	
+	mov	cur_row, #0
+	
+test_row:
+	cmp	cur_row, length
+	bge	draw_end
+	
+	mov	cur_col, #0		@ Resets the column drawn to left(0)
+	
+test_col:
+	cmp	col, width
+	blt	draw_col
+	
+	add	cur_row, cur_row, #1
+	
+	b	test_row
+	
+draw_col:
+	add	map_x, r0, cur_col
+	add	map_y, r1, cur_row
+	ldr	r2, [color], #4
+	
+	bl	draw_pxl
+	
+	add	cur_col, cur_col, #1
+	
+	b	test_col
+	
+draw_end:
+	pop	{r4-r9, pc}
 
 
 @ r0 - x-value
@@ -66,7 +116,7 @@ draw_pxl:
 	@ making the offset
 	MUL	y_val, width
 	ADD	offset, x_val, y_val
-	LSL	offset, #2				@ offset * 4
+	LSL	offset, #2		@ offset * 4
 
 	@ Stores color at frame buffer pointer + offset
 	LDR	r3, [frame]
