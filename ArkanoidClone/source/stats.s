@@ -64,7 +64,7 @@ updateStats:
 
 	@ Score
 	ldr	r0, =score
-	bl	tostring
+	bl	toString
 	mov	r4, r1
 
 	mov	r1, #165
@@ -78,7 +78,7 @@ updateStats:
 
 	@ Lives
 	ldr	r0, =lives
-	bl	tostring		
+	bl	toString		
 	mov	r4, r1			
 
 	mov	r1, #545
