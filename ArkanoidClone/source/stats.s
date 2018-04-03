@@ -97,7 +97,12 @@ updateStats:
 @ r0 - location of the integer
 @ returns r0 (string code)
 
+<<<<<<< HEAD
 toString:
+=======
+toString:	
+	push	{r4, r5, lr}
+>>>>>>> 2b9ca46483da8d0dbaf32a836322059f5b13b958
 	ldr	r0, [r0]
 	mov	r2, #0
 	
@@ -115,7 +120,7 @@ convertASCII:
 	add	r1, r0, #48		@ r1 - Second digit
 	add	r0, r2, #48		@ r0 - First digit
 
-	mov	pc, lr
+	pop	{r4, r5, pc}
 
 
 
