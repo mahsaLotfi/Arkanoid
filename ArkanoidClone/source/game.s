@@ -251,7 +251,11 @@ drawInitialPaddle:
 	mov	r0, #228	@ x
 
 	mov	r1, #774	@ y
+<<<<<<< HEAD
 	mov	r2, #0x336699	@ color
+=======
+	mov	r2, #0x33669900	@ color
+>>>>>>> parent of a75c351... Update game.s
 	mov	r3, #192
 	mov	r4, #32		@ height
 	bl	drawCell
