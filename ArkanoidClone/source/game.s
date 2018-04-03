@@ -8,7 +8,7 @@ makeGame:
 		@ draw background
 		mov	r0, #4
 		mov	r1, #4
-		mov	r2, #0x007770
+		mov	r2, #0xFFFFF366
 		mov	r3, #704
 		mov	r4, #944
 		bl	makeTile
@@ -243,7 +243,7 @@ drawInitialPaddle:
 	@ init Paddle
 	mov	r0, #228	@ x
 	mov	r1, #774	@ y
-	mov	r2, #0x880000	@ color
+	mov	r2, #0x336699	@ color
 	mov	r3, #192
 	mov	r4, #32		@ height
 	bl	makeTile
@@ -277,7 +277,7 @@ fixWalls:
 
 	mov	r0, #4
 	mov	r1, #36
-	mov	r2, #0x007770
+	mov	r2, #0xFFF7FFFE
 	mov	r3, #31
 	mov	r4, #816
 	bl	makeTile
