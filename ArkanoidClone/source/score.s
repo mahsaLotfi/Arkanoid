@@ -56,7 +56,7 @@ updateStats:
 	@ write digits
 
 	ldr	r0, =score
-	bl	intTostring	@ r0 - first digit
+	bl	toString	@ r0 - first digit
 	mov	r4, r1		@ r1 - second digit
 
 		mov	r1, #140
@@ -69,7 +69,7 @@ updateStats:
 		bl	drawChar
 
 	ldr	r0, =lives
-	bl	intTostring	@ r0 - first digit
+	bl	toString	@ r0 - first digit
 	mov	r4, r1		@ r1 - second digit
 
 		mov	r1, #630
@@ -89,7 +89,7 @@ updateStats:
 @ changes intger to string for printing
 @ params: r0 - location of the integer
 @ returns: r0 - string code
-intTostring:
+toString:
 	push	{r4, r5, lr}
 	ldr	r0, [r0]
 
@@ -98,7 +98,7 @@ intTostring:
 		cmp	r0, #10
 		ADDGE	r4, r4, #1
 		SUBGE	r0, #10
-		BGE	divideLoop
+		bge	divideLoop
 
 	add	r1, r0, #48	@ r1 - second digit, r0 is first
 	add	r0, r4, #48	@converts to ascii version
@@ -106,11 +106,11 @@ intTostring:
 	pop	{r4, r5, pc}
 
 @ behavior for when score is 0
-.global LOST
-LOST:
+.global GAME_OVER
+GAME_OVER:
 	bl	updateStats
         bl	clearPaddle
-	bl	getRidOfBall
+	bl	clearBall
 
 	ldr	r0,=gameOver
         mov	r1, #720
@@ -119,8 +119,8 @@ LOST:
 	B	anybutton
 
 @ behavior for win condition
-.global WIN
-WIN:
+.global GAME_WIN
+GAME_WIN:
 	bl	updateStats
 
 	ldr	r0,=gameWonImage
@@ -130,7 +130,7 @@ WIN:
 	B	anybutton
 
 
-@ reiniitializes game vairables
+@ reinitializes game vairables
 .global	resetScore
 resetScore:
 	push	{lr}
@@ -143,18 +143,18 @@ resetScore:
 	mov	r1, #3
 	str	r1, [r0]
 
-	ldr	r0, =slopeCode
+	ldr	r0, =ballSlope
 	mov	r1, #0
 	str	r1, [r0]
 
-	ldr	r0, =prevX
+	ldr	r0, =preX
 	mov	r1, #354
 	str	r1, [r0]
 
 	ldr	r0, =curX
 	str	r1, [r0]
 
-	ldr	r0, =prevY
+	ldr	r0, =preY
 	mov	r1, #740
 	str	r1, [r0]
 

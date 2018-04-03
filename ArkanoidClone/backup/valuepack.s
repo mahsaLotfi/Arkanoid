@@ -41,7 +41,7 @@ ballTileBroken:
 
 	mov	r5, #1
 
-	ldr	r0, =brick25
+	ldr	r0, =tile26
 	LDRB	r6, [r0]
 
 	cmp	r6, #0
@@ -57,7 +57,7 @@ paddleTileBroken:
 
 	mov	r5, #1
 
-	ldr	r0, =brick20
+	ldr	r0, =tile20
 	LDRB	r6, [r0]
 
 	cmp	r6, #0
@@ -125,7 +125,7 @@ checkPaddleDrop:
 
 	@ if paddle is 88 from the left
 	cmp	r0, #88
-	blLE	superPaddle	@ change paddle to big paddle
+	blLE	bigPaddle	@ change paddle to big paddle
 
 	mov	r0, #56
 	ldr	r1, =paddleDropY

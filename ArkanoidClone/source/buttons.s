@@ -3,8 +3,8 @@
 	gBase	.req	r9
 
 @ functions 
-.global	initSneS
-	initSneS:
+.global	initSNES
+	initSNES:
 		push	{lr}
 		bl	getGpioPtr		@ load base address
 		ldr	r1, =gpioBaseAddress	@ load to variable
@@ -31,8 +31,8 @@
 @ returns:
 @ r0 - code for button pressed
 
-.global readSneS
-	readSneS:
+.global readSNES
+	readSNES:
 		push	{r6-r8, lr}
 		btns	.req	r8
 		mov	r6, r0

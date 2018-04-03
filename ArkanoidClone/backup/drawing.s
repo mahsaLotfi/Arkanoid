@@ -1,13 +1,13 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
-.section	.text
-.global initFrame
-initFrame:
-	push	{lr}
+.text
+.global Init_Frame
+Init_Frame:
+		push	{lr}
 
-	ldr	r0, =frameBufferInfo
-	bl	initFbInfo
+		ldr	r0, =frameBufferInfo
+		bl	initFbInfo
 
-	pop	{pc}
+		pop	{pc}
 
 @ r0 - xStart
 @ r1 - yStart
@@ -26,6 +26,7 @@ drawCell:
 	color	.req	r9
 
 	push	{r5-r6, lr}
+	@ length r3
 	height	.req	r4
 
 	ldr	r5, =frameBufferInfo
@@ -205,6 +206,7 @@ drawblackscreen:
 
 .align 4
 font:		.incbin	"font.bin"
+
 initX:		.int 0
 
 .global frameBufferInfo

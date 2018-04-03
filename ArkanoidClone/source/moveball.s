@@ -7,7 +7,7 @@ moveBall:
 	push	{r4-r5,lr}
 	bl	changeSlope
 
-	ldr	r0, =slopeCode
+	ldr	r0, =ballSlope
 	ldr	r0, [r0]
 
 	cmp	r0, #0		@ ignore if not launched
@@ -58,7 +58,7 @@ moveBall:
 	sub	r1, r1, r5
 	str	r1, [r0]
 
-	bl	getRidOfBall
+	bl	clearBall
 	bl	drawBall
 	pop	{r4-r5,pc}
 
@@ -74,7 +74,7 @@ changeSlope:
 	ldr	r2, [r2]
 	mov	r5, r2
 
-	ldr	r3, =slopeCode
+	ldr	r3, =ballSlope
 	ldr	r3, [r3]
 	mov	r6, r3
 
@@ -242,11 +242,11 @@ ballIsCaught:
 		add	r1, r1, #1
 		str	r1, [r0]
 
-		ldr	r0, =willCatchBall
+		ldr	r0, =isBallCatchable
 		mov	r1, #0
 		str	r1, [r0]
 
-		bl	unlaunch
+		bl	unLaunchBall
 	pop	{pc}
 
 
@@ -254,7 +254,7 @@ ballIsCaught:
 enableCatchBall:
 	push	{lr}
 
-	ldr	r0, =willCatchBall
+	ldr	r0, =isBallCatchable
 	mov	r1, #1
 	str	r1, [r0]
 
@@ -264,13 +264,13 @@ enableCatchBall:
 checkIfCaught:
 	push	{r4-r8, lr}
 
-	ldr	r0, =willCatchBall	@ check if ball will be caught
+	ldr	r0, =isBallCatchable	@ check if ball will be caught
 	ldr	r0, [r0]
 	cmp	r0, #1
 	bleq	ballIsCaught
 	popeq	{r4-r8, pc}
 
-	ldr	r0, =slopeCode		@ check if ball is launched
+	ldr	r0, =ballSlope		@ check if ball is launched
 	ldr	r0, [r0]
 	cmp	r0, #0
 	popeq	{r4-r8, pc}
@@ -308,30 +308,30 @@ checkIfCaught:
 		blGT	switch60Paddle
 	pop	{r4-r8, pc}
 
-@ unlaunch ball once below the paddle
+@ unLaunchBall ball once below the paddle
 ballDies:
 	push	{r4-r5,lr}
 
-	ldr	r4, =slopeCode
+	ldr	r4, =ballSlope
 	ldr	r4, [r4]
 
 	cmp	r4, #0
 	popeq	{r4-r5,pc}
 
-	ldr	r4, =ballWillDie
+	ldr	r4, =deadBall
 	ldr	r5, [r4]
 
 	cmp	r5, #5
 		ADDLT	r5, r5, #1
 		strLT	r5, [r4]
-		bleq	unlaunch
+		bleq	unLaunchBall
 
 	pop	{r4-r5,pc}
 
 @ switch the ball's trajectory to 60 degrees
 switch60:
 	push	{lr}
-	ldr	r0, =slopeCode
+	ldr	r0, =ballSlope
 	ldr	r1, [r0]
 
 	cmp	r1, #9
@@ -369,7 +369,7 @@ switch60:
 @ switch the ball's trajectory to 45 degrees
 switch45:
 	push	{lr}
-	ldr	r0, =slopeCode
+	ldr	r0, =ballSlope
 	ldr	r1, [r0]
 
 	cmp	r1, #9
@@ -411,7 +411,7 @@ switch60Paddle:
 		blGE	switch45
 		popGE	{pc}
 
-	ldr	r0, =slopeCode
+	ldr	r0, =ballSlope
 	ldr	r1, [r0]
 	mov	r2, r1
 
@@ -442,7 +442,7 @@ switch45Paddle:
 		blGE	switch45
 		popGE	{pc}
 
-	ldr	r0, =slopeCode
+	ldr	r0, =ballSlope
 	ldr	r1, [r0]
 	mov	r2, r1
 
@@ -463,14 +463,7 @@ switch45Paddle:
 
 @@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.data
+	.global	deadBall
+	deadBall:	.byte	0
 
-
-	illegalslope:	.asciz	"here"
-	xandy:		.asciz	"x: %d y: %d slope: %d\n"
-
-	ballAndPaddle:	.asciz	"ball: %d, paddle: %d\n"
-
-	.global	ballWillDie
-	ballWillDie:	.byte	0
-
-	willCatchBall:	.int	0
+	isBallCatchable:	.int	0
