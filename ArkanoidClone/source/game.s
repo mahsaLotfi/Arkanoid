@@ -311,6 +311,6 @@ fixWalls:
 	.global	paddlePosition
 	paddlePosition:	.int	228
 
-	paddleBound:	.int	520
+	paddleBound:	.int	522
 
 	willmoveBall:	.int	1
