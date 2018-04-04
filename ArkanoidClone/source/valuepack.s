@@ -128,6 +128,13 @@ paddle_drop_caught:
 	cmp	r0, #246
 	blgt	paddle_destroy
 	
+	ldr	r0, =paddleDropState
+	mov	r1, #2
+	str	r1, [r0]
+
+	ldr	r0, =paddlePosition
+	ldr	r0, [r0]
+	
 	b	superPaddle
 
 paddle_destroy:
