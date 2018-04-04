@@ -5,14 +5,6 @@
 .global drawCell, drawPx, drawChar, drawWord, blackScreen
 
 
-initFrame:
-	push	{lr}
-
-	ldr	r0, =frameBufferInfo
-	bl	initFbInfo
-
-	pop	{pc}
-
 @ r0 - xStart
 @ r1 - yStart
 @ r2 - color
