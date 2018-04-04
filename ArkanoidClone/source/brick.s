@@ -234,153 +234,127 @@ codeToTile:
 	fromZero:
 		cmp	r0, #0
 		ldreq	r0, =brick0
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #1
 		ldreq	r0, =brick1
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #2
 		ldreq	r0, =brick2
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #3
 		ldreq	r0, =brick3
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #4
 		ldreq	r0, =brick4
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #5
 		ldreq	r0, =brick5
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #6
-		ldreq	r0, =brick6
-		popeq	{pc}
+		beq	brick_end
 
 		cmp	r0, #7
 		ldreq	r0, =brick7
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #8
 		ldreq	r0, =brick8
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		ldr	r0, =brick9
-		pop	{lr}
-		mov	pc, lr
+		beq	brick_end
 
 	fromTen:
 		cmp	r0, #0
 		ldreq	r0, =brick10
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #1
 		ldreq	r0, =brick11
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #2
 		ldreq	r0, =brick12
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #3
 		ldreq	r0, =brick13
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #4
 		ldreq	r0, =brick14
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #5
 		ldreq	r0, =brick15
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #6
 		ldreq	r0, =brick16
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #7
 		ldreq	r0, =brick17
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #8
 		ldreq	r0, =brick18
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		ldr	r0, =brick19
-		pop	{lr}
-		mov	pc, lr
+		beq	brick_end
 
 	fromTwenty:
 		cmp	r0, #0
 		ldreq	r0, =brick20
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #1
 		ldreq	r0, =brick21
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #2
 		ldreq	r0, =brick22
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #3
 		ldreq	r0, =brick23
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 
 		cmp	r0, #4
 		ldreq	r0, =brick24
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 
 		cmp	r0, #5
 		ldreq	r0, =brick25
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #6
 		ldreq	r0, =brick26
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #7
 		ldreq	r0, =brick27
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		cmp	r0, #8
 		ldreq	r0, =brick28
-		popeq	{lr}
-		moveq	pc, lr
+		beq	brick_end
 
 		ldr	r0, =brick29
+
+brick_end:
 		pop	{lr}
 		mov	pc, lr
+
 
 @ Re-draws all the bricks 
 updateBricks:
