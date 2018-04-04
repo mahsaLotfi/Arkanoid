@@ -115,15 +115,13 @@ paddle_drop_caught:
 	mov	r1, #2
 	str	r1, [r0]
 
-	@ load paddle position
 	ldr	r0, =paddlePosition
 	ldr	r0, [r0]
 
-	@ if paddle is 88 from the left
-	cmp	r0, #88
-	blle	superPaddle	@ change paddle to big paddle
+	cmp	r0, #214	@ 182 + 32
+	blle	superPaddle	@ Upgrade paddle
 
-	mov	r0, #56
+	mov	r0, #192
 	ldr	r1, =paddleDropY
 	ldr	r1, [r1]
 	sub	r1, r1, #32
