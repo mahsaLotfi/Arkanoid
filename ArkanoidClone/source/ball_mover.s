@@ -13,7 +13,7 @@ moveBall:
 	ldr	r0, =ballSlope
 	ldr	r0, [r0]
 
-	cmp	r0, #0		@ ignore if not launched
+	cmp	r0, #0
 	popeq	{r4-r5,pc}
 
 	@ slopes going up
@@ -81,9 +81,6 @@ changeSlope:
 	ldr	r3, [r3]
 	mov	r6, r3
 
-@	ldr	r0, =xandy	for debugging purposes
-@	bl	printf
-
 	@ check if walls are hit
 	cmp	r4,#644
 	blge	switch45
@@ -94,23 +91,23 @@ changeSlope:
 	cmp	r4, #36
 	blle	switch45
 
-	cmp	r5, #740		@ check if paddle catches the ball
+	cmp	r5, #740
 	blge	checkIfCaught
 
-	bl	checkCorners		@ check if other corners have hit something
+	bl	checkCorners
 
 	pop	{r4-r9, lr}
 	mov      pc, LR
 
 	topleft:
 		push 	{lr}
-		ldr	r0, =curX @top left corner
+		ldr	r0, =curX
 		ldr	r0, [r0]
 
 		ldr	r1, =curY
 		ldr	r1, [r1]
 
-		bl	hit_brick @returns if hit
+		bl	hit_brick
 	        ldr     r1, =score
 		ldr	r2, [r1]
 	        add	r2, r2, r0
@@ -120,14 +117,14 @@ changeSlope:
 
 	topright:
 		push 	{lr}
-		ldr	r0, =curX @top right corner
+		ldr	r0, =curX
 		ldr	r0, [r0]
 	        add	r0, r0, #32
 
 		ldr	r1, =curY
 		ldr	r1, [r1]
 
-		bl	hit_brick @returns if hit
+		bl	hit_brick
         	ldr     r1, =score
 		ldr	r2, [r1]
 
@@ -137,7 +134,7 @@ changeSlope:
 
 	bottomleft:
 		push 	{lr}
-		ldr	r0, =curX @bottom left corner
+		ldr	r0, =curX
 		ldr	r0, [r0]
 
 		ldr	r1, =curY
@@ -153,7 +150,7 @@ changeSlope:
 
 	bottomright:
 		push 	{lr}
-		ldr	r0, =curX @bottom right corner
+		ldr	r0, =curX
 		ldr	r0, [r0]
 		add	r0, r0, #32
 
@@ -168,12 +165,11 @@ changeSlope:
 		str	r2, [r1]
 	pop	{pc}
 
-@Does not take or return arguments
-checkCorners: @makes function calls to avoid checking the same brick
+
+checkCorners:
 	push	{r4-r9, lr}
 
-	bl topleft @check this corner initally
-	@r9 keeps track of if the ball should change direction
+	bl	topleft
 	mov 	r9, r0
 
 	ldr	r4, =curX @r4 is x
@@ -185,15 +181,15 @@ checkCorners: @makes function calls to avoid checking the same brick
 	mov	r0, r4
 	mov	r1, r5
 	bl	brick_pos
-	mov	r6, r0 @r6 is top left x (till bottom right)
-	mov	r7, r1 @r7 is top left y (till bottom right)
+	mov	r6, r0 
+	mov	r7, r1
 
 	mov	r0, r4
-	add	r1,r5, #32 @bottom left
+	add	r1,r5, #32
 	bl	brick_pos
 
 	cmp	r1, r7
-	blne	bottomleft @calls bottom left if different tile from top left
+	blne	bottomleft
 	orrne	r9, r9, r0
 
 	add	r0, r4, #32
@@ -201,14 +197,13 @@ checkCorners: @makes function calls to avoid checking the same brick
 	bl	brick_pos
 
 	cmp 	r6, r0
-	mov	r6, r0 @store thes values for next check
+	mov	r6, r0
 	mov	r7, r1
-	blne	topright @if top right and top left are different check hits
+	blne	topright
 	orrne	r9, r9, r0
 
-	@this section deals with bottom right, top right and bottom left affect this
 	add	r0, r4, #32
-	add	r1, r5, #32 @bottom right
+	add	r1, r5, #32
 	bl	brick_pos
 	cmp 	r0, r6
 	beq	skip
@@ -216,7 +211,6 @@ checkCorners: @makes function calls to avoid checking the same brick
 	mov	r6, r0
 	mov	r7, r1
 
-        @check top right
 	add	r0, r4, #32
 	mov	r1, r5
 	bl	brick_pos
@@ -227,7 +221,6 @@ checkCorners: @makes function calls to avoid checking the same brick
 	bl	bottomright
 	orr	r9, r9, r0
 
-	@label if bottom right doesn't need to be checked
 skip:   cmp	r9, #0
 	blne	switch60
 
@@ -235,9 +228,6 @@ skip:   cmp	r9, #0
 	mov      pc, LR
 
 
-@ functions associated with the value pack \\
-
-@ paddle catches ball as effect of value pack
 ballIsCaught:
 	push	{lr}
 		ldr	r0, =lives
@@ -266,51 +256,51 @@ enableCatchBall:
 checkIfCaught:
 	push	{r4-r8, lr}
 
-	ldr	r0, =isBallCatchable	@ check if ball will be caught
+	ldr	r0, =isBallCatchable
 	ldr	r0, [r0]
 	cmp	r0, #1
 	bleq	ballIsCaught
 	popeq	{r4-r8, pc}
 
-	ldr	r0, =ballSlope		@ check if ball is launched
+	ldr	r0, =ballSlope
 	ldr	r0, [r0]
 	cmp	r0, #0
 	popeq	{r4-r8, pc}
 
-	ldr	r0, =curX	@ leftbound of ball
+	ldr	r0, =curX
 	ldr	r4, [r0]
 
 	ldr	r0, =paddlePosition
-	ldr	r5, [r0]	@ leftbound of paddle
+	ldr	r5, [r0]
 
-	add	r6, r4, #32	@ rightbound of ball
+	add	r6, r4, #32
 
 	ldr	r0, =paddleSize
 	ldr	r7, [r0]
-	add	r7, r7, r5	@ rightbound of paddle
+	add	r7, r7, r5
 
-	cmp	r6, r5		@ R ball - L paddle
-	bllt	ballDies	@ if ball too far right, ball will die
+	cmp	r6, r5
+	bllt	ballDies
 	popLT	{r4-r8, pc}
 
-	cmp	r7, r4		@ R paddle - L ball
-	bllt	ballDies	@ if paddle too far right, ball will die
+	cmp	r7, r4
+	bllt	ballDies
 	popLT	{r4-r8, pc}
 
 	@checkRightBound
-		sub	r7, r7, #48	@edge of paddle
-		cmp	r7, r4		@ edge of paddle - L ball
-		bllt	switch45Paddle	@ bounce 45
+		sub	r7, r7, #48	
+		cmp	r7, r4		
+		bllt	switch45Paddle	
 		popLT	{r4-r8, pc}
 
 	@checkLeftBound
-		add	r5, r5, #48	@ edge of paddle
-		cmp	r6, r5		@ R ball - edge of paddle
-		blle	switch45Paddle	@ bounce 45
+		add	r5, r5, #48	
+		cmp	r6, r5		
+		blle	switch45Paddle	
 		blGT	switch60Paddle
 	pop	{r4-r8, pc}
 
-@ unLaunchBall ball once below the paddle
+
 ballDies:
 	push	{r4-r5,lr}
 
@@ -330,7 +320,7 @@ ballDies:
 
 	pop	{r4-r5,pc}
 
-@ switch the ball's trajectory to 60 degrees
+
 switch60:
 	push	{lr}
 	ldr	r0, =ballSlope
@@ -368,7 +358,7 @@ switch60:
 	pop	{pc}
 
 
-@ switch the ball's trajectory to 45 degrees
+
 switch45:
 	push	{lr}
 	ldr	r0, =ballSlope
@@ -401,8 +391,7 @@ switch45:
 	str	r2, [r0]
 	pop	{pc}
 
-@ switch the ball's trajectory to 60 degrees
-@ that the paddle causes
+
 switch60Paddle:
 	push	{lr}
 
@@ -432,8 +421,7 @@ switch60Paddle:
 	str	r2, [r0]
 	pop	{pc}
 
-@ switch the ball's trajectory to 45 degrees
-@ when caused by the paddle
+
 switch45Paddle:
 	push	{lr}
 

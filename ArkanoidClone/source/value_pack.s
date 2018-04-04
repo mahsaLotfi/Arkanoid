@@ -153,7 +153,6 @@ catch_ball_drop_fall:
 	ldr	r1, =ballDrop
 	ldr	r6, [r1]
 
-	@ create the white tile
 	mov	r1, r6
 	mov	r2, #0xFFFFFF
 	mov	r3, #28
@@ -217,7 +216,7 @@ ball_destroy:
 
 	pop	{r6, pc}
 
-@ resets the state values for value packs for restarting
+
 reset_value_packs:
 	ldr	r0, =paddleDrop
 	mov	r1, #170

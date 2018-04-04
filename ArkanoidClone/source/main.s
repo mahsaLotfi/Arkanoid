@@ -144,8 +144,6 @@ frameBufferInfo:
 	.int 0		@ screen width
 	.int 0		@ screen height
 
-authors:	.asciz  "Authors: Kevin HuynH, Heavenel Cerna and Austin So\n"
-
 .global gpioBaseAddress
 gpioBaseAddress:
 	.int	0

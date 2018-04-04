@@ -17,16 +17,16 @@ init_SNES:
 	ldr	r0, =gpioBaseAddress
 	ldr	GPIO_base, [r0]		@ load address to register
 
-	mov	r0, #9			@ GPIO9
-	mov	r1, #0b001		@ as output
+	mov	r0, #9			@ Latch
+	mov	r1, #0b001		@ Set output
 	bl	Init_GPIO
 
-	mov	r0, #10			@ GPIO10
-	mov	r1, #0b000		@ as input
+	mov	r0, #10			@ Latch
+	mov	r1, #0b000		@ Set input
 	bl	Init_GPIO
 
-	mov	r0, #11			@ GPIO11
-	mov	r1, #0b001		@ as output
+	mov	r0, #11			@Latch
+	mov	r1, #0b001		@ Set output
 	bl	Init_GPIO
 
 	pop	{pc}
@@ -43,29 +43,29 @@ read_SNES:
 	btns	.req	r8
 	mov	r6, r0
 
-	mov	btns, #0		@ reset pushed buttons to 0
+	mov	btns, #0
 
 	mov	r0, #1
 	bl	write_clock
 
-	mov	r0, #1			@ set latch
+	mov	r0, #1
 	bl	write_latch
 
 	@ wait 12microSeconds to signal controller
 	mov	r0, #12
 	bl	delayMicroseconds
 
-	mov	r0, #0			@ clear latch
+	mov	r0, #0
 	bl	write_latch
 
 	inc	.req	r7
-	mov	inc, #0			@ increment
+	mov	inc, #0
 
 wait:
 	mov	r0, r6
 	bl	delayMicroseconds
 
-	mov	r0, #0		@ rise edge
+	mov	r0, #0
 	bl	write_clock
 
 	mov	r0, r6
@@ -73,18 +73,18 @@ wait:
 
 	bl	read_data
 
-	cmp	r0, #0		@ is data returned 0?
-	lsl	btns, #1	@ make space for new bit
-	addeq	btns, #0b1	@ if so, add 1 (pressed) to btns
+	cmp	r0, #0
+	lsl	btns, #1
+	addeq	btns, #0b1
 
-	mov	r0, #1		@ fall edge
+	mov	r0, #1
 	bl	write_clock
 
-	add	inc, #1		@ increment
-	cmp	inc, #16	@ end when greater than/equal to 16
+	add	inc, #1
+	cmp	inc, #16
 	blt	wait
 
-	mov	r0, btns		@ return buttons
+	mov	r0, btns
 	pop	{r6-r8, pc}
 
 
@@ -93,41 +93,37 @@ Init_GPIO:
 	@ r0: GPIO number
 	@ r1: function code
 
-	push	{r4, r5, lr}		@ store vars in stack
+	push	{r4, r5, lr}
 
-	toAdd	.req	r3		@ name r3 immediate scratch value
-	fSel	.req	r4		@ name r4 function select
+	toAdd	.req	r3
+	fSel	.req	r4
 
 	mov	r2, #0
 
 GPIO_loop:
-	cmp	r0, #9		@ r0 is GPIO number
-	SUBHI	r0, #10		@ loop divides r0 to get GPIOSELn
+	cmp	r0, #9
+	SUBHI	r0, #10	
 	ADDHI	r2, #1
 	BHI	GPIO_loop
-	lsl	toAdd, r2, #2		@ toAdd is the increment from GPIO_base
+	lsl	toAdd, r2, #2
 
-	ldr	fSel, [GPIO_base, toAdd]	@ load GPIO to r1
+	ldr	fSel, [GPIO_base, toAdd]
 
-	add	r0, r0, lsl #1		@ r0 is multiplied to become the pin number
-	lsl	r1, r0			@ function code is left shifted to pin number
+	add	r0, r0, lsl #1
+	lsl	r1, r0
 
-	mov	r5, #0b111		@ set bitmask
+	mov	r5, #0b111
 	lsl	r5, r0
 
-	bic	fSel, r5		@ bit clear at desired pins
-	orr	fSel, r1		@ apply function code
-	str	fSel, [GPIO_base, toAdd]	@ store back to GPIO_base
+	bic	fSel, r5
+	orr	fSel, r1
+	str	fSel, [GPIO_base, toAdd]
 
 	pop	{r4, r5, pc}
 
-.unreq	fSel			@ unset register names
+.unreq	fSel
 .unreq	toAdd
 
-
-@GPIO9  - LAT (latch): OUTPUT
-@GPIO10 - DAT (data): INPUT
-@GPIO11 - CLK (clock): OUTPUT
 
 write_latch:
 	teq	r0, #0			@ Clear Register if true

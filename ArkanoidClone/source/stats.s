@@ -39,7 +39,6 @@ init_lives:
 update_stats:
 	push	{r4, lr}
 
-	@ black out positions
 	mov	r0, #135
 	mov	r1, #54
 	mov	r2, #0x0
@@ -53,8 +52,6 @@ update_stats:
 	mov	r3, #32
 	mov	r4, r3
 	bl	drawCell
-
-	@ write digits
 
 	ldr	r0, =score
 	bl	to_string	@ r0 - first digit
@@ -87,10 +84,6 @@ update_stats:
 
 	pop	{r4, pc}
 
-@ changes intger to string for printing
-@ params: r0 - location of the integer
-@ returns: r0 - string code
-
 to_string:
 	push	{r4, r5, lr}
 	ldr	r0, [r0]
@@ -107,7 +100,7 @@ to_string:
 
 	pop	{r4, r5, pc}
 
-@ behavior for when score is 0
+
 game_over:
 	bl	update_stats
         bl	clearPaddle
@@ -119,7 +112,7 @@ game_over:
 	bl      draw_center_image
 	b	anybutton
 
-@ behavior for win condition
+
 game_won:
 	bl	update_stats
 
@@ -130,7 +123,6 @@ game_won:
 	b	anybutton
 
 
-@ reinitializes game vairables
 reset_score:
 	push	{lr}
 

@@ -53,6 +53,7 @@ initBall:
 	pop	{r4-r6, pc}
 
 
+@ Clears ball
 @ Argument: None
 @ Return: None
 clearBall:
@@ -70,16 +71,16 @@ clearBall:
 
 	bl	drawCell
 
-	@ update ball location
-		ldr	r4, =curX
-		ldr	r4, [r4]
-		ldr	r5, =preX
-		str	r4, [r5]
+@ update ball location
+	ldr	r4, =curX
+	ldr	r4, [r4]
+	ldr	r5, =preX
+	str	r4, [r5]
 
-		ldr	r4, =curY
-		ldr	r4, [r4]
-		ldr	r5, =preY
-		str	r4, [r5]
+	ldr	r4, =curY
+	ldr	r4, [r4]
+	ldr	r5, =preY
+	str	r4, [r5]
 
 	pop	{r4-r5, pc}
 
@@ -102,14 +103,14 @@ launchBall:
 
 	pop	{r4-r7,pc}
 
-	launch:
-		push	{lr}
+launch:
+	push	{lr}
 
-		ldr	r0, =ballSlope
-		mov	r1, #87
-		strB	r1, [r0]
+	ldr	r0, =ballSlope
+	mov	r1, #87
+	strB	r1, [r0]
 
-		pop	{pc}
+	pop	{pc}
 
 
 unLaunchBall:

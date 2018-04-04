@@ -165,7 +165,6 @@ drawWordLoop:
 	add	r6, r6, #11
 	b	drawWordLoop
 
-@blacks out game screen takes and returns no arguments
 blackScreen:
 	push {r4, r5, lr}
 	mov r4, #0
