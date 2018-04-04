@@ -92,7 +92,7 @@ paddle_drop_fall:
 	sub	r1, r6, #32
 	mov	r2, #0x0
 	mov	r3, #64
-	mov	r4, #16
+	mov	r4, #48
 	bl	drawCell
 
 	ldr	r0, =paddleDropY
@@ -135,7 +135,7 @@ paddle_drop_caught:
 catch_ball_drop_fall:
 	push	{r4-r8, lr}
 
-	mov	r0, #428
+	mov	r0, #428 + 96
 
 	ldr	r1, =ballDropY
 	ldr	r6, [r1]
@@ -150,12 +150,6 @@ catch_ball_drop_fall:
 	add	r7, r6, #32
 	ldr	r1, =ballDropY
 	str	r7, [r1]
-
-	@ create the signifyuing character
-	mov	r0, #'-'
-	mov	r1, #434
-	add	r2, r6, #4
-	bl	drawChar
 
 	mov	r0, #428
 	sub	r1, r6, #32
