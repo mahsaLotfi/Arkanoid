@@ -97,7 +97,7 @@ paddle_drop_fall:
 
 	ldr	r0, =paddleDropY
 	ldr	r0, [r0]
-	mov	r1, #774
+	mov	r1, #800
 
 
 	@ Check if tile is caught
