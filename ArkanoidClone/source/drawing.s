@@ -1,32 +1,24 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
-
 .section	.text
-
 .global drawCell, drawPx, drawChar, drawWord, blackScreen, initFrame
-
-initFrame:
-	push	{lr}
-
-	ldr	r0, =frameBufferInfo
-	bl	initFbInfo
-
-	pop	{pc}
-
+	
+@ Parameters:
 @ r0 - xStart
 @ r1 - yStart
 @ r2 - color
 @ r3 - length
-@ r4 - xLength (height)
-drawCell:
-	length	.req 	r3
-	pxDrawn	.req	r6
-	offset	.req	r4
-	frame	.req	r5
-	width	.req	r6
-	xval	.req	r7
-	yval	.req	r8
-	color	.req	r9
+@ r4 - height
 
+length	.req 	r3
+pxDrawn	.req	r6
+offset	.req	r4
+frame	.req	r5
+width	.req	r6
+xval	.req	r7
+yval	.req	r8
+color	.req	r9
+
+drawCell:
 	push	{r5-r6, lr}
 	height	.req	r4
 
@@ -34,7 +26,9 @@ drawCell:
 	ldr	r5, [r5, #4]
 
 	mov	pxDrawn, #0
+	
 	tileLoop:
+	
 		bl	drawHLn
 		add	r0, r0, r5
 		sub	r0, r0, length
@@ -45,10 +39,10 @@ drawCell:
 
 	pop	{r5-r6, pc}
 
+@ Parameters:
 @ r0 - xStart
 @ r1 - yStart
 @ r2 - color
-
 drawPx:
 	push	{r3-r9, lr}
 
@@ -70,10 +64,11 @@ drawPx:
 	pop	{r3-r9, pc}
 
 
-	.unreq	offset
-	.unreq	frame
-	.unreq	width
+.unreq	offset
+.unreq	frame
+.unreq	width
 
+@ Parameters:
 @ r0 - xStart
 @ r1 - yStart
 @ r2 - color
@@ -92,15 +87,15 @@ drawHLn:
 	pop	{r6, lr}
 	mov	pc, lr
 
+.unreq	length
+.unreq	height
+.unreq	pxDrawn
 
-	.unreq	length
-	.unreq	height
-	.unreq	pxDrawn
-
-@ Draw the character in r0
-@ r1=x
-@ r2=y
-@ r3=colour
+@ Parameters:
+@ r0 - Character
+@ r1 - X
+@ r2 - Y
+@ r3 - Color
 drawChar:
 	push		{r4-r9, lr}
 
@@ -111,54 +106,47 @@ drawChar:
 	mask		.req	r8
         colour		.req	r9
 
-	ldr		chAdr, =font		@ load the address of the font map
-	add		chAdr,	r0, lsl #4	@ char address = font base + (char * 16)
+	ldr		chAdr, =font		
+	add		chAdr,	r0, lsl #4	
 
-	mov		py, r2			@ init the Y coordinate (pixel coordinate)
+	mov		py, r2			
 
 	ldr		r2 , =initX
 	str		r1, [r2]
 
 	charLoop:
 		ldr		px, =initX
-		ldr		px, [px]		@ init the X coordinate
-		mov		mask, #0x01		@ set the bitmask to 1 in the LSB
-		ldrb		row, [chAdr], #1	@ load the row byte, post increment chAdr
+		ldr		px, [px]	
+		mov		mask, #0x01		
+		ldrb		row, [chAdr], #1	
 
 	rowLoop:
-		tst		row, mask		@ test row byte against the bitmask
+		tst		row, mask		
 		beq		noPixel
 
 		mov		r0, px
 		mov		r1, py
 		mov		r2, colour
-		bl		drawPx			@ draw pixel at (px, py)
+		bl		drawPx			
 
-	noPixel:
-		add		px, px, #1		@ increment x coordinate by 1
-		lsl		mask, #1		@ shift bitmask left by 1
+noPixel:
+	add		px, px, #1		
+	lsl		mask, #1		
 
-		tst		mask,	#0x100		@ test if the bitmask has shifted 8 times (test 9th bit)
-		beq		rowLoop
+	tst		mask,	#0x100		
+	beq		rowLoop
 
-		add		py,py, #1		@ increment y coordinate by 1
-
-		tst		chAdr, #0xF
-		bne		charLoop		@ loop back to charLoop$, unless address evenly divisibly by 16 (ie: at the next char)
-
-	.unreq	chAdr
-	.unreq	px
-	.unreq	py
-	.unreq	row
-	.unreq	mask
+	add		py,py, #1		
+	tst		chAdr, #0xF
+	bne		charLoop		
 
 	pop		{r4-r9, pc}
 
-
-@ r0 - char array address
-@ r1 - initial x
-@ r2 - y
-@ r3 - color
+@ Parameters:
+@ r0 - Array address
+@ r1 - X
+@ r2 - Y
+@ r3 - Color
 drawWord:
 	push	{r4-r7, lr}
 	mov	r5, r0
@@ -206,7 +194,6 @@ font:		.incbin	"font.bin"
 initX:		.int 0
 
 .global frameBufferInfo
-
 frameBufferInfo:
 	.int	0	@ frame buffer pointer
 	.int	0	@ width
