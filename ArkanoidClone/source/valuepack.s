@@ -212,7 +212,7 @@ ball_destroy:
 	mov	r4, #32
 	bl	drawCell
 
-	pop	{pc}
+	pop	{r6, pc}
 
 @ resets the state values for value packs for restarting
 reset_value_packs:
