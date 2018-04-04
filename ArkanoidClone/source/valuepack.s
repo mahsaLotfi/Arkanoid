@@ -81,7 +81,7 @@ paddle_drop_fall:
 	ldr	r1, =paddleDropY
 	ldr	r6, [r1]
 
-	@ draws white tile
+	@ draws 0xFFFFFF tile
 	mov	r1, r6
 	mov	r2, #0xFFFFFF
 	mov	r3, #28
@@ -152,7 +152,7 @@ catch_ball_drop_fall:
 	ldr	r1, =ballDropY
 	ldr	r6, [r1]
 
-	@ create the white tile
+	@ create the 0xFFFFFF tile
 	mov	r1, r6
 	mov	r2, #0xFFFFFF
 	mov	r3, #28

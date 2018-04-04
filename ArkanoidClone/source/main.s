@@ -152,21 +152,6 @@ frameBufferInfo:
 	msgTerminate:	.asciz	"Program Terminated\n"
 
 
-.global white, indigo, green, yellow
-
-white:	c1:
-	.int	0xFFFFFF
-
-indigo:	c2:
-	.int 	0x4B0082
-
-green:	c3:
-	.int	0x00FF00
-
-yellow:
-	.int	0xFFFF00
-
-
 .global gpioBaseAddress
 
 gpioBaseAddress:

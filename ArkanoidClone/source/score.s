@@ -16,7 +16,7 @@ initScore:
 	ldr	r0, =scoreChar
 	mov	r1, #60
 	mov	r2, #55
-	ldr	r3, =white
+	ldr	r3, =0xFFFFFF
 	bl	drawWord
 	pop	{pc}
 
@@ -32,7 +32,7 @@ initLives:
 	ldr	r0, =livesChar
 	mov	r1, #550
 	mov	r2, #55
-	ldr	r3, =white
+	ldr	r3, =0xFFFFFF
 	bl	drawWord
 	pop	{pc}
 

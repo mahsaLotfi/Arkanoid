@@ -8,10 +8,10 @@
 makeGame:
 	bl	resetScore
 
-		@ Draw white border
+		@ Draw 0xFFFFFF border
 		mov	r0, #0
 		mov	r1, #0
-		mov	r2, #0xFFFFFF
+		mov	r2, 0xFFFFFF
 		mov	r3, #720
 		mov	r4, #960
 		bl	drawCell
