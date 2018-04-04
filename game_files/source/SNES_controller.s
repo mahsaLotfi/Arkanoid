@@ -13,7 +13,7 @@ pButton		.req	r9
 .global GPIO_init, button_press
 
 
-GPIO_init:
+init_SNES:
 	push	{fp, lr}
 	
 	bl	getGpioPtr		@ Called to get	base address of GPIO in r0
@@ -205,7 +205,7 @@ check_button:
 
 B:
 	tst	r1, pButton
-	bne	print_Y
+	bne	print_B
 	mov	r0, #1
 
 	pop	{pc}			
@@ -213,7 +213,7 @@ B:
 Y:
 	lsl	r1, #1
 	tst	r1, pButton
-	bne	print_select
+	bne	print_Y
 	mov	r0, #2
 
 	pop	{pc}
@@ -221,7 +221,7 @@ Y:
 select:
 	lsl	r1, #1
 	tst	r1, pButton
-	bne	print_start
+	bne	print_select
 	mov	r0, #3
 
 	pop	{pc}			
@@ -229,7 +229,7 @@ select:
 start:
 	lsl	r1, #1
 	tst	r1, pButton
-	bne	print_up
+	bne	print_start
 	mov	r0, #4
 
 	pop	{pc}			
@@ -237,7 +237,7 @@ start:
 up:
 	lsl	r1, #1
 	tst	r1, pButton
-	bne	print_down
+	bne	print_up
 	mov	r0, #5
 
 	pop	{pc}			@ Return call
@@ -245,7 +245,7 @@ up:
 down:
 	lsl	r1, #1
 	tst	r1, pButton
-	bne	print_left
+	bne	print_down
 	mov	r0, #6
 
 	pop	{pc}			@ Return call
@@ -253,7 +253,7 @@ down:
 left:
 	lsl	r1, #1
 	tst	r1, pButton
-	bne	print_right
+	bne	print_left
 	mov	r0, #7
 
 	pop	{pc}			@ Return call
@@ -261,7 +261,7 @@ left:
 right:
 	lsl	r1, #1
 	tst	r1, pButton
-	bne	print_A
+	bne	print_right
 	mov	r0, #8
 
 	pop	{pc}			@ Return call
@@ -269,7 +269,7 @@ right:
 A:
 	lsl	r1, #1
 	tst	r1, pButton
-	bne	print_X
+	bne	print_A
 	mov	r0, #9
 
 	pop	{pc}			@ Return call
@@ -277,7 +277,7 @@ A:
 X:
 	lsl	r1, #1
 	tst	r1, pButton
-	bne	print_lB
+	bne	print_X
 	mov	r0, #10
 
 	pop	{pc}			@ Return call
@@ -285,7 +285,7 @@ X:
 lB:
 	lsl	r1, #1
 	tst	r1, pButton
-	bne	print_rB
+	bne	print_leftB
 	mov	r0, #11
 
 	pop	{pc}			@ Return call
@@ -293,15 +293,24 @@ lB:
 rB:
 	lsl	r1, #1
 	tst	r1, pButton
-	bne	end_print
+	bne	print_rightB
 	mov	r0, #12
 
 	pop	{pc}			@ Return call
 
-
-@--------------------------------------------------------------------------------------
-
-
+@@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.data
-
-GPIO_baseAddr:	.word	0
+	GPIO_baseAddr:	.word	0
+	
+	print_B:	.asciz		"B\n"
+	print_Y		.asciz		"Y\n"
+	print_select:	.asciz		"Select\n"
+	print_start:	.asciz 		"Start\n"
+	print_up:	.asciz		"UP\n"
+	print_down:	.asciz		"DOWN\n"
+	print_left:	.asciz		"LEFT\n"
+	print_right:	.asciz		"RIGHT\n"
+	print_A:	.asciz		"A\n"
+	print_X:	.asciz		"X\n"
+	print_leftB:	.asciz		"Left Button\n"
+	print_rightB:	.asciz		"Right Button\n"
