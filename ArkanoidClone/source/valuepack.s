@@ -92,7 +92,7 @@ paddle_drop_fall:
 	sub	r1, r6, #32
 	mov	r2, #0x0
 	mov	r3, #64
-	mov	r4, #48
+	mov	r4, #32
 	bl	drawCell
 
 	ldr	r0, =paddleDropY
@@ -168,7 +168,7 @@ catch_ball_drop_fall:
 	pop	{r4-r8, pc}
 
 catch_ball_drop_caught:
-	push	{r4, lr}
+	push	{r6, lr}
 
 	ldr	r0, =ballDropState
 	mov	r1, #2
