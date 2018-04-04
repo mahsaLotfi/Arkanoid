@@ -154,6 +154,5 @@ frameBufferInfo:
 
 
 .global gpioBaseAddress
-
 gpioBaseAddress:
 	.int	0
