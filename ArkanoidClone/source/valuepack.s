@@ -120,9 +120,9 @@ paddle_drop_caught:
 	ldr	r1, =paddleSize
 	ldr	r1, [r1]
 	
-	add	r0, r1
+	add	r1, r0
 
-	cmp	r0, #182	
+	cmp	r1, #182	
 	bllt	paddle_destroy
 	
 	cmp	r0, #246
