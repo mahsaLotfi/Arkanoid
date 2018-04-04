@@ -16,13 +16,13 @@ main:
 	gBase	.req	r10
 	prevbtn	.req	r9
 
+	ldr	r0, =frameBufferInfo
+	bl	initFbInfo
+
 	ldr	r0, =authors		@ Print authors
 	bl	printf
 
 	bl	initSNES
-
-	ldr	r0, =frameBufferInfo
-	bl	initFbInfo
 
 start_menu:
 	mov	r4, #0			@ Initial state is 0
@@ -157,7 +157,7 @@ frameBufferInfo:
 .global white, indigo, green, yellow
 
 white:	c1:
-	.int	0x0000FF
+	.int	0xFFFFFF
 
 indigo:	c2:
 	.int 	0x4B0082
