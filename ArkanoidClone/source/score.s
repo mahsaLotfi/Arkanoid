@@ -1,5 +1,4 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
-
 .section	.text
 
 .global initScore, initLives, updateStats, GAME_OVER, GAME_WIN, resetScore
@@ -173,6 +172,5 @@ scoreChar:	.asciz		"SCORE: "
 livesChar:	.asciz		"LIVES: "
 
 .global score, lives
-
 score:	.int	0
 lives:	.int	3
