@@ -191,7 +191,7 @@ checkBallDrop2:
 	mov	r3, #28
 	mov	r4, r3
 	bl	drawCell
-	pop	{r6, lr}
+	pop	{r6, pc}
 
 tryOtherSide:
 	ldr	r1, =paddleSize
