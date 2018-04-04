@@ -177,13 +177,13 @@ catch_ball_drop_caught:
 	ldr	r0, =paddlePosition
 	ldr	r0, [r0]
 
-	mov	r6, #610
+	mov	r6, #620
 	cmp	r0, r6
 	blle	enableCatchBall	
 	bgt	tryOtherSide
 
 checkBallDrop2:
-	mov	r0, #428
+	mov	r0, #578
 	ldr	r1, =ballDropY
 	ldr	r1, [r1]
 	sub	r1, r1, #32
@@ -191,13 +191,14 @@ checkBallDrop2:
 	mov	r3, #28
 	mov	r4, r3
 	bl	drawCell
+	
 	pop	{r6, pc}
 
 tryOtherSide:
 	ldr	r1, =paddleSize
 	ldr	r1, [r1]
 	add	r0, r0, r1
-	cmp	r0, #428
+	cmp	r0, #578
 	blge	enableCatchBall
 
 	b	checkBallDrop2
