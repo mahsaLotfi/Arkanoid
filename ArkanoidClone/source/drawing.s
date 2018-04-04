@@ -1,6 +1,10 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+
 .section	.text
-.global initFrame
+
+.global drawCell, drawPx, drawChar, drawWord, blackScreen
+
+
 initFrame:
 	push	{lr}
 
@@ -14,7 +18,6 @@ initFrame:
 @ r2 - color
 @ r3 - length
 @ r4 - xLength (height)
-.global drawCell
 drawCell:
 	length	.req 	r3
 	pxDrawn	.req	r6
@@ -43,7 +46,6 @@ drawCell:
 
 	pop	{r5-r6, pc}
 
-.global drawPx
 @ r0 - xStart
 @ r1 - yStart
 @ r2 - color
@@ -77,7 +79,6 @@ drawPx:
 @ r1 - yStart
 @ r2 - color
 @ r3 - length
-.global drawHLn
 drawHLn:
 	push	{r6, lr}
 
@@ -101,7 +102,6 @@ drawHLn:
 @ r1=x
 @ r2=y
 @ r3=colour
-.global drawChar
 drawChar:
 	push		{r4-r9, lr}
 
@@ -160,7 +160,6 @@ drawChar:
 @ r1 - initial x
 @ r2 - y
 @ r3 - color
-.global drawWord
 drawWord:
 	push	{r4-r7, lr}
 	mov	r5, r0
@@ -179,7 +178,7 @@ drawWord:
 		add	r6, r6, #11
 		b	drawWordLoop
 
-.global blackScreen @blacks out game screen takes and returns no arguments
+@blacks out game screen takes and returns no arguments
 blackScreen:
 	push {r4, r5, lr}
 	mov r4, #0
@@ -202,12 +201,13 @@ drawblackscreen:
 
 @@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section .data
-
 .align 4
+
 font:		.incbin	"font.bin"
 initX:		.int 0
 
 .global frameBufferInfo
+
 frameBufferInfo:
 	.int	0	@ frame buffer pointer
 	.int	0	@ width

@@ -2,7 +2,7 @@
 
 .section	.text
 
-.global makeGame
+.global makeGame, anybutton, superPaddle, clearPaddle
 
 
 makeGame:
@@ -110,7 +110,7 @@ paddle:
 		bl	readSNES
 		mov	r7, #1500
 
-		cmp	r0, #199
+		cmp	r0, #409
 		bleq	pause_menu
 
 		cmp	r0, #32768
@@ -211,7 +211,6 @@ isBallMovable:
 		str	r1, [r0]
 		pop	{r4,r5,pc}
 
-.global anybutton
 anybutton:
 	mov	r0, #8192
         bl 	readSNES
@@ -221,7 +220,6 @@ anybutton:
 
 @ PowerUp Element
 @ Changes paddle size to superPadde size
-.global superPaddle
 superPaddle:		
 	push	{lr}
 
@@ -260,7 +258,6 @@ drawInitialPaddle:
 	pop	{r4, pc}
 
 
-.global	clearPaddle
 clearPaddle:
 	push	{lr}
 	mov	r0, #36

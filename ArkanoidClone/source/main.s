@@ -9,7 +9,7 @@
 
 .section    .text
 
-.global main, start_menu, start_menu_wait, terminate, pause_menu
+.global main, start_menu, terminate, pause_menu
 
 
 main:
@@ -30,7 +30,6 @@ start_menu:
 	bl	readSNES
 
 start_menu_wait:
-
     	cmp 	r4, #0			@ Check state
 
 	mov 	r1, #720

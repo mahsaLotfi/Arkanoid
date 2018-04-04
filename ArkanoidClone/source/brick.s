@@ -1,11 +1,15 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+
 .section .text
+
+.global generateBricks, initBricks, hitBrick, XYtoCode, updateBricks, isGameWon
+
 
 @ Updates and draws brick
 @ r0 - X
 @ r1 - Y
 @ r2 - Color
-.global generateBricks
+
 generateBricks:
 	push	{r4-r6, lr}
 	
@@ -27,7 +31,6 @@ generateBricks:
 
 
 @ Initializes the brick
-.global	initBricks
 initBricks:
 	push	{r4-r6, lr}
 
@@ -68,6 +71,7 @@ initBricks:
 @ r0 - Brick's x position
 @ r1 - Brick's y position
 @ r2 - Brick type
+
 drawBrick:
 	xPos		.req	r5
 	yPos		.req	r6
@@ -116,7 +120,6 @@ drawBrick:
 @ r1 - Y
 @ Return:
 @ r0 - Brick state 
-.global	hitBrick
 hitBrick:
 	push	{r4-r7, lr}
 
@@ -160,7 +163,6 @@ CodeToXY:
 @ Returns:
 @ r0 - X
 @ r1 - Y
-.global XYtoCode
 XYtoCode:
 	push	{r4,r5,lr}
 
@@ -381,7 +383,6 @@ codeToTile:
 		mov	pc, lr
 
 @ Re-draws all the bricks 
-.global	updateBricks
 updateBricks:
 	push	{r4-r6, lr}
 	
@@ -417,7 +418,6 @@ getBrickStateLoop:
 
 @ Returns:
 @ r0: Is Game Won
-.global isGameWon
 isGameWon:
 	push	{r4, r5, lr}
 	
@@ -448,44 +448,40 @@ checkBricks:
 @ 2 - Medium Brick
 @ 3 - Strong Brick
 
-    .global brick20, brick25
+.global brick20, brick25
 
-	doBrick:	.byte	1
-	destroyedBrick:	.byte	0
+doBrick:	.byte	1
+destroyedBrick:	.byte	0
     
-	brick0:	.byte 	1
-	brick1:	.byte	1
-	brick2:	.byte	1
-	brick3:	.byte	1
-	brick4:	.byte	1
-	brick5:	.byte	1
-	brick6:	.byte	1
-	brick7:	.byte	1
-	brick8:	.byte	1
-	brick9:	.byte	1
+brick0:	.byte 	1
+brick1:	.byte	1
+brick2:	.byte	1
+brick3:	.byte	1
+brick4:	.byte	1
+brick5:	.byte	1
+brick6:	.byte	1
+brick7:	.byte	1
+brick8:	.byte	1
+brick9:	.byte	1
 
-	brick10:	.byte 	2
-	brick11:	.byte	2
-	brick12:	.byte	2
-	brick13:	.byte	2
-	brick14:	.byte	2
-	brick15:	.byte	2
-	brick16:	.byte	2
-	brick17:	.byte	2
-	brick18:	.byte	2
-	brick19:	.byte	2
+brick10:	.byte 	2
+brick11:	.byte	2
+brick12:	.byte	2
+brick13:	.byte	2
+brick14:	.byte	2
+brick15:	.byte	2
+brick16:	.byte	2
+brick17:	.byte	2
+brick18:	.byte	2
+brick19:	.byte	2
 
-	brick20:	.byte 	3
-	brick21:	.byte	3
-	brick22:	.byte	3
-	brick23:	.byte	3
-	brick24:	.byte	3
-	brick25:	.byte	3
-	brick26:	.byte	3
-	brick27:	.byte	3
-	brick28:	.byte	3
-	brick29:	.byte	3
-
-
-
-
+brick20:	.byte 	3
+brick21:	.byte	3
+brick22:	.byte	3
+brick23:	.byte	3
+brick24:	.byte	3
+brick25:	.byte	3
+brick26:	.byte	3
+brick27:	.byte	3
+brick28:	.byte	3
+brick29:	.byte	3

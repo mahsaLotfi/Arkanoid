@@ -1,7 +1,10 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+
 .section	.text
 
-.global initScore
+.global initScore, initLives, updateStats, GAME_OVER, GAME_WIN, resetScore
+
+
 initScore:
 	push	{lr}
 
@@ -17,7 +20,7 @@ initScore:
 	bl	drawWord
 	pop	{pc}
 
-.global	initLives
+
 initLives:
 	push	{lr}
 
@@ -34,7 +37,6 @@ initLives:
 	pop	{pc}
 
 
-.global	updateStats
 updateStats:
 	push	{r4, lr}
 
@@ -89,6 +91,7 @@ updateStats:
 @ changes intger to string for printing
 @ params: r0 - location of the integer
 @ returns: r0 - string code
+
 toString:
 	push	{r4, r5, lr}
 	ldr	r0, [r0]
@@ -106,7 +109,6 @@ toString:
 	pop	{r4, r5, pc}
 
 @ behavior for when score is 0
-.global GAME_OVER
 GAME_OVER:
 	bl	updateStats
         bl	clearPaddle
@@ -119,7 +121,6 @@ GAME_OVER:
 	b	anybutton
 
 @ behavior for win condition
-.global GAME_WIN
 GAME_WIN:
 	bl	updateStats
 
@@ -131,7 +132,6 @@ GAME_WIN:
 
 
 @ reinitializes game vairables
-.global	resetScore
 resetScore:
 	push	{lr}
 
@@ -165,13 +165,14 @@ resetScore:
 	bl	reset_value_packs
 	pop	{pc}
 
+
 @@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.data
-	scoreChar:	.asciz		"SCORE: "
-	livesChar:	.asciz		"LIVES: "
 
-	.global score
-	score:	.int	0
+scoreChar:	.asciz		"SCORE: "
+livesChar:	.asciz		"LIVES: "
 
-	.global	lives
-	lives:	.int	3
+.global score, lives
+
+score:	.int	0
+lives:	.int	3

@@ -4,6 +4,7 @@
 
 .global	check_drops, reset_value_packs
 
+
 @ listens for drops
 check_drops:
 	push	{r4-r6, lr}

@@ -1,7 +1,10 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
+
 .section	.text
 
-.global	moveBall
+.global	moveBall, enableCatchBall
+
+
 @ no arguments or return values
 moveBall:
 	push	{r4-r5,lr}
@@ -250,7 +253,6 @@ ballIsCaught:
 	pop	{pc}
 
 
-.global	enableCatchBall
 enableCatchBall:
 	push	{lr}
 
@@ -463,7 +465,9 @@ switch45Paddle:
 
 @@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.data
-	.global	deadBall
-	deadBall:	.byte	0
 
-	isBallCatchable:	.int	0
+.global	deadBall
+
+deadBall:		.byte	0
+
+isBallCatchable:	.int	0
