@@ -197,18 +197,18 @@ catch_ball_drop_caught:
 	bllt	ball_destroy
 	
 	mov	r6, #606
-	cmp	r1, r6	
+	cmp	r0, r6	
 	blgt	ball_destroy
 	
 	bl	enableCatchBall
 
 ball_destroy:
-	mov	r0, #182
-	ldr	r1, =paddleDropY
+	mov	r0, #578
+	ldr	r1, =ballDropY
 	ldr	r1, [r1]
 	sub	r1, r1, #32
 	mov	r2, #0x0
-	mov	r3, #64
+	mov	r3, #32
 	mov	r4, #32
 	bl	drawCell
 
