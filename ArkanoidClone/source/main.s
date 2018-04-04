@@ -20,6 +20,8 @@ main:
 	bl	printf
 
 	bl	initSNES
+
+	ldr	r0, =frameBufferInfo
 	bl	initFbInfo
 
 start_menu:
