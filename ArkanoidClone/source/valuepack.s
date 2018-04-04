@@ -1,12 +1,8 @@
 
 @@@@@@@@@@@@@@@@@@@@@@@@@ Text Section @@@@@@@@@@@@@@@@@@@@@@@@@
-
 .section	.text
-
 .global	check_drops, reset_value_packs
 
-
-@ listens for drops
 check_drops:
 	push	{r4-r6, lr}
 
@@ -16,7 +12,7 @@ check_drops:
 	pop	{r4-r6, pc}
 
 
-@ checks whether paddle drop or catch ball drop is occuring
+@ Super paddle value pack drop checker
 check_paddle_drop:
 	push	{lr}
 
@@ -41,14 +37,12 @@ check_catch_ball_drop:
 
 	pop	{pc}
 
-@ checks whetehr the brick holding the approrpaite til has been broken
-
 check_catch_ball_brick_broken:
 	push	{r4-r6,lr}
 
 	mov	r5, #1
 
-	ldr	r0, =brick20
+	ldr	r0, =brick0
 	ldrb	r6, [r0]
 
 	cmp	r6, #0
@@ -56,7 +50,6 @@ check_catch_ball_brick_broken:
 		streq	r5, [r0]
 
 	pop	{r4-r6,pc}
-
 
 
 check_paddle_brick_broken:
@@ -73,7 +66,8 @@ check_paddle_brick_broken:
 
 	pop	{r4-r6,pc}
 
-@ drops the value pack inrementally
+
+@ Moves super paddle drop downward
 paddle_drop_fall:
 	push	{r4-r8, lr}
 
@@ -82,7 +76,7 @@ paddle_drop_fall:
 	ldr	r1, =paddleDropY
 	ldr	r6, [r1]
 
-	@ draws white tile
+	@ Draws super paddle drop tile
 	mov	r1, r6
 	mov	r2, #0x0000FF
 	mov	r3, #16
@@ -93,12 +87,7 @@ paddle_drop_fall:
 	ldr	r1, =paddleDropY
 	str	r7, [r1]
 
-	@ draws signifying value
-	@mov	r0, #'+'
-	@mov	r1, #64
-	@add	r2, r6, #4
-	@bl	drawChar
-
+	@ Erases tile trace
 	mov	r0, #56
 	sub	r1, r6, #32
 	mov	r2, #0x0
@@ -111,14 +100,14 @@ paddle_drop_fall:
 	mov	r1, #774
 
 
-	@ if drop is near the bottom check if the paddle caught it
+	@ Check if tile is caught
 	cmp	r0, r1
 	blge	paddle_drop_caught
 
 
 	pop	{r4-r8, pc}
 
-@ check whether the paddle drop is caught
+
 paddle_drop_caught:
 	push	{lr}
 
@@ -181,14 +170,11 @@ catch_ball_drop_fall:
 	ldr	r0, [r0]
 	mov	r1, #774
 
-
-	@ if drop is near the bottom check if the paddle caught it
 	cmp	r0, r1
 	blge	catch_ball_drop_caught
 
 	pop	{r4-r8, pc}
 
-@ cgecj whether ball drop is caught
 catch_ball_drop_caught:
 	push	{lr}
 
@@ -256,4 +242,4 @@ ballDropY:		.int	224
 @ 2 - caught/finished
 paddleDropState:	.int	0
 ballDropState:		.int	0
->>>>>>> parent of 07576e5... Update valuepack.s
+
