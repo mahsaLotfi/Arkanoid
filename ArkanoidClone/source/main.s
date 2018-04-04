@@ -71,14 +71,6 @@ haltLoop$:
 
 
 
-init_FB:
-	push {lr}
-
-	ldr	r0, =frameBufferInfo
-	bl	initFbInfo
-
-	pop {pc}
-
 pause_menu:
 	push	{r4-r5, lr}
 	mov	r4, #0		@ state
