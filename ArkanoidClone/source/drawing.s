@@ -1,6 +1,6 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.text
-.global drawCell, drawPx, drawChar, drawWord, blackScreen
+.global drawCell, drawPx, drawChar, drawWord, blackScreen, init_FB
 
 init_FB:
 	push {lr}
