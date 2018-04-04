@@ -18,7 +18,8 @@ main:
 
 	bl	init_SNES
 
-	bl	init_FB
+	ldr	r0, =frameBufferInfo
+	bl	initFbInfo
 
 start_menu:
 	mov	r4, #0			@ Initial state is 0
@@ -137,6 +138,7 @@ cs_loop:
 .section	.data
 .align 2
 
+.global	frameBufferInfo
 frameBufferInfo:
 	.int 0		@ frame buffer pointer
 	.int 0		@ screen width

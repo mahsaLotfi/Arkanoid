@@ -1,14 +1,6 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.text
-.global drawCell, drawPx, drawChar, drawWord, blackScreen, init_FB
-
-init_FB:
-	push {lr}
-
-	ldr	r0, =frameBufferInfo
-	bl	initFbInfo
-
-	pop {pc}
+.global drawCell, drawPx, drawChar, drawWord, blackScreen
 	
 @ Parameters:
 @ r0 - xStart
@@ -200,9 +192,3 @@ drawblackscreen:
 
 font:		.incbin	"font.bin"
 initX:		.int 0
-
-.global frameBufferInfo
-frameBufferInfo:
-	.int	0	@ frame buffer pointer
-	.int	0	@ width
-	.int	0	@ height
