@@ -110,7 +110,7 @@ paddle:
 		bl	readSNES
 		mov	r7, #1500
 
-		cmp	r0, #409
+		cmp	r0, #199
 		bleq	pause_menu
 
 		cmp	r0, #32768
