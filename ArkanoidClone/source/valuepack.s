@@ -174,13 +174,12 @@ catch_ball_drop_caught:
 	mov	r1, #2
 	str	r1, [r0]
 
-	@ load paddle position
 	ldr	r0, =paddlePosition
 	ldr	r0, [r0]
 
-	@ if paddle is 428 from the left
-	cmp	r0, #610
-	blle	enableCatchBall	@ change to catch ball
+	mov	r5, #610
+	cmp	r0, r5
+	blle	enableCatchBall	
 	bgt	tryOtherSide
 
 checkBallDrop2:
