@@ -21,7 +21,8 @@ main:
 
 	bl	init_SNES
 
-	bl	initFrame
+	ldr	r0, =frameBufferInfo
+	bl	initFbInfo
 
 start_menu:
 	mov	r4, #0			@ Initial state is 0
