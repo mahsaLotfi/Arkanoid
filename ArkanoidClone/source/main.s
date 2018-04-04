@@ -21,8 +21,7 @@ main:
 
 	bl	init_SNES
 
-	ldr	r0, =frameBufferInfo
-	bl	initFbInfo
+	bl	init_FB
 
 start_menu:
 	mov	r4, #0			@ Initial state is 0
@@ -71,6 +70,14 @@ haltLoop$:
 	prevbtn	.req	r9
 
 
+
+init_FB:
+	push {lr}
+
+	ldr	r0, =frameBufferInfo
+	bl	initFbInfo
+
+	pop {pc}
 
 pause_menu:
 	push	{r4-r5, lr}
