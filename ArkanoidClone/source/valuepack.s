@@ -135,7 +135,7 @@ paddle_drop_caught:
 catch_ball_drop_fall:
 	push	{r4-r8, lr}
 
-	mov	r0, #428 + 96
+	mov	r0, #578
 
 	ldr	r1, =ballDropY
 	ldr	r6, [r1]
@@ -144,14 +144,14 @@ catch_ball_drop_fall:
 	mov	r1, r6
 	mov	r2, #0xFFFFFF
 	mov	r3, #28
-	mov	r4, r3
+	mov	r4, #28
 	bl	drawCell
 
 	add	r7, r6, #32
 	ldr	r1, =ballDropY
 	str	r7, [r1]
 
-	mov	r0, #428
+	mov	r0, #578
 	sub	r1, r6, #32
 	mov	r2, #0x0
 	mov	r3, #28
@@ -179,7 +179,7 @@ catch_ball_drop_caught:
 	ldr	r0, [r0]
 
 	@ if paddle is 428 from the left
-	cmp	r0, #428
+	cmp	r0, #610
 	blle	enableCatchBall	@ change to catch ball
 	bgt	tryOtherSide
 
