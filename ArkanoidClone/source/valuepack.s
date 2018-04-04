@@ -41,7 +41,7 @@ check_paddle_brick_broken:
 paddle_drop_fall:
 	push	{r4-r8, lr}
 
-	mov	r0, #438
+	mov	r0, #270
 
 	ldr	r1, =paddleDropY
 	ldr	r6, [r1]
@@ -58,7 +58,7 @@ paddle_drop_fall:
 	str	r7, [r1]
 
 	@ Erases tile trace
-	mov	r0, #438
+	mov	r0, #270
 	sub	r1, r6, #16
 	mov	r2, #0x0
 	mov	r3, #28
@@ -87,7 +87,7 @@ paddle_drop_caught:
 	ldr	r0, [r0]
 
 	@ Upgrade paddle into super paddle
-	cmp	r0, #470 	
+	cmp	r0, #302	270 + 32	
 	blle	superPaddle	
 
 	@ Draw super paddle blackout 
