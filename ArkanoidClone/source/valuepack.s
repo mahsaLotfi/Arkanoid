@@ -41,7 +41,7 @@ check_paddle_brick_broken:
 paddle_drop_fall:
 	push	{r4-r8, lr}
 
-	mov	r0, #270
+	mov	r0, #88
 
 	ldr	r1, =paddleDropY
 	ldr	r6, [r1]
