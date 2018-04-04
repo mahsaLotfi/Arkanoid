@@ -79,8 +79,8 @@ paddle_drop_fall:
 	@ Draws super paddle drop tile
 	mov	r1, r6
 	mov	r2, #0x0000FF
-	mov	r3, #16
-	mov	r4, #32
+	mov	r3, #64
+	mov	r4, #16
 	bl	drawCell
 
 	add	r7, r6, #16
@@ -91,8 +91,8 @@ paddle_drop_fall:
 	mov	r0, #182
 	sub	r1, r6, #32
 	mov	r2, #0x0
-	mov	r3, #28
-	mov	r4, r3
+	mov	r3, #64
+	mov	r4, #16
 	bl	drawCell
 
 	ldr	r0, =paddleDropY
