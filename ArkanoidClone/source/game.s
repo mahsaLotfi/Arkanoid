@@ -1,9 +1,6 @@
 @@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
-
 .section	.text
-
 .global makeGame, anybutton, superPaddle, clearPaddle
-
 
 makeGame:
 	bl	resetScore
