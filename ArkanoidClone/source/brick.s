@@ -268,6 +268,7 @@ codeToTile:
 		ldreq	r0, =brick8
 		beq	brick_end
 
+		cmp	r0, #9
 		ldr	r0, =brick9
 		beq	brick_end
 
@@ -308,6 +309,7 @@ codeToTile:
 		ldreq	r0, =brick18
 		beq	brick_end
 
+		cmp	r0, #9
 		ldr	r0, =brick19
 		beq	brick_end
 
@@ -350,6 +352,7 @@ codeToTile:
 		ldreq	r0, =brick28
 		beq	brick_end
 
+		cmp	r0, #9
 		ldr	r0, =brick29
 
 brick_end:
