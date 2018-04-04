@@ -187,34 +187,30 @@ catch_ball_drop_caught:
 	ldr	r0, =paddlePosition
 	ldr	r0, [r0]
 
-	mov	r6, #620
-	cmp	r0, r6
-	blle	enableCatchBall	
-	bgt	tryOtherSide
+	ldr	r1, =paddleSize
+	ldr	r1, [r1]
+	
+	add	r1, r0
 
-checkBallDrop2:
-	mov	r0, #578
-	ldr	r1, =ballDropY
+	cmp	r1, #578	
+	bllt	ball_destroy
+	
+	cmp	r0, #606
+	blgt	ball_destroy
+	
+	bl	enableCatchBall
+
+ball_destroy:
+	mov	r0, #182
+	ldr	r1, =paddleDropY
 	ldr	r1, [r1]
 	sub	r1, r1, #32
 	mov	r2, #0x0
-	mov	r3, #28
-	mov	r4, r3
+	mov	r3, #64
+	mov	r4, #32
 	bl	drawCell
-	
-	pop	{r6, pc}
 
-tryOtherSide:
-	ldr	r1, =paddleSize
-	ldr	r1, [r1]
-	add	r0, r0, r1
-	
-	
-	cmp	r0, r6
-	blge	enableCatchBall
-
-	b	checkBallDrop2
-	
+	pop	{pc}
 
 @ resets the state values for value packs for restarting
 reset_value_packs:
