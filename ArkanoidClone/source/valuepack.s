@@ -57,7 +57,7 @@ check_paddle_brick_broken:
 
 	mov	r5, #1
 
-	ldr	r0, =brick28
+	ldr	r0, =brick12
 	ldrb	r6, [r0]
 
 	cmp	r6, #0
