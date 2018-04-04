@@ -198,10 +198,13 @@ tryOtherSide:
 	ldr	r1, =paddleSize
 	ldr	r1, [r1]
 	add	r0, r0, r1
-	cmp	r0, #578
+	
+	
+	cmp	r0, r6
 	blge	enableCatchBall
 
 	b	checkBallDrop2
+	
 
 @ resets the state values for value packs for restarting
 reset_value_packs:
