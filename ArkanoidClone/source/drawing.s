@@ -1,6 +1,6 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.text
-.global drawCell, drawPx, drawChar, drawWord, blackScreen, initFrame
+.global drawCell, drawPx, drawChar, drawWord, blackScreen
 	
 @ Parameters:
 @ r0 - xStart
