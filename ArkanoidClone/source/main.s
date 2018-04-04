@@ -16,13 +16,11 @@ main:
 	gBase	.req	r10
 	prevbtn	.req	r9
 
-	ldr	r0, =frameBufferInfo
-	bl	initFbInfo
-
 	ldr	r0, =authors		@ Print authors
 	bl	printf
 
 	bl	initSNES
+	bl	initFrame
 
 start_menu:
 	mov	r4, #0			@ Initial state is 0

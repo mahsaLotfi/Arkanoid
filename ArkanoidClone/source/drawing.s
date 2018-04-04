@@ -2,8 +2,15 @@
 
 .section	.text
 
-.global drawCell, drawPx, drawChar, drawWord, blackScreen
+.global drawCell, drawPx, drawChar, drawWord, blackScreen, initFrame
 
+initFrame:
+	push	{lr}
+
+	ldr	r0, =frameBufferInfo
+	bl	initFbInfo
+
+	pop	{pc}
 
 @ r0 - xStart
 @ r1 - yStart
