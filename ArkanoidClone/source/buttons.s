@@ -1,237 +1,316 @@
-@@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
-.section	.text
-	gBase	.req	r9
+@ SNES_controller: 
 
-@ functions 
-.global	initSNES
-	initSNES:
-		push	{lr}
-		bl	getGpioPtr		@ load base address
-		ldr	r1, =gpioBaseAddress	@ load to variable
-		str	r0, [r1]		@ store
-		ldr	r0, =gpioBaseAddress
-		ldr	gBase, [r0]		@ load address to register
+@ Is used by:
 
-		mov	r0, #9			@ GPIO9
-		mov	r1, #0b001		@ as output
-		bl	Init_GPIO		@ set
+@ Uses:
 
-		mov	r0, #10			@ GPIO10
-		mov	r1, #0b000		@ as input
-		bl	Init_GPIO		@ set
+gpio_bA		.req	r11
+clearMask	.req	r10
+pButton		.req	r9
 
-		mov	r0, #11			@ GPIO11
-		mov	r1, #0b001		@ as output
-		bl	Init_GPIO		@ set
+.text
 
-		pop	{pc}
-
-@ params:
-@ r0 - delay
-@ returns:
-@ r0 - code for button pressed
-
-.global readSNES
-	readSNES:
-		push	{r6-r8, lr}
-		btns	.req	r8
-		mov	r6, r0
-
-		mov	btns, #0		@ reset pushed buttons to 0
-
-		mov	r0, #1
-		bl	Write_Clock
-
-		mov	r0, #1			@ set latch
-		bl	Write_Latch
-
-		@ wait 12microSeconds to signal controller
-		mov	r0, #12
-		bl	delayMicroseconds
-
-		mov	r0, #0			@ clear latch
-		bl	Write_Latch
-
-		inc	.req	r7
-		mov	inc, #0			@ increment
-
-		pulseLoop:
-			mov	r0, r6
-			bl	delayMicroseconds
-
-			mov	r0, #0		@ rise edge
-			bl	Write_Clock
-
-			mov	r0, r6
-			bl	delayMicroseconds
-
-			bl	Read_Data
-
-			cmp	r0, #0		@ is data returned 0?
-			lsl	btns, #1	@ make space for new bit
-			addeq	btns, #0b1	@ if so, add 1 (pressed) to btns
-
-			mov	r0, #1		@ fall edge
-			bl	Write_Clock
-
-			add	inc, #1		@ increment
-			cmp	inc, #16	@ end when greater than/equal to 16
-			blt	pulseLoop
-
-		mov	r0, btns		@ return buttons
-		pop	{r6-r8, pc}
-
-	.unreq	inc
-	.unreq	btns
-
-@ converts to button code
-@ code is not used but is only for debugging purposes
-.global	getButton
-	getButton:
-		push	{r4,lr}
-		notNull	.req	r4
-
-		mov	notNull, #0	@ ensures that the buttons
-					@ pressed are valid
-
-		@ save button pressed to r1
-		cmp	r0, #32768	@ code for button b
-		ldreq	r1, =msgB1	@ if code is b, load string for b
-		moveq	notNull, #1	@ turn on not null flag
-
-		cmp	r0, #16384	@ same goes for the rest of the buttons
-		ldreq	r1, =msgB2
-		moveq	notNull, #1
-
-		cmp	r0, #8192
-		ldreq	r1, =msgB3
-		moveq	notNull, #1
-
-		cmp	r0, #4096	@ code for start
-		ldreq	r1, =msgB4	@ pop and go to terminate code
-		moveq	notNull, #1
-
-		cmp	r0, #2048
-		ldreq	r1, =msgB5
-		moveq	notNull, #1
-
-		cmp	r0, #1024
-		ldreq	r1, =msgB6
-		moveq	notNull, #1
-
-		cmp	r0, #512
-		ldreq	r1, =msgB7
-		moveq	notNull, #1
-
-		cmp	r0, #256
-		ldreq	r1, =msgB8
-		moveq	notNull, #1
-
-		cmp	r0, #128
-		ldreq	r1, =msgB9
-		moveq	notNull, #1
-
-		cmp	r0, #64
-		ldreq	r1, =msgB10
-		moveq	notNull, #1
-
-		cmp	r0, #32
-		ldreq	r1, =msgB11
-		moveq	notNull, #1
-
-		cmp	r0, #16
-		ldreq	r1, =msgB12
-		moveq	notNull, #1
-
-		cmp	notNull, #1	@ if null string, do not print
-		bleq	printf
-
-		movne	r0, #59999	@ delay to make button printing smoother
-		blne	delayMicroseconds	@ if not printing
-
-		pop	{r4, pc}
-
-		.unreq	notNull
-
-	Init_GPIO:
-
-		@ r0: GPIO number
-		@ r1: function code
-
-		push	{r4, r5, lr}		@ store vars in stack
-
-		toAdd	.req	r3		@ name r3 immediate scratch value
-		fSel	.req	r4		@ name r4 function select
-
-		mov	r2, #0
-
-		initLoop:
-			cmp	r0, #9		@ r0 is GPIO number
-			SUBHI	r0, #10		@ loop divides r0 to get GPIOSELn
-			ADDHI	r2, #1
-			BHI	initLoop
-		lsl	toAdd, r2, #2		@ toAdd is the increment from gBase
+.global GPIO_init, button_press
 
 
-		ldr	fSel, [gBase, toAdd]	@ load GPIO to r1
+init_SNES:
+	push	{fp, lr}
+	
+	bl	getGpioPtr		@ Called to get	base address of GPIO in r0
+	ldr	r1, =GPIO_baseAddr	@ Loads GPIO_baseAddr address into r1
+	str	r0, [r1]		@ Stores GPIO base address into GPIO_baseAddr address
+	ldr	r0, =GPIO_baseAddr	@ ldr	r0, =0x3F200000
+	ldr	gpio_bA, [r0]		@ Saves GPIO base address to r4
 
-		add	r0, r0, lsl #1		@ r0 is multiplied to become the pin number
-		lsl	r1, r0			@ function code is left shifted to pin number
+	@ Initializes the SNES lines
+	mov	r0, #9			@ GPIO 9 = Latch line
+	mov	r1, #1			@ Output function code
+	bl	init_GPIO		@ Latch line to output
 
-		mov	r5, #0b111		@ set bitmask
-		lsl	r5, r0
+	mov	r0, #11			@ GPIO 10 = Clock line
+	mov	r1, #1			@ Output function code
+	bl	init_GPIO		@ Clock line to output
 
-		bic	fSel, r5		@ bit clear at desired pins
-		orr	fSel, r1		@ apply function code
-		str	fSel, [gBase, toAdd]	@ store back to gBase
+	mov	r0, #10			@ GPIO 11 = Data line
+	mov	r1, #0			@ Input function code
+	bl	init_GPIO		@ Data line to input
 
-		pop	{r4, r5, pc}
-		.unreq	fSel			@ unset register names
-		.unreq	toAdd
-
+	pop	{fp, pc}
 
 
-	@GPIO9  - LAT (latch): OUTPUT
-	@GPIO10 - DAT (data): INPUT
-	@GPIO11 - CLK (clock): OUTPUT
+button_press:
+	push	{r4, fp, lr}
 
-	Write_Latch:
-		teq	r0, #0			@ Clear Register if true
-		mov	r0, #0x200		@ latch address
-		streq	r0, [gBase, #0x28]	@ clear latch	@ 0x200 = 1 lsl 0x9
-		strne	r0, [gBase, #0x1C]	@ or set latch
-		mov	pc, lr
+wait:
+	bl 	read_SNES
+	mov	pButton, r0		
 
-	Write_Clock:
-		teq	r0, #0			@ Clear Register if true
-		mov	r0, #0x800		@ clock address
-		streq	r0, [gBase, #0x28]
-		strne	r0, [gBase, #0x1C]	@ set/clear clock	0x800 = 1 lsl 0x11
-		mov	pc, lr
+	@ mov 	r0,#10000		
+	@ bl	delayMicroseconds
+	
+	bl 	read_SNES
 
-	Read_Data:
-		ldr	r0, [gBase, #0x34]	@ get GPLEV0
-		tst	r0, #0x400		@ and with GPIO10 (data) bitmask
+	cmp	pButton, r0		
+	beq 	wait			@ 
 
-		movne	r0, #1
-		moveq	r0, #0			@ equal means bit is 0
-		mov	pc, lr
+	cmp	r0, r4			
+	beq	wait
 
-	.unreq	gBase
+	mov 	pButton, r0
+	mov 	r0,pButton		
+	bl	check_button
+	
+	pop	{r4, fp, pc}
+
+
+@@@@@ ---------- Subroutines ---------- @@@@@
+
+
+init_GPIO:
+	mov r3, #10				@ Get function Select Register number
+	sdiv r0, r0, r3
+	mov r6, r0				@ Keep parameters to safe variables
+	mov r4, r1
+
+	@ Get least significant digit of line number and control bit for that digit
+	mov r3, #10
+	mul r1, r0, r3
+	sub r1, r6, r1
+	mov r3, #3
+	mul r5, r1, r3
+
+	ldr	r0, [gpio_bA, r6, lsl #2] 	@ Load the value of Function Select Register 
+
+	mov	r1, #7				@ Clear bits
+	bic	r0, r1, lsl r5
+
+	orr	r0, r4, lsl r5			@ Set bits to function code
+
+	str	r0, [gpio_bA, r6, lsl #2]	@ Write back to Function Select Register 1
+
+	mov	pc, lr				@ Returns call
+
+write_latch:
+	push	{r4}
+	mov	r1, #9			@ move number9 into r1
+	ldr	r4, =GPIO_baseAddr	@ lpad GPIO base address into r4
+	ldr	r2, [r4]		@ load r4 content into r2
+	mov	r3, #1			@ move number 1 into r3
+	lsl	r3, r1			@ logical shift left 9 bits for r3
+
+	teq	r0, #0			@ test equal r0 to number 0
+
+	streq	r3, [r2, #40]		@ store r3 into r2 plus 40 if r0 equal to 0
+	strne	r3, [r2, #28]		@ store r3 into r2 plus 28 if r0 not equal to 0
+	pop	{r4}
+
+	mov	pc, lr			@ Return call
+
+
+write_clock:
+	push	{r4}
+	mov	r1, #11			@ mov number 11 into r1
+	ldr	r4, =GPIO_baseAddr	@ load GPIO base address into r4
+	ldr	r2, [r4]		@ load r2 with r4
+	mov	r3, #1			@ mov number1 into r3
+	lsl	r3, r1			@ logical shift left r3 11 bits
+
+	teq	r0, #0			@ test equal r0 to 
+
+	streq	r3, [r2, #40]		@ store r3 into r2 plus 40 if r0 equal to 0
+	strne	r3, [r2, #28]		@ store r3 into r2 plus 28 if r0 not equal to 0
+	pop	{r4}
+
+	mov	pc, lr			@ Return call
+
+
+read_data:
+	push	{r4,r7}
+	mov	r0, #10			@ move number 10 into r0
+	ldr	r4, =GPIO_baseAddr	@ load GPIO basse address into r4
+	ldr	r7, [r4]		@ load r7 with r4
+	ldr	r1, [r7, #52]		@ load r1 with r7 plus 52
+	mov	r3, #1			@ move number 1 into r3
+	lsl	r3, r0			@ logical shift left r3 10 bits
+
+	and	r1, r3			@ and r1 and r3 then store in r1
+	teq	r1, #0			@ test equal r1 with 0
+
+	moveq	r0, #0			@ move number 0 into r0 if r1 = 0
+	movne	r0, #1			@ move number 1 into r0 if r1 != 0
+	pop	{r4,r7}
+
+	mov	pc, lr			@ Return call
+
+
+read_SNES:
+	push	{r7,r8,lr}
+	mov	r0, #1			@ move number 1 into r0
+	bl	write_clock		@ branch link to write_clock function
+
+	mov	r0, #1			@ move nummber 1 into r0
+	bl	write_latch		@  branch link to write_latch
+
+	mov	r0, #12			@ move number 12 into r0
+	bl	delayMicroseconds	@ brnach link to delatMicrseconds function
+
+	mov	r0, #0			@ move number 0 into r0
+	bl	write_latch		@ branch link to write_latch
+
+	mov	r7, #0			@ Sampling button
+	mov	r8, #0			@ Loop counter
+
+
+clock_loop:
+	mov	r0, #6			@ move number 6 into r0
+	bl	delayMicroseconds	@ branch link to delayMicraseconds function
+
+	mov	r0, #0			@ move number 0 into r0
+	bl	write_clock		@ branch link to wrote_clock function
+
+	mov	r0, #6			@ move number 6 into r0
+	bl	delayMicroseconds	@ branch link to delayMicroseconds function
+
+	bl	read_data		@ branch link read_data function
+	lsl	r0, r7			@ logical shift left r0 by r7
+	orr	r8, r0			@ or r8 and r0, store in r8
+
+	mov	r0, #1			@ move number 1 into r0
+	bl	write_clock		@ branch link to write_clock
+
+	add	r7, #1			@ add r7 by 1
+	cmp	r7, #16			@ compare r7 to 16
+	blt	clock_loop		
+	mov	r0, r8			@ move r8 value into r0
+	pop	{r7,r8,pc}		
+
+
+@ Checks which button is presssed
+@ B - 1
+@ Y - 2
+@ select - 3
+@ start - 4
+@ up - 5
+@ down - 6
+@ left - 7
+@ right - 8
+@ A - 9
+@ X - 10
+@ lB - 11
+@ rB - 12
+
+check_button:
+	push	{lr}
+	mov	r1, #1
+
+B:
+	tst	r1, pButton
+	bne	print_B
+	mov	r0, #1
+
+	pop	{pc}			
+
+Y:
+	lsl	r1, #1
+	tst	r1, pButton
+	bne	print_Y
+	mov	r0, #2
+
+	pop	{pc}
+
+select:
+	lsl	r1, #1
+	tst	r1, pButton
+	bne	print_select
+	mov	r0, #3
+
+	pop	{pc}			
+
+start:
+	lsl	r1, #1
+	tst	r1, pButton
+	bne	print_start
+	mov	r0, #4
+
+	pop	{pc}			
+
+up:
+	lsl	r1, #1
+	tst	r1, pButton
+	bne	print_up
+	mov	r0, #5
+
+	pop	{pc}			@ Return call
+
+down:
+	lsl	r1, #1
+	tst	r1, pButton
+	bne	print_down
+	mov	r0, #6
+
+	pop	{pc}			@ Return call
+
+left:
+	lsl	r1, #1
+	tst	r1, pButton
+	bne	print_left
+	mov	r0, #7
+
+	pop	{pc}			@ Return call
+
+right:
+	lsl	r1, #1
+	tst	r1, pButton
+	bne	print_right
+	mov	r0, #8
+
+	pop	{pc}			@ Return call
+
+A:
+	lsl	r1, #1
+	tst	r1, pButton
+	bne	print_A
+	mov	r0, #9
+
+	pop	{pc}			@ Return call
+
+X:
+	lsl	r1, #1
+	tst	r1, pButton
+	bne	print_X
+	mov	r0, #10
+
+	pop	{pc}			@ Return call
+
+lB:
+	lsl	r1, #1
+	tst	r1, pButton
+	bne	print_leftB
+	mov	r0, #11
+
+	pop	{pc}			@ Return call
+
+rB:
+	lsl	r1, #1
+	tst	r1, pButton
+	bne	print_rightB
+	mov	r0, #12
+
+	pop	{pc}			@ Return call
 
 @@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.data
-	@ Buttons
-		msgB1:	.asciz		"B\n"
-		msgB2:	.asciz		"Y\n"
-		msgB3:	.asciz		"Select\n"
-		msgB4:	.asciz 		"Start\n"
-		msgB5:	.asciz		"Joy-pad UP\n"
-		msgB6:	.asciz		"Joy-pad DOWN\n"
-		msgB7:	.asciz		"Joy-pad LEFT\n"
-		msgB8:	.asciz		"Joy-pad RIGHT\n"
-		msgB9:	.asciz		"A\n"
-		msgB10:	.asciz		"X\n"
-		msgB11:	.asciz		"Left\n"
-		msgB12:	.asciz		"Right\n"
-
+	GPIO_baseAddr:	.word	0
+	
+	print_B:	.asciz		"B\n"
+	print_Y		.asciz		"Y\n"
+	print_select:	.asciz		"Select\n"
+	print_start:	.asciz 		"Start\n"
+	print_up:	.asciz		"UP\n"
+	print_down:	.asciz		"DOWN\n"
+	print_left:	.asciz		"LEFT\n"
+	print_right:	.asciz		"RIGHT\n"
+	print_A:	.asciz		"A\n"
+	print_X:	.asciz		"X\n"
+	print_leftB:	.asciz		"Left Button\n"
+	print_rightB:	.asciz		"Right Button\n"
