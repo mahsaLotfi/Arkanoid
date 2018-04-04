@@ -157,7 +157,7 @@ frameBufferInfo:
 .global white, indigo, green, yellow
 
 white:	c1:
-	.int	0xFFFFFF
+	.int	0x0000FF
 
 indigo:	c2:
 	.int 	0x4B0082
