@@ -257,6 +257,7 @@ codeToTile:
 		beq	brick_end
 
 		cmp	r0, #6
+		ldreq	r0, =brick6
 		beq	brick_end
 
 		cmp	r0, #7
