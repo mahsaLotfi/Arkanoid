@@ -47,7 +47,7 @@ check_catch_ball_brick_broken:
 
 	mov	r5, #1
 
-	ldr	r0, =brick25
+	ldr	r0, =brick20
 	ldrb	r6, [r0]
 
 	cmp	r6, #0
@@ -63,7 +63,7 @@ check_paddle_brick_broken:
 
 	mov	r5, #1
 
-	ldr	r0, =brick20
+	ldr	r0, =brick25
 	ldrb	r6, [r0]
 
 	cmp	r6, #0
@@ -76,14 +76,14 @@ check_paddle_brick_broken:
 paddle_drop_fall:
 	push	{r4-r8, lr}
 
-	mov	r0, #438
+	mov	r0, #428
 
 	ldr	r1, =paddleDropY
 	ldr	r6, [r1]
 
 	@ draws white tile
 	mov	r1, r6
-	mov	r2, #0xFFFFFF
+	mov	r2, #0x0000FF
 	mov	r3, #16
 	mov	r4, #32
 	bl	drawCell
@@ -93,13 +93,13 @@ paddle_drop_fall:
 	str	r7, [r1]
 
 	@ draws signifying value
-	mov	r0, #'+'
-	mov	r1, #64
-	add	r2, r6, #4
-	bl	drawChar
+	@mov	r0, #'+'
+	@mov	r1, #64
+	@add	r2, r6, #4
+	@bl	drawChar
 
-	mov	r0, #438
-	sub	r1, r6, #16
+	mov	r0, #56
+	sub	r1, r6, #32
 	mov	r2, #0x0
 	mov	r3, #28
 	mov	r4, r3
@@ -136,7 +136,7 @@ paddle_drop_caught:
 	mov	r0, #56
 	ldr	r1, =paddleDropY
 	ldr	r1, [r1]
-	sub	r1, r1, #16
+	sub	r1, r1, #32
 	mov	r2, #0x0
 	mov	r3, #28
 	mov	r4, r3
@@ -147,7 +147,7 @@ paddle_drop_caught:
 catch_ball_drop_fall:
 	push	{r4-r8, lr}
 
-	mov	r0, #52
+	mov	r0, #428
 
 	ldr	r1, =ballDropY
 	ldr	r6, [r1]
@@ -159,7 +159,7 @@ catch_ball_drop_fall:
 	mov	r4, r3
 	bl	drawCell
 
-	add	r7, r6, #16
+	add	r7, r6, #32
 	ldr	r1, =ballDropY
 	str	r7, [r1]
 
@@ -170,7 +170,7 @@ catch_ball_drop_fall:
 	bl	drawChar
 
 	mov	r0, #428
-	sub	r1, r6, #16
+	sub	r1, r6, #32
 	mov	r2, #0x0
 	mov	r3, #28
 	mov	r4, r3
@@ -199,13 +199,13 @@ catch_ball_drop_caught:
 	ldr	r0, =paddlePosition
 	ldr	r0, [r0]
 
-	@ if paddle is 52 from the left
-	cmp	r0, #52
+	@ if paddle is 428 from the left
+	cmp	r0, #428
 	blle	enableCatchBall	@ change to catch ball
 	bgt	tryOtherSide
 
 checkBallDrop2:
-	mov	r0, #52
+	mov	r0, #428
 	ldr	r1, =ballDropY
 	ldr	r1, [r1]
 	sub	r1, r1, #32
@@ -219,7 +219,7 @@ tryOtherSide:
 	ldr	r1, =paddleSize
 	ldr	r1, [r1]
 	add	r0, r0, r1
-	cmp	r0, #52
+	cmp	r0, #428
 	blge	enableCatchBall
 
 	b	checkBallDrop2
@@ -227,11 +227,11 @@ tryOtherSide:
 @ resets the state values for value packs for restarting
 reset_value_packs:
 	ldr	r0, =paddleDropY
-	mov	r1, #224
+	mov	r1, #256
 	str	r1, [r0]
 
 	ldr	r0, =ballDropY
-	mov	r1, #256
+	mov	r1, #224
 	str	r1, [r0]
 
 	ldr	r0, =paddleDropState
@@ -239,7 +239,7 @@ reset_value_packs:
 	str	r1, [r0]
 
 	ldr	r0, =ballDropState
-	mov	r1, #192
+	mov	r1, #0
 	str	r1, [r0]
 
 	mov	pc, lr
@@ -247,8 +247,8 @@ reset_value_packs:
 @@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.data
 
-paddleDropY:		.int    224
-ballDropY:		.int	256
+paddleDropY:		.int    256
+ballDropY:		.int	224
 
 @ 0 - default
 @ 1 - dropping
