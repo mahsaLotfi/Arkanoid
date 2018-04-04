@@ -42,21 +42,21 @@ start_menu_wait:
 	bl	read_SNES		@ Check button press
 	mov	r6, #3750
 
-	cmp	r0, #2048		@ U
+	cmp	r0, #2048		@ Up
 	moveq 	r4, #0
-	cmp	r0, #1024		@ D
+	cmp	r0, #1024		@ Down
 	moveq	r4, #1
-	cmp	r0, #128  		@ A
+	cmp	r0, #128  		@ A button
 
 	bne start_menu_wait
 
 	@ Branch based on state
 	cmp	r4, #0
-	bne	end_game		@ clears the screen to quit
-	beq	draw_game		@ starts the game
+	bne	end_game
+	beq	draw_game
 
 
-end_game:				@ infinite loop ending program
+end_game:			
 	bl blackScreen
 
 haltLoop$:
@@ -66,14 +66,14 @@ haltLoop$:
 
 pause_menu:
 	push	{r4-r5, lr}
-	mov	r4, #0			@ state
-	mov	r5, #16384		@ delay for SNES
+	mov	r4, #0		
+	mov	r5, #16384	
 
 	mov	r0, r5
-	bl	read_SNES		@ pause SNES reading
+	bl	read_SNES	
 
 pm_loop:
-   	cmp 	r4, #0			@check state
+   	cmp 	r4, #0		
 
 	mov 	r1, #200
 	mov 	r2, #200
@@ -81,9 +81,9 @@ pm_loop:
 	ldreq	r0, =pausedRestart	
 	ldrne	r0, =pausedQuit
 
-	bl	draw_center_image		@ draws the menu
+	bl	draw_center_image	
 	mov	r0, r5
-	bl	read_SNES		@check button press
+	bl	read_SNES	
 	mov	r5, #2048
 
 	cmp	r0, #2048		@ Up
