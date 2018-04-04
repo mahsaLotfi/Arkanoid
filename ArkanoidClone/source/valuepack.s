@@ -76,7 +76,7 @@ check_paddle_brick_broken:
 paddle_drop_fall:
 	push	{r4-r8, lr}
 
-	mov	r0, #56
+	mov	r0, #438
 
 	ldr	r1, =paddleDropY
 	ldr	r6, [r1]
@@ -98,7 +98,7 @@ paddle_drop_fall:
 	add	r2, r6, #4
 	bl	drawChar
 
-	mov	r0, #56
+	mov	r0, #438
 	sub	r1, r6, #16
 	mov	r2, #0x0
 	mov	r3, #28
@@ -136,7 +136,7 @@ paddle_drop_caught:
 	mov	r0, #56
 	ldr	r1, =paddleDropY
 	ldr	r1, [r1]
-	sub	r1, r1, #32
+	sub	r1, r1, #16
 	mov	r2, #0x0
 	mov	r3, #28
 	mov	r4, r3
@@ -147,7 +147,7 @@ paddle_drop_caught:
 catch_ball_drop_fall:
 	push	{r4-r8, lr}
 
-	mov	r0, #428
+	mov	r0, #52
 
 	ldr	r1, =ballDropY
 	ldr	r6, [r1]
@@ -159,7 +159,7 @@ catch_ball_drop_fall:
 	mov	r4, r3
 	bl	drawCell
 
-	add	r7, r6, #32
+	add	r7, r6, #16
 	ldr	r1, =ballDropY
 	str	r7, [r1]
 
@@ -170,7 +170,7 @@ catch_ball_drop_fall:
 	bl	drawChar
 
 	mov	r0, #428
-	sub	r1, r6, #32
+	sub	r1, r6, #16
 	mov	r2, #0x0
 	mov	r3, #28
 	mov	r4, r3
