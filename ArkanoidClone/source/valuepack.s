@@ -192,10 +192,12 @@ catch_ball_drop_caught:
 	
 	add	r1, r0
 
-	cmp	r1, #578	
+	mov	r6, #578
+	cmp	r1, r6	
 	bllt	ball_destroy
 	
-	cmp	r0, #606
+	mov	r6, #606
+	cmp	r1, r6	
 	blgt	ball_destroy
 	
 	bl	enableCatchBall
