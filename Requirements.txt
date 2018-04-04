@@ -1,0 +1,97 @@
+-Main Menu (5 marks)
+
+- Draw game title and creator name(s) (1)
+- Draw menu options and option selector (1)
+- Select between menu options using up/down on D-pad (1)
+- Press A button with Start Game selected to start game (1)
+- Press A button with Quit Game selected to exti game (1)
+
+
+Draw game state (29 marks)
+
+- All objects are drawn according to interface specifications (32x32 pixels) (6) (Ordered by priority(Important to Unimportant))
+	- Wall (1)
+		- Left, right, upper edges
+	- Bricks (at least 10 of each type) (1)
+	- Paddle (1)
+	- Ball (1)
+	- Floor (1)
+	- Value-packs (1)
+	
+- Bricks disappear if breaks (according to its hardness) (3)
+	- 1 bounces (1)
+	- 2 '     ' (1)
+	- 3 '     ' (1)
+	
+- Ball animation/bouncing as specified (7)
+	- Ball Moves (3/4)
+		- Angle (2)
+		- Direction (1/2)
+	- Ball Bouncing (4)
+		- Bricks/Wall - reverse direction (against brick/wall) (2)
+		- Paddle (2)
+		
+- Score/Lives are drawn  as specified (4)
+	- Score (Brick/Value-pack contact) - Drawn + Updated (2)
+	- Lives (At least 3) - Drawn + Updated (2)
+	
+- Implement value-packs as specified (5+bonus)
+	- Hidden under bricks (1)
+		- When broken, falls down (1)
+	- At least 2 types of value-packs (Slow ball, Catch ball and shoot, Expand paddle) (2)
+	- Interaction with ball/paddle and value-pack (1)
+	- More points for creative value-packs (bonus)
+	
+- Game won (2)
+	- Condition to win (1)
+	- Messsage displayed (1)
+	
+- Game lost (2) (Similar as above)
+
+
+Draw game menu (4)
+
+- Filled box with border in center of screen (1)
+- Draw menu options and option selector (1)
+- Erase game menu from screen when closed (2)
+	- Clear (1)
+	- Back to game screen
+
+
+Interact with game (8)
+
+- Use D-Pad to move paddle (if move action is valid) (left/right) (2)
+	- Left (1)
+	- Right (1)
+
+- Hold A button to speed up the paddle (2)
+	- A button and left/right (2)
+
+- Press B to release the ball from initial position (2)
+	- B button to release (1)
+	- ~45 degress to right (1)
+	
+- Press Start button to open game menu (1)
+
+- Press any button to return to main menu (game over) (1)
+
+
+Interact with game menu (4)
+
+- Use up/down on D-pad to change menu selection (1)
+- Press A button on Restart Game; resets the game (1)
+- Press A button on Quit; Go to main menu (1)
+- Press Start button to close game menu (1)
+
+
+APCS compliant functions (3)
+
+
+Well structured code (15)
+
+- Use of functions to generalize repeated procedures (10)
+
+- Use of data structures to represent game state, etc. (5)
+
+
+Well documented code (2)

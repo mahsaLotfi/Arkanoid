@@ -35,15 +35,15 @@ drawCell:
 
 	mov	pxDrawn, #0
 	
-	tileLoop:
+tileLoop:
 	
-		bl	drawHLn
-		add	r0, r0, r5
-		sub	r0, r0, length
-		sub	r0, r0, #1
-		add	pxDrawn, pxDrawn, #1
-		cmp	pxDrawn, height
-		ble	tileLoop
+	bl	drawHLn
+	add	r0, r0, r5
+	sub	r0, r0, length
+	sub	r0, r0, #1
+	add	pxDrawn, pxDrawn, #1
+	cmp	pxDrawn, height
+	ble	tileLoop
 
 	pop	{r5-r6, pc}
 
@@ -85,12 +85,12 @@ drawHLn:
 	push	{r6, lr}
 
 	mov	pxDrawn, #0
-	hlPxLoop:
-		bl	drawPx
-		add	r0, r0, #1
-		add	pxDrawn, pxDrawn, #1
-		cmp	pxDrawn, length
-		ble	hlPxLoop
+hlPxLoop:
+	bl	drawPx
+	add	r0, r0, #1
+	add	pxDrawn, pxDrawn, #1
+	cmp	pxDrawn, length
+	ble	hlPxLoop
 
 	pop	{r6, lr}
 	mov	pc, lr
@@ -122,20 +122,20 @@ drawChar:
 	ldr		r2 , =initX
 	str		r1, [r2]
 
-	charLoop:
-		ldr		px, =initX
-		ldr		px, [px]	
-		mov		mask, #0x01		
-		ldrb		row, [chAdr], #1	
+charLoop:
+	ldr		px, =initX
+	ldr		px, [px]	
+	mov		mask, #0x01		
+	ldrb		row, [chAdr], #1	
 
-	rowLoop:
-		tst		row, mask		
-		beq		noPixel
+rowLoop:
+	tst		row, mask		
+	beq		noPixel
 
-		mov		r0, px
-		mov		r1, py
-		mov		r2, colour
-		bl		drawPx			
+	mov		r0, px
+	mov		r1, py
+	mov		r2, colour
+	bl		drawPx			
 
 noPixel:
 	add		px, px, #1		
@@ -161,17 +161,17 @@ drawWord:
 	mov	r6, r1
 	mov	r7, r2
 	mov	r4, r3
-	drawWordLoop:
-		ldrb	r0, [r5], #1
-		cmp	r0, #0
-		popeq	{r4-r7, pc}
+drawWordLoop:
+	ldrb	r0, [r5], #1
+	cmp	r0, #0
+	popeq	{r4-r7, pc}
 
-		mov	r1, r6
-		mov	r2, r7
-		mov	r3, r4
-		bl	drawChar
-		add	r6, r6, #11
-		b	drawWordLoop
+	mov	r1, r6
+	mov	r2, r7
+	mov	r3, r4
+	bl	drawChar
+	add	r6, r6, #11
+	b	drawWordLoop
 
 @blacks out game screen takes and returns no arguments
 blackScreen:
@@ -187,12 +187,12 @@ drawblackscreen:
 
 	add	r4, r4, #1
     	cmp 	r4, #720
-    		moveq	r4, #0
-   	 	addeq r5, r5, #1
+	moveq	r4, #0
+ 	addeq r5, r5, #1
 
-    cmp   r5, #960
-    blt drawblackscreen
-    pop {r4,r5, pc}
+        cmp   r5, #960
+        blt drawblackscreen
+        pop {r4,r5, pc}
 
 @@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section .data

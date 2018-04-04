@@ -2,7 +2,7 @@
 
 .section .text
 
-.global generateBricks, initBricks, hitBrick, XYtoCode, updateBricks, isGameWon
+.global generate_bricks, init_bricks, hit_brick, brick_pos, update_bricks, check_game_won
 
 
 @ Updates and draws brick
@@ -10,20 +10,20 @@
 @ r1 - Y
 @ r2 - Color
 
-generateBricks:
+generate_bricks:
 	push	{r4-r6, lr}
 	
 	mov	r4, r0			@ r4 - x
 	mov	r5, r1			@ r5 - y
 	mov	r6, r2			@ r6 - color
-	bl	codeToTile
+	bl	check_brick
 	strb	r6, [r0]		@ Stores the brick's type
 
 	@ Draws the brick
 	mov	r0, r4			@ r0 - x
 	mov	r1, r5			@ r1 - y
 	mov	r2, r6			@ r2 - Brick's type
-	bl	drawBrick
+	bl	draw_brick
 
 	pop	{r4-r6, lr}
 	
@@ -31,38 +31,38 @@ generateBricks:
 
 
 @ Initializes the brick
-initBricks:
+init_bricks:
 	push	{r4-r6, lr}
 
 	mov	r4, #0			@ x direction
 	mov	r5, #0			@ y direction
 	add	r6, r5, #3
 
-	initBrickLoop:
-		mov	r0, r4			@ r0 - x
-		mov	r1, r5			@ r1 - y
+init_all_bricks:
+	mov	r0, r4			@ r0 - x
+	mov	r1, r5			@ r1 - y
 
-		bl	codeToTile
-		strb	r6, [r0]		@ Stores the brick's type
+	bl	check_brick
+	strb	r6, [r0]		@ Stores the brick's type
 
-		@ Checks if there was an error for getting the brick's type
-		cmp	r0, #0
-		movne	r2, r6
-		movne	r0, r4
-		movne	r1, r5
-		blne	drawBrick
+	@ Checks if there was an error for getting the brick's type
+	cmp	r0, #0
+	movne	r2, r6
+	movne	r0, r4
+	movne	r1, r5
+	blne	draw_brick
 
-		@ Checks X
-		add	r4, r4, #1
-		cmp	r4, #10
-		blt	initBrickLoop
+	@ Checks X
+	add	r4, r4, #1
+	cmp	r4, #10
+	blt	init_all_bricks
 
-		@ Check Y
-		add	r5, r5, #1
-		sub	r6, r6, #1
-		cmp	r5, #3
-		movlt	r4, #0
-		blt	initBrickLoop
+	@ Check Y
+	add	r5, r5, #1
+	sub	r6, r6, #1
+	cmp	r5, #3
+	movlt	r4, #0
+	blt	init_all_bricks
 
 	pop	{r4-r6, pc}
 
@@ -72,14 +72,14 @@ initBricks:
 @ r1 - Brick's y position
 @ r2 - Brick type
 
-drawBrick:
+draw_brick:
 	xPos		.req	r5
 	yPos		.req	r6
 	brickColor	.req	r7
 
 	push	{r3-r8, lr}
 	
-	bl	CodeToXY
+	bl	get_coord
 
 	mov	xPos, r0		@ r0 - X
 	mov	yPos, r1		@ r1 - Y
@@ -115,19 +115,20 @@ drawBrick:
 	bl	drawCell
 	pop	{r3-r8, pc}
 
+
 @ Arguments:
 @ r0 - X 
 @ r1 - Y
 @ Return:
 @ r0 - Brick state 
-hitBrick:
+hit_brick:
 	push	{r4-r7, lr}
 
 	@ store brick state on register
-	bl	XYtoCode
+	bl	brick_pos
 	mov	r4, r0
 	mov	r5, r1
-	bl	codeToTile
+	bl	check_brick
         ldrb	r7, [r0]
 
 	cmp	r7, #0
@@ -139,7 +140,7 @@ hitBrick:
 	sub	r2, r7, #1	@ Degrade the brick
 	mov	r0, r4
 	mov	r1, r5
-	bl	generateBricks
+	bl	generate_bricks
 	@ r2 is the color
 
 	mov	r0, #1		@ Brick is hit
@@ -147,9 +148,10 @@ hitBrick:
 	pop	{r4-r7, lr}
 	mov	pc, lr
 
+
 @ r0 r1 - xy code
 @ returns r0 r1 - xy
-CodeToXY:
+get_coord:
 	lsl	r0, r0, #6
 	add	r0, r0, #36
 
@@ -157,13 +159,14 @@ CodeToXY:
 	add	r1, r1, #96
 	mov	pc, lr
 
+
 @ Arguments:
 @ r0 - X
 @ r1 - Y
 @ Returns:
 @ r0 - X
 @ r1 - Y
-XYtoCode:
+brick_pos:
 	push	{r4,r5,lr}
 
 	mov	r4, r0
@@ -186,33 +189,34 @@ XYtoCode:
 	mov	r5, #0 			@ Default layer
 	sub	r1, r1, #96
 
-	yloop:
-		cmp	r1, #32
-		sub	r1, r1, #32
-		movlt	r1, r5
-		add	r5, r5, #1
-		bge	yloop
+yloop:
+	cmp	r1, #32
+	sub	r1, r1, #32
+	movlt	r1, r5
+	add	r5, r5, #1
+	bge	yloop
 
-		mov	r4, #0			@ Default start
-		sub	r0, r0, #36
+	mov	r4, #0			@ Default start
+	sub	r0, r0, #36
 
-	xloop:
-		cmp	r0, #64
-		sub	r0, r0, #64
-		movlt	r0, r4
-		add	r4,r4, #1
-		bge	xloop
+xloop:
+	cmp	r0, #64
+	sub	r0, r0, #64
+	movlt	r0, r4
+	add	r4,r4, #1
+	bge	xloop
 
+	pop	{r4,r5, lr}
 
-		pop	{r4,r5, lr}
-		mov	pc, lr
+	mov	pc, lr
+
 
 @ Arguments:
 @ r0 - x
 @ r1 - y
 @ Return:
 @ r0 - Brick's type address
-codeToTile:
+check_brick:
 	push	{lr}
 
 	cmp	r0, #9
@@ -221,186 +225,185 @@ codeToTile:
 	movgt	pc, lr
 
 	cmp	r1, #1
-	blt	fromZero
-	beq	fromTen
+	blt	top_bricks
+	beq	middle_bricks
 
 	cmpgt	r1, #2
-	beq	fromTwenty
+	beq	bottom_bricks
 	ldr	r0, =destroyedBrick
 
 	pop	{lr}
 	mov	pc, lr
 
-	fromZero:
-		cmp	r0, #0
-		ldreq	r0, =brick0
-		beq	brick_end
+top_bricks:
+	cmp	r0, #0
+	ldreq	r0, =brickt1
+	beq	brick_end
 
-		cmp	r0, #1
-		ldreq	r0, =brick1
-		beq	brick_end
+	cmp	r0, #1
+	ldreq	r0, =brickt2
+	beq	brick_end
 
-		cmp	r0, #2
-		ldreq	r0, =brick2
-		beq	brick_end
+	cmp	r0, #2
+	ldreq	r0, =brickt3
+	beq	brick_end
 
-		cmp	r0, #3
-		ldreq	r0, =brick3
-		beq	brick_end
+	cmp	r0, #3
+	ldreq	r0, =brickt4
+	beq	brick_end
 
-		cmp	r0, #4
-		ldreq	r0, =brick4
-		beq	brick_end
+	cmp	r0, #4
+	ldreq	r0, =brickt5
+	beq	brick_end
 
-		cmp	r0, #5
-		ldreq	r0, =brick5
-		beq	brick_end
+	cmp	r0, #5
+	ldreq	r0, =brickt6
+	beq	brick_end
 
-		cmp	r0, #6
-		ldreq	r0, =brick6
-		beq	brick_end
+	cmp	r0, #6
+	ldreq	r0, =brickt7
+	beq	brick_end
 
-		cmp	r0, #7
-		ldreq	r0, =brick7
-		beq	brick_end
+	cmp	r0, #7
+	ldreq	r0, =brickt8
+	beq	brick_end
 
-		cmp	r0, #8
-		ldreq	r0, =brick8
-		beq	brick_end
+	cmp	r0, #8
+	ldreq	r0, =brickt9
+	beq	brick_end
 
-		cmp	r0, #9
-		ldr	r0, =brick9
-		beq	brick_end
+	cmp	r0, #9
+	ldr	r0, =brickt10
+	beq	brick_end
 
-	fromTen:
-		cmp	r0, #0
-		ldreq	r0, =brick10
-		beq	brick_end
+middle_bricks:
+	cmp	r0, #0
+	ldreq	r0, =brickM1
+	beq	brick_end
 
-		cmp	r0, #1
-		ldreq	r0, =brick11
-		beq	brick_end
+	cmp	r0, #1
+	ldreq	r0, =brickM2
+	beq	brick_end
 
-		cmp	r0, #2
-		ldreq	r0, =brick12
-		beq	brick_end
+	cmp	r0, #2
+	ldreq	r0, =brickM3
+	beq	brick_end
 
-		cmp	r0, #3
-		ldreq	r0, =brick13
-		beq	brick_end
+	cmp	r0, #3
+	ldreq	r0, =brickM4
+	beq	brick_end
 
-		cmp	r0, #4
-		ldreq	r0, =brick14
-		beq	brick_end
+	cmp	r0, #4
+	ldreq	r0, =brickM5
+	beq	brick_end
 
-		cmp	r0, #5
-		ldreq	r0, =brick15
-		beq	brick_end
+	cmp	r0, #5
+	ldreq	r0, =brickM6
+	beq	brick_end
 
-		cmp	r0, #6
-		ldreq	r0, =brick16
-		beq	brick_end
+	cmp	r0, #6
+	ldreq	r0, =brickM7
+	beq	brick_end
 
-		cmp	r0, #7
-		ldreq	r0, =brick17
-		beq	brick_end
+	cmp	r0, #7
+	ldreq	r0, =brickM8
+	beq	brick_end
 
-		cmp	r0, #8
-		ldreq	r0, =brick18
-		beq	brick_end
+	cmp	r0, #8
+	ldreq	r0, =brickM9
+	beq	brick_end
 
-		cmp	r0, #9
-		ldr	r0, =brick19
-		beq	brick_end
+	cmp	r0, #9
+	ldr	r0, =brickM10
+	beq	brick_end
 
-	fromTwenty:
-		cmp	r0, #0
-		ldreq	r0, =brick20
-		beq	brick_end
+bottom_bricks:
+	cmp	r0, #0
+	ldreq	r0, =brickB1
+	beq	brick_end
 
-		cmp	r0, #1
-		ldreq	r0, =brick21
-		beq	brick_end
+	cmp	r0, #1
+	ldreq	r0, =brickB2
+	beq	brick_end
 
-		cmp	r0, #2
-		ldreq	r0, =brick22
-		beq	brick_end
+	cmp	r0, #2
+	ldreq	r0, =brickB3
+	beq	brick_end
 
-		cmp	r0, #3
-		ldreq	r0, =brick23
-		beq	brick_end
+	cmp	r0, #3
+	ldreq	r0, =brickB4
+	beq	brick_end
 
+	cmp	r0, #4
+	ldreq	r0, =brickB5
+	beq	brick_end
 
-		cmp	r0, #4
-		ldreq	r0, =brick24
-		beq	brick_end
+	cmp	r0, #5
+	ldreq	r0, =brickB6
+	beq	brick_end
 
+	cmp	r0, #6
+	ldreq	r0, =brickB7
+	beq	brick_end
 
-		cmp	r0, #5
-		ldreq	r0, =brick25
-		beq	brick_end
+	cmp	r0, #7
+	ldreq	r0, =brickB8
+	beq	brick_end
 
-		cmp	r0, #6
-		ldreq	r0, =brick26
-		beq	brick_end
+	cmp	r0, #8
+	ldreq	r0, =brickB9
+	beq	brick_end
 
-		cmp	r0, #7
-		ldreq	r0, =brick27
-		beq	brick_end
-
-		cmp	r0, #8
-		ldreq	r0, =brick28
-		beq	brick_end
-
-		cmp	r0, #9
-		ldr	r0, =brick29
+	cmp	r0, #9
+	ldr	r0, =brickB10
 
 brick_end:
-		pop	{lr}
-		mov	pc, lr
+	pop	{lr}
+	mov	pc, lr
 
 
 @ Re-draws all the bricks 
-updateBricks:
+update_bricks:
 	push	{r4-r6, lr}
 	
 	mov	r4, #0
 	mov	r5, #0
 
-getBrickStateLoop:
+get_bricks_state:
 	mov	r0, r4
 	mov	r1, r5
 
-	bl	codeToTile
+	bl	check_brick
 	ldrb	r6, [r0]
 
 	mov	r2, r6
 	mov	r0, r4
 	mov	r1, r5
 	cmp	r2, #0
-	blne	drawBrick
+	blne	draw_brick
 
 	@ Check X
 	add	r4, r4, #1
 	cmp	r4, #10
-	blt	getBrickStateLoop
+	blt	get_bricks_state
 
 	@ Check Y
 	add	r5, r5, #1
 	cmp	r5, #3
 	movlt	r4, #0
-	blt	getBrickStateLoop
+	blt	get_bricks_state
 
 	pop	{r4-r6, lr}
 	mov	pc, lr
 
+
 @ Returns:
 @ r0: Is Game Won
-isGameWon:
+check_game_won:
 	push	{r4, r5, lr}
 	
 	mov	r4, #0
-        ldr	r5, =brick0
+        ldr	r5, =brickt1
 
 checkBricks:
 	ldrb	r0, [r5, r4]
@@ -415,51 +418,54 @@ checkBricks:
 
 	mov	r0, #1
 	
-    pop	{r4, r5, lr}
+	pop	{r4, r5, lr}
+
 	mov	pc, lr
+
+
 
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.data
 
-@ 0 - Destroyed Brick
-@ 1 - Weak Brick
-@ 2 - Medium Brick
-@ 3 - Strong Brick
+@ 0 - No brick
+@ 1 - 1 hit brick
+@ 2 - 2 hits brick
+@ 3 - 3 hits brick
 
-.global brick12, brick28
+.global brickM3, brickB9
 
-doBrick:	.byte	1
+
 destroyedBrick:	.byte	0
     
-brick0:	.byte 	1
-brick1:	.byte	1
-brick2:	.byte	1
-brick3:	.byte	1
-brick4:	.byte	1
-brick5:	.byte	1
-brick6:	.byte	1
-brick7:	.byte	1
-brick8:	.byte	1
-brick9:	.byte	1
+brickt1:	.byte 	1
+brickt2:	.byte	1
+brickt3:	.byte	1
+brickt4:	.byte	1
+brickt5:	.byte	1
+brickt6:	.byte	1
+brickt7:	.byte	1
+brickt8:	.byte	1
+brickt9:	.byte	1
+brickt10:	.byte	1
 
-brick10:	.byte 	2
-brick11:	.byte	2
-brick12:	.byte	2
-brick13:	.byte	2
-brick14:	.byte	2
-brick15:	.byte	2
-brick16:	.byte	2
-brick17:	.byte	2
-brick18:	.byte	2
-brick19:	.byte	2
+brickM1:	.byte 	2
+brickM2:	.byte	2
+brickM3:	.byte	2
+brickM4:	.byte	2
+brickM5:	.byte	2
+brickM6:	.byte	2
+brickM7:	.byte	2
+brickM8:	.byte	2
+brickM9:	.byte	2
+brickM10:	.byte	2
 
-brick20:	.byte 	3
-brick21:	.byte	3
-brick22:	.byte	3
-brick23:	.byte	3
-brick24:	.byte	3
-brick25:	.byte	3
-brick26:	.byte	3
-brick27:	.byte	3
-brick28:	.byte	3
-brick29:	.byte	3
+brickB1:	.byte 	3
+brickB2:	.byte	3
+brickB3:	.byte	3
+brickB4:	.byte	3
+brickB5:	.byte	3
+brickB6:	.byte	3
+brickB7:	.byte	3
+brickB8:	.byte	3
+brickB9:	.byte	3
+brickB10:	.byte	3

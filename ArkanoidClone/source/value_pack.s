@@ -1,7 +1,10 @@
 
 @@@@@@@@@@@@@@@@@@@@@@@@@ Text Section @@@@@@@@@@@@@@@@@@@@@@@@@
+
 .section	.text
+
 .global	check_drops, reset_value_packs
+
 
 check_drops:
 	push	{r4-r6, lr}
@@ -42,7 +45,7 @@ check_catch_ball_brick_broken:
 
 	mov	r5, #1
 
-	ldr	r0, =brick28
+	ldr	r0, =brickB9
 	ldrb	r6, [r0]
 
 	cmp	r6, #0
@@ -57,7 +60,7 @@ check_paddle_brick_broken:
 
 	mov	r5, #1
 
-	ldr	r0, =brick12
+	ldr	r0, =brickM3
 	ldrb	r6, [r0]
 
 	cmp	r6, #0
@@ -73,7 +76,7 @@ paddle_drop_fall:
 
 	mov	r0, #182
 
-	ldr	r1, =paddleDropY
+	ldr	r1, =paddleDrop
 	ldr	r6, [r1]
 
 	@ Draws super paddle drop tile
@@ -84,7 +87,7 @@ paddle_drop_fall:
 	bl	drawCell
 
 	add	r7, r6, #16
-	ldr	r1, =paddleDropY
+	ldr	r1, =paddleDrop
 	str	r7, [r1]
 
 	@ Erases tile trace
@@ -95,7 +98,7 @@ paddle_drop_fall:
 	mov	r4, #32
 	bl	drawCell
 
-	ldr	r0, =paddleDropY
+	ldr	r0, =paddleDrop
 	ldr	r0, [r0]
 	mov	r1, #774
 
@@ -132,7 +135,7 @@ paddle_drop_caught:
 
 paddle_destroy:
 	mov	r0, #182
-	ldr	r1, =paddleDropY
+	ldr	r1, =paddleDrop
 	ldr	r1, [r1]
 	sub	r1, r1, #32
 	mov	r2, #0x0
@@ -147,7 +150,7 @@ catch_ball_drop_fall:
 
 	mov	r0, #578
 
-	ldr	r1, =ballDropY
+	ldr	r1, =ballDrop
 	ldr	r6, [r1]
 
 	@ create the white tile
@@ -158,7 +161,7 @@ catch_ball_drop_fall:
 	bl	drawCell
 
 	add	r7, r6, #32
-	ldr	r1, =ballDropY
+	ldr	r1, =ballDrop
 	str	r7, [r1]
 
 	mov	r0, #578
@@ -168,7 +171,7 @@ catch_ball_drop_fall:
 	mov	r4, r3
 	bl	drawCell
 
-	ldr	r0, =ballDropY
+	ldr	r0, =ballDrop
 	ldr	r0, [r0]
 	mov	r1, #774
 
@@ -204,7 +207,7 @@ catch_ball_drop_caught:
 
 ball_destroy:
 	mov	r0, #578
-	ldr	r1, =ballDropY
+	ldr	r1, =ballDrop
 	ldr	r1, [r1]
 	sub	r1, r1, #32
 	mov	r2, #0x0
@@ -216,11 +219,11 @@ ball_destroy:
 
 @ resets the state values for value packs for restarting
 reset_value_packs:
-	ldr	r0, =paddleDropY
+	ldr	r0, =paddleDrop
 	mov	r1, #170
 	str	r1, [r0]
 
-	ldr	r0, =ballDropY
+	ldr	r0, =ballDrop
 	mov	r1, #192
 	str	r1, [r0]
 
@@ -237,8 +240,8 @@ reset_value_packs:
 @@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.data
 
-paddleDropY:		.int    170
-ballDropY:		.int	192
+paddleDrop:		.int    170
+ballDrop:		.int	192
 
 @ 0 - default
 @ 1 - dropping

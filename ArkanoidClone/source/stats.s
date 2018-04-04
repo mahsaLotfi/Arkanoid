@@ -1,10 +1,10 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.text
 
-.global initScore, initLives, updateStats, GAME_OVER, GAME_WIN, resetScore
+.global init_score, init_lives, update_stats, game_over, game_won, reset_score
 
 
-initScore:
+init_score:
 	push	{lr}
 
 	@ r0 - character
@@ -20,7 +20,7 @@ initScore:
 	pop	{pc}
 
 
-initLives:
+init_lives:
 	push	{lr}
 
 	@ r0 - character
@@ -36,7 +36,7 @@ initLives:
 	pop	{pc}
 
 
-updateStats:
+update_stats:
 	push	{r4, lr}
 
 	@ black out positions
@@ -57,7 +57,7 @@ updateStats:
 	@ write digits
 
 	ldr	r0, =score
-	bl	toString	@ r0 - first digit
+	bl	to_string	@ r0 - first digit
 	mov	r4, r1		@ r1 - second digit
 
 		mov	r1, #140
@@ -70,7 +70,7 @@ updateStats:
 		bl	drawChar
 
 	ldr	r0, =lives
-	bl	toString	@ r0 - first digit
+	bl	to_string	@ r0 - first digit
 	mov	r4, r1		@ r1 - second digit
 
 		mov	r1, #630
@@ -82,8 +82,8 @@ updateStats:
 		mov	r2, #55
 		bl	drawChar
 
-		bl	initLives
-		bl	initScore
+		bl	init_lives
+		bl	init_score
 
 	pop	{r4, pc}
 
@@ -91,7 +91,7 @@ updateStats:
 @ params: r0 - location of the integer
 @ returns: r0 - string code
 
-toString:
+to_string:
 	push	{r4, r5, lr}
 	ldr	r0, [r0]
 
@@ -108,30 +108,30 @@ toString:
 	pop	{r4, r5, pc}
 
 @ behavior for when score is 0
-GAME_OVER:
-	bl	updateStats
+game_over:
+	bl	update_stats
         bl	clearPaddle
 	bl	clearBall
 
 	ldr	r0,=gameOver
         mov	r1, #720
 	mov	r2, #960
-	bl      drawCenterTile
+	bl      draw_center_image
 	b	anybutton
 
 @ behavior for win condition
-GAME_WIN:
-	bl	updateStats
+game_won:
+	bl	update_stats
 
 	ldr	r0,=gameWonImage
-    mov	r1, #720
+	mov	r1, #720
 	mov	r2, #960
-	bl      drawCenterTile
+	bl      draw_center_image
 	b	anybutton
 
 
 @ reinitializes game vairables
-resetScore:
+reset_score:
 	push	{lr}
 
 	ldr	r0, =score

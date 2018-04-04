@@ -110,7 +110,7 @@ changeSlope:
 		ldr	r1, =curY
 		ldr	r1, [r1]
 
-		bl	hitBrick @returns if hit
+		bl	hit_brick @returns if hit
 	        ldr     r1, =score
 		ldr	r2, [r1]
 	        add	r2, r2, r0
@@ -127,7 +127,7 @@ changeSlope:
 		ldr	r1, =curY
 		ldr	r1, [r1]
 
-		bl	hitBrick @returns if hit
+		bl	hit_brick @returns if hit
         	ldr     r1, =score
 		ldr	r2, [r1]
 
@@ -144,7 +144,7 @@ changeSlope:
 		ldr	r1, [r1]
 	  	add	r1, r1, #32
 
-		bl	hitBrick
+		bl	hit_brick
 	        ldr     r1, =score
 		ldr	r2, [r1]
 	        add	r2, r2, r0
@@ -161,7 +161,7 @@ changeSlope:
 		ldr	r1, [r1]
 	  	add	r1, r1, #32
 
-		bl	hitBrick
+		bl	hit_brick
 	        ldr     r1, =score
 		ldr	r2, [r1]
 	        add	r2, r2, r0
@@ -184,13 +184,13 @@ checkCorners: @makes function calls to avoid checking the same brick
 
 	mov	r0, r4
 	mov	r1, r5
-	bl	XYtoCode
+	bl	brick_pos
 	mov	r6, r0 @r6 is top left x (till bottom right)
 	mov	r7, r1 @r7 is top left y (till bottom right)
 
 	mov	r0, r4
 	add	r1,r5, #32 @bottom left
-	bl	XYtoCode
+	bl	brick_pos
 
 	cmp	r1, r7
 	blne	bottomleft @calls bottom left if different tile from top left
@@ -198,7 +198,7 @@ checkCorners: @makes function calls to avoid checking the same brick
 
 	add	r0, r4, #32
 	mov	r1, r5
-	bl	XYtoCode
+	bl	brick_pos
 
 	cmp 	r6, r0
 	mov	r6, r0 @store thes values for next check
@@ -209,7 +209,7 @@ checkCorners: @makes function calls to avoid checking the same brick
 	@this section deals with bottom right, top right and bottom left affect this
 	add	r0, r4, #32
 	add	r1, r5, #32 @bottom right
-	bl	XYtoCode
+	bl	brick_pos
 	cmp 	r0, r6
 	beq	skip
 
@@ -219,7 +219,7 @@ checkCorners: @makes function calls to avoid checking the same brick
         @check top right
 	add	r0, r4, #32
 	mov	r1, r5
-	bl	XYtoCode
+	bl	brick_pos
 
 	cmp	r1, r7
 	beq	skip

@@ -1,21 +1,18 @@
 @ Assignment 4: Arkanoid
 
 @ Authors:  Kevin Huynh	    10162332
-@	    Heavenel Cerna  
-@	    Austin So	    
+@	    Heavenel Cerna  30019914
+@	    Austin So	    30021027
 
 
 @@@@@@@@@@@@@@@@@@@@@@@@@ Code Section @@@@@@@@@@@@@@@@@@@@@@@@@
 
 .section    .text
 
-.global main, start_menu, terminate, pause_menu
+.global main, start_menu, end_game, pause_menu
 
 
 main:
-	gBase	.req	r10
-	prevbtn	.req	r9
-
 	ldr	r0, =authors		@ Print authors
 	bl	printf
 
@@ -38,7 +35,7 @@ start_menu_wait:
 	ldreq	r0, =menuStart		@ State determines the screen
 	ldrne	r0, =menuQuit	
 
-	bl	drawTile
+	bl	draw_cell
 
 	mov	r0, r6
 	bl	read_SNES		@ Check button press
@@ -54,33 +51,28 @@ start_menu_wait:
 
 	@ Branch based on state
 	cmp	r4, #0
-	bne	terminate		@ clears the screen to quit
-	beq	makeGame		@ starts the game
+	bne	end_game		@ clears the screen to quit
+	beq	draw_game		@ starts the game
 
 
-terminate:				@ infinite loop ending program
-	ldr	r0, =msgTerminate
-	bl	printf
-
+end_game:				@ infinite loop ending program
 	bl blackScreen
+
 haltLoop$:
 	b	haltLoop$
-
-	gBase	.req	r10
-	prevbtn	.req	r9
 
 
 
 pause_menu:
 	push	{r4-r5, lr}
-	mov	r4, #0		@ state
-	mov	r5, #16384	@ delay for SneS
+	mov	r4, #0			@ state
+	mov	r5, #16384		@ delay for SNES
 
 	mov	r0, r5
-	bl	read_SNES		@ pause SneS reading
+	bl	read_SNES		@ pause SNES reading
 
-pauseMenuLoop:
-   	cmp 	r4, #0 @check state
+pm_loop:
+   	cmp 	r4, #0			@check state
 
 	mov 	r1, #200
 	mov 	r2, #200
@@ -88,43 +80,44 @@ pauseMenuLoop:
 	ldreq	r0, =pausedRestart	
 	ldrne	r0, =pausedQuit
 
-	bl	drawCenterTile		@ draws the menu
+	bl	draw_center_image		@ draws the menu
 	mov	r0, r5
-	bl	read_SNES @check button press
+	bl	read_SNES		@check button press
 	mov	r5, #2048
 
-	cmp	r0, #2048		@ U
+	cmp	r0, #2048		@ Up
 	moveq 	r4, #0
 
-	cmp	r0, #1024		@ D
+	cmp	r0, #1024		@ Down
 	moveq	r4, #1
 
-	cmp	r0, #4096		@ Start
-	bleq	clearScreen
+	cmp	r0, #4096		@ Start button
+	bleq	clear_screen
 	moveq	r0, #16384
 	bleq	read_SNES
 	popeq	{r4,r5, pc}
 
-	cmp	r0, #128  		@A
-	bne pauseMenuLoop
+	cmp	r0, #128  		@ A button
+	bne	pm_loop
 
 	@branch based on state
-	cmp	r4, #0		@ restart if equal
+	cmp	r4, #0			@ Restart if equal
 	pop	{r4,r5, r0}
-	bne	start_menu	@ returns to menu
-	beq	makeGame	@ restarts the game
+	bne	start_menu		@ Returns to menu
+	beq	draw_game		@ Restarts the game
+
 
 @ Clears the screen
-@ 
-@ 
+@ Inputs: None
+@ Outputs: None
 
-clearScreen:
+clear_screen:
 	push	{r4,r5, lr}
 
-	mov	r4, #260 @start x position of where menu is drawn
-	mov	r5, #380 @start y position of where meun is drawn
+	mov	r4, #260		@ Start x position of where menu is drawn
+	mov	r5, #380		@ Start y position of where meun is drawn
 
-clearScreenLoop:
+cs_loop:
 	mov	r0, r4
     	mov	r1, r5
     	mov	r2, #0
@@ -136,7 +129,7 @@ clearScreenLoop:
 
     	addeq   r5, r5, #1
    	cmp	r5, #580
-        blt	clearScreenLoop
+        blt	cs_loop
 
 	pop	{r4, r5, pc}
 
@@ -149,9 +142,7 @@ frameBufferInfo:
 	.int 0		@ screen width
 	.int 0		@ screen height
 
-	authors:	.asciz  "Authors: Kevin HuynH, Heavenel Cerna and Austin So\n"
-	msgTerminate:	.asciz	"Program Terminated\n"
-
+authors:	.asciz  "Authors: Kevin HuynH, Heavenel Cerna and Austin So\n"
 
 .global gpioBaseAddress
 gpioBaseAddress:
