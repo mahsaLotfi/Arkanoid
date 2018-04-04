@@ -19,7 +19,7 @@ main:
 	ldr	r0, =authors		@ Print authors
 	bl	printf
 
-	bl	initSNES
+	bl	init_SNES
 
 	bl	initFrame
 
@@ -28,7 +28,7 @@ start_menu:
 	mov	r6, #8496		@ Initial wait is longer
 
 	mov	r0, r6			@ Pause SNES before reading
-	bl	readSNES
+	bl	read_SNES
 
 start_menu_wait:
     	cmp 	r4, #0			@ Check state
@@ -41,7 +41,7 @@ start_menu_wait:
 	bl	drawTile
 
 	mov	r0, r6
-	bl	readSNES		@ Check button press
+	bl	read_SNES		@ Check button press
 	mov	r6, #3750
 
 	cmp	r0, #2048		@ U
@@ -77,7 +77,7 @@ pause_menu:
 	mov	r5, #16384	@ delay for SneS
 
 	mov	r0, r5
-	bl	readSNES		@ pause SneS reading
+	bl	read_SNES		@ pause SneS reading
 
 pauseMenuLoop:
    	cmp 	r4, #0 @check state
@@ -90,7 +90,7 @@ pauseMenuLoop:
 
 	bl	drawCenterTile		@ draws the menu
 	mov	r0, r5
-	bl	readSNES @check button press
+	bl	read_SNES @check button press
 	mov	r5, #2048
 
 	cmp	r0, #2048		@ U
@@ -102,7 +102,7 @@ pauseMenuLoop:
 	cmp	r0, #4096		@ Start
 	bleq	clearScreen
 	moveq	r0, #16384
-	bleq	readSNES
+	bleq	read_SNES
 	popeq	{r4,r5, pc}
 
 	cmp	r0, #128  		@A

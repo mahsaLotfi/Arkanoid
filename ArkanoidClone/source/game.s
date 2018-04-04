@@ -107,7 +107,7 @@ paddle:
 
 		@ Read SNES Button
 		mov	r0, r7
-		bl	readSNES
+		bl	read_SNES
 		mov	r7, #1500
 
 		cmp	r0, #4096
@@ -213,7 +213,7 @@ isBallMovable:
 
 anybutton:
 	mov	r0, #8192
-        bl 	readSNES
+        bl 	read_SNES
 	cmp     r0, #0
         bne	start_menu
 	b	anybutton

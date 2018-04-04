@@ -4,8 +4,8 @@
 	gBase	.req	r9
 
 @ functions 
-.global	initSNES
-	initSNES:
+.global	init_SNES
+	init_SNES:
 		push	{lr}
 		bl	getGpioPtr		@ load base address
 		ldr	r1, =gpioBaseAddress	@ load to variable
@@ -32,8 +32,8 @@
 @ returns:
 @ r0 - code for button pressed
 
-.global readSNES
-	readSNES:
+.global read_SNES
+	read_SNES:
 		push	{r6-r8, lr}
 		btns	.req	r8
 		mov	r6, r0
@@ -84,75 +84,6 @@
 
 	.unreq	inc
 	.unreq	btns
-
-@ converts to button code
-@ code is not used but is only for debugging purposes
-.global	getButton
-	getButton:
-		push	{r4,lr}
-		notNull	.req	r4
-
-		mov	notNull, #0	@ ensures that the buttons
-					@ pressed are valid
-
-		@ save button pressed to r1
-		cmp	r0, #32768	@ code for button b
-		ldreq	r1, =msgB1	@ if code is b, load string for b
-		moveq	notNull, #1	@ turn on not null flag
-
-		cmp	r0, #16384	@ same goes for the rest of the buttons
-		ldreq	r1, =msgB2
-		moveq	notNull, #1
-
-		cmp	r0, #8192
-		ldreq	r1, =msgB3
-		moveq	notNull, #1
-
-		cmp	r0, #4096	@ code for start
-		ldreq	r1, =msgB4	@ pop and go to terminate code
-		moveq	notNull, #1
-
-		cmp	r0, #2048
-		ldreq	r1, =msgB5
-		moveq	notNull, #1
-
-		cmp	r0, #1024
-		ldreq	r1, =msgB6
-		moveq	notNull, #1
-
-		cmp	r0, #512
-		ldreq	r1, =msgB7
-		moveq	notNull, #1
-
-		cmp	r0, #256
-		ldreq	r1, =msgB8
-		moveq	notNull, #1
-
-		cmp	r0, #128
-		ldreq	r1, =msgB9
-		moveq	notNull, #1
-
-		cmp	r0, #64
-		ldreq	r1, =msgB10
-		moveq	notNull, #1
-
-		cmp	r0, #32
-		ldreq	r1, =msgB11
-		moveq	notNull, #1
-
-		cmp	r0, #16
-		ldreq	r1, =msgB12
-		moveq	notNull, #1
-
-		cmp	notNull, #1	@ if null string, do not print
-		bleq	printf
-
-		movne	r0, #59999	@ delay to make button printing smoother
-		blne	delayMicroseconds	@ if not printing
-
-		pop	{r4, pc}
-
-		.unreq	notNull
 
 	Init_GPIO:
 
@@ -219,21 +150,3 @@
 		mov	pc, lr
 
 	.unreq	gBase
-
-@@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
-.section	.data
-	@ Buttons
-		msgB1:	.asciz		"B\n"
-		msgB2:	.asciz		"Y\n"
-		msgB3:	.asciz		"Select\n"
-		msgB4:	.asciz 		"Start\n"
-		msgB5:	.asciz		"Joy-pad UP\n"
-		msgB6:	.asciz		"Joy-pad DOWN\n"
-		msgB7:	.asciz		"Joy-pad LEFT\n"
-		msgB8:	.asciz		"Joy-pad RIGHT\n"
-		msgB9:	.asciz		"A\n"
-		msgB10:	.asciz		"X\n"
-		msgB11:	.asciz		"Left\n"
-		msgB12:	.asciz		"Right\n"
-
->>>>>>> parent of 80a2152... dsadsa
