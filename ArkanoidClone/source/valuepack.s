@@ -42,7 +42,7 @@ check_catch_ball_brick_broken:
 
 	mov	r5, #1
 
-	ldr	r0, =brick29
+	ldr	r0, =brick28
 	ldrb	r6, [r0]
 
 	cmp	r6, #0
@@ -57,7 +57,7 @@ check_paddle_brick_broken:
 
 	mov	r5, #1
 
-	ldr	r0, =brick25
+	ldr	r0, =brick12
 	ldrb	r6, [r0]
 
 	cmp	r6, #0
@@ -71,7 +71,7 @@ check_paddle_brick_broken:
 paddle_drop_fall:
 	push	{r4-r8, lr}
 
-	mov	r0, #428
+	mov	r0, #182
 
 	ldr	r1, =paddleDropY
 	ldr	r6, [r1]
@@ -88,7 +88,7 @@ paddle_drop_fall:
 	str	r7, [r1]
 
 	@ Erases tile trace
-	mov	r0, #56
+	mov	r0, #182
 	sub	r1, r6, #32
 	mov	r2, #0x0
 	mov	r3, #28
@@ -214,11 +214,11 @@ tryOtherSide:
 @ resets the state values for value packs for restarting
 reset_value_packs:
 	ldr	r0, =paddleDropY
-	mov	r1, #256
+	mov	r1, #170
 	str	r1, [r0]
 
 	ldr	r0, =ballDropY
-	mov	r1, #224
+	mov	r1, #192
 	str	r1, [r0]
 
 	ldr	r0, =paddleDropState
@@ -234,8 +234,8 @@ reset_value_packs:
 @@@@@@@@@@@@@@@@@@@@@@@@@ Data Section @@@@@@@@@@@@@@@@@@@@@@@@@
 .section	.data
 
-paddleDropY:		.int    256
-ballDropY:		.int	224
+paddleDropY:		.int    170
+ballDropY:		.int	192
 
 @ 0 - default
 @ 1 - dropping
