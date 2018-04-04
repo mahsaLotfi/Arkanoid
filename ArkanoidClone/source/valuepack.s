@@ -97,13 +97,12 @@ paddle_drop_fall:
 
 	ldr	r0, =paddleDropY
 	ldr	r0, [r0]
-	mov	r1, #800
+	mov	r1, #790
 
 
 	@ Check if tile is caught
 	cmp	r0, r1
 	blge	paddle_drop_caught
-
 
 	pop	{r4-r8, pc}
 
@@ -126,8 +125,8 @@ paddle_drop_caught:
 	ldr	r1, [r1]
 	sub	r1, r1, #32
 	mov	r2, #0x0
-	mov	r3, #28
-	mov	r4, r3
+	mov	r3, #64
+	mov	r4, #32
 	bl	drawCell
 
 	pop	{pc}
