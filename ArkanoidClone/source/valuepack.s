@@ -117,13 +117,14 @@ paddle_drop_caught:
 	ldr	r0, =paddlePosition
 	ldr	r0, [r0]
 
-	cmp	r0, #182	@ 
-	bllt	paddle_destroy	@ Upgrade paddle
-	
 	ldr	r1, =paddleSize
 	ldr	r1, [r1]
+
 	add	r1, #182
-	cmp	r0, r1
+	cmp	r0, r1	@ 
+	bllt	paddle_destroy	@ Upgrade paddle
+	
+	cmp	r0, #246
 	blgt	paddle_destroy
 	
 	b	superPaddle
