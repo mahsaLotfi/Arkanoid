@@ -426,7 +426,7 @@ checkBricks:
 @ 2 - Medium Brick
 @ 3 - Strong Brick
 
-.global brick12, brick28, brick0
+.global brick12, brick28
 
 doBrick:	.byte	1
 destroyedBrick:	.byte	0
