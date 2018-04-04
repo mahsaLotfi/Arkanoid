@@ -58,7 +58,7 @@ wait:
 
 	mov 	pButton, r0
 	mov 	r0,pButton		
-	bl	check_button
+	@bl	check_button
 	
 	pop	{r4, fp, pc}
 
