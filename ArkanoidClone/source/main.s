@@ -20,6 +20,7 @@ main:
 	bl	printf
 
 	bl	initSNES
+
 	bl	initFrame
 
 start_menu:
