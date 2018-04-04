@@ -42,7 +42,7 @@ check_catch_ball_brick_broken:
 
 	mov	r5, #1
 
-	ldr	r0, =brick0
+	ldr	r0, =brick28
 	ldrb	r6, [r0]
 
 	cmp	r6, #0
@@ -57,7 +57,7 @@ check_paddle_brick_broken:
 
 	mov	r5, #1
 
-	ldr	r0, =brick0
+	ldr	r0, =brick28
 	ldrb	r6, [r0]
 
 	cmp	r6, #0
