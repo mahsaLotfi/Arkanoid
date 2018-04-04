@@ -87,7 +87,7 @@ paddle_drop_caught:
 	ldr	r0, [r0]
 
 	@ Upgrade paddle into super paddle
-	cmp	r0, #470 	@ 438 + 32
+	cmp	r0, #470 	
 	blle	superPaddle	
 
 	@ Draw super paddle blackout 
